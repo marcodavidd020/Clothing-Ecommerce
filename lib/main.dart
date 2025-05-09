@@ -1,5 +1,6 @@
 /// Este es el archivo principal y punto de entrada para la aplicación Flutter.
 import 'package:flutter/material.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/pages/home_page.dart';
 import 'package:flutter_application_ecommerce/features/splash/presentation/pages/splash_page.dart';
 import 'package:flutter_application_ecommerce/core/theme/app_theme.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.light,
       // home: const MainShellPage(),
-      home: const SplashPage(),
+      home: const HomePage(),
     );
   }
 }

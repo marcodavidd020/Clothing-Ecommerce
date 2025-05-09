@@ -16,7 +16,8 @@ class SplashPage extends StatefulWidget {
 }
 
 /// Estado para [SplashPage] que maneja la animación del logo y la navegación.
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -35,7 +36,10 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOutBack), // Efecto de escala con rebote
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutBack,
+      ), // Efecto de escala con rebote
     );
 
     _animationController.forward(); // Inicia la animación
@@ -46,7 +50,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   /// Navega a la [SignInPage] después de una demora.
   /// La demora debe ser igual o mayor que la duración de la animación.
   void _navigateToNextScreen() {
-    Future.delayed(const Duration(seconds: 3), () { // 3 segundos de splash en total
+    Future.delayed(const Duration(seconds: 3), () {
+      // 3 segundos de splash en total
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const SignInPage()),
@@ -68,9 +73,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       body: Container(
         width: size.width,
         height: size.height,
-        decoration: const BoxDecoration(
-          color: AppColors.primary, 
-        ),
+        decoration: const BoxDecoration(color: AppColors.primary),
         child: Center(
           // Aplicar las transiciones al logo
           child: ScaleTransition(
@@ -79,7 +82,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               opacity: _fadeAnimation,
               child: Image.asset(
                 AppStrings.logo,
-                width: AppDimens.logoWidth, 
+                width: AppDimens.logoWidth,
                 height: AppDimens.logoHeight,
               ),
             ),

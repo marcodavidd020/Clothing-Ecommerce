@@ -20,34 +20,29 @@ class CategoriesSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.screenPadding,
-          ).copyWith(bottom: AppDimens.vSpace8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                AppStrings.categoriesTitle,
-                style: AppTextStyles.categorySectionTitle,
-              ),
-              if (onSeeAllPressed != null)
-                TextButton(
-                  onPressed: onSeeAllPressed,
-                  child: Text(
-                    AppStrings.seeAllLabel,
-                    style: AppTextStyles.seeAll,
-                  ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppStrings.categoriesTitle,
+              style: AppTextStyles.categorySectionTitle,
+            ),
+            if (onSeeAllPressed != null)
+              TextButton(
+                onPressed: onSeeAllPressed,
+                child: Text(
+                  AppStrings.seeAllLabel,
+                  style: AppTextStyles.seeAll,
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
         SizedBox(
           height: AppDimens.categoriesItemHeight, // Altura aproximada para los items y el texto
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.screenPadding,
-            ),
+            // padding: const EdgeInsets.symmetric(
+            //   horizontal: AppDimens.screenPadding,
+            // ),
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
             itemBuilder: (context, index) {
