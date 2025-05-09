@@ -30,4 +30,8 @@ class AppDimens {
   // Search Bar
   static const double homeSearchPaddingHorizontal = 22.0;
   static const double homeSearchPaddingVertical = 12.0;
+
+  //logo
+  static const double logoWidth = 175.0;
+  static const double logoHeight = 80.0;
 }

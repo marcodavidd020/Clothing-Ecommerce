@@ -1,4 +1,3 @@
-
 class AppStrings {
   // Titles
   static const String signInTitle = 'Sign in';
@@ -16,17 +15,21 @@ class AppStrings {
   static const String continueWithGoogle = 'Continue With Google';
   static const String continueWithFacebook = 'Continue With Facebook';
 
-  // Social icons
+  // Icons
+  static const String logo = 'assets/logo.png';
   static const String appleIcon = 'assets/icons/apple.png';
   static const String googleIcon = 'assets/icons/google.png';
   static const String facebookIcon = 'assets/icons/facebook.png';
 
-  // Back icon
   static const String backIcon = 'assets/icons/back.svg';
   static const String arrowDownIcon = 'assets/icons/arrowdown.svg';
   static const String bagIcon = 'assets/icons/bag.svg';
   static const String searchIcon = 'assets/icons/search.svg';
   static const String userPlaceholderIcon = 'assets/icons/user_placeholder.png';
+  static const String homeIcon = 'assets/icons/home.svg';
+  static const String notificationIcon = 'assets/icons/notification.svg';
+  static const String receiptIcon = 'assets/icons/receip.svg';
+  static const String profileIcon = 'assets/icons/profile.svg';
 
   // Form hints
   static const String emailHint = 'Email Address';

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
+import 'package:flutter_application_ecommerce/features/shell/presentation/presentation.dart';
 import 'register_page.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({Key? key}) : super(key: key);
+  const SignInPage({super.key});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -36,7 +36,7 @@ class _SignInPageState extends State<SignInPage> {
       if (_formKey.currentState!.validate()) {
         // Lógica de inicio de sesión con email y password
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomePage()),
+          MaterialPageRoute(builder: (_) => const MainShellPage()),
         );
       }
     }

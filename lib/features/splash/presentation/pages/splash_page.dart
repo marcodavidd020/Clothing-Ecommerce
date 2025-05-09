@@ -3,7 +3,7 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/pages/sign_in_page.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -29,7 +29,11 @@ class _SplashPageState extends State<SplashPage> {
         height: size.height,
         decoration: BoxDecoration(color: AppColors.primary),
         child: Center(
-          child: Image.asset('assets/logo.png', width: 175, height: 80),
+          child: Image.asset(
+            AppStrings.logo,
+            width: AppDimens.logoWidth,
+            height: AppDimens.logoHeight,
+          ),
         ),
       ),
     );

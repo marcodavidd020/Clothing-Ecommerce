@@ -1,2 +1,2 @@
 /// Models for Auth feature
-/// Define data models here. 
+/// Define data models here.
