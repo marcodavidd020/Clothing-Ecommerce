@@ -29,11 +29,29 @@ class AppTextStyles {
     color: AppColors.textDark,
   );
   static const TextStyle socialButton = TextStyle(
-    fontFamily: 'Circular Std',
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     fontSize: 12,
     height: 1.6875,
     letterSpacing: -0.495753,
     color: AppColors.textDark,
+  );
+
+  static const TextStyle categorySectionTitle = TextStyle(
+    fontSize: 13,
+    color: AppColors.black,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle seeAll = TextStyle(
+    fontSize: 13,
+    color: AppColors.primary,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle categoryItem = TextStyle(
+    fontSize: 12,
+    color: AppColors.black,
+    fontWeight: FontWeight.w100,
+    letterSpacing: -0.295753,
   );
 }

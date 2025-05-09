@@ -31,6 +31,15 @@ class AppStrings {
   static const String receiptIcon = 'assets/icons/receip.svg';
   static const String profileIcon = 'assets/icons/profile.svg';
 
+  // Categories
+  static const String categoriesTitle = 'Categories';
+  static const String seeAllLabel = 'See All';
+  static const String hoodiesLabel = 'Hoodies';
+  static const String shortsLabel = 'Shorts';
+  static const String shoesLabel = 'Shoes';
+  static const String bagLabel = 'Bag';
+  static const String accessoriesLabel = 'Accessories';
+
   // Form hints
   static const String emailHint = 'Email Address';
   static const String passwordHint = 'Password';

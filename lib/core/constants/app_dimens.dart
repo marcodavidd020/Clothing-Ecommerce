@@ -6,9 +6,10 @@ class AppDimens {
   static const double socialButtonIconLeft = 19.42;
 
   // Spacing
+  static const double vSpace8 = 8.0;
+  static const double vSpace12 = 12.0;
   static const double vSpace16 = 16.0;
   static const double vSpace32 = 32.0;
-
   // Button
   static const double buttonHeight = 49.0;
   static const double buttonRadius = 100.0;
@@ -34,4 +35,10 @@ class AppDimens {
   //logo
   static const double logoWidth = 175.0;
   static const double logoHeight = 80.0;
+
+  // Pading Categories why categories item
+  static const double categoriesItemPadding = 16.0;
+
+  // Size height
+  static const double categoriesItemHeight = 120.0;
 }
