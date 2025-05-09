@@ -22,6 +22,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
               .fixed, // Para que todos los items sean visibles
       backgroundColor:
           AppColors.white, // O el color que prefieras para el fondo
+      elevation: 0, // Asegura que no haya sombra/elevación
       selectedItemColor: AppColors.primary,
       unselectedItemColor: AppColors.textDark.withOpacity(0.5),
       showSelectedLabels: false, // Ocultar etiquetas si solo quieres iconos
