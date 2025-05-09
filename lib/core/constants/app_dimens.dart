@@ -75,4 +75,7 @@ class AppDimens {
 
   // Size height
   static const double categoriesItemHeight = 120.0;
+
+  // Image
+  static const double categoriesItemImageSize = 70.0;
 }

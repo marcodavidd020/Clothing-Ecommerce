@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 
 class CategoryItemWidget extends StatelessWidget {
@@ -15,15 +16,14 @@ class CategoryItemWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: 35, // Tamaño del círculo de la imagen
-            backgroundColor:
-                AppColors.inputFill, // Fondo mientras carga o si falla
-            backgroundImage: NetworkImage(category.imageUrl),
-            onBackgroundImageError: (exception, stackTrace) {
-              // Podrías mostrar un icono de error o placeholder local
-              print("Error cargando imagen: ${category.imageUrl}");
-            },
+          SizedBox(
+            width: AppDimens.categoriesItemImageSize,
+            height: AppDimens.categoriesItemImageSize,
+            child: NetworkImageWithPlaceholder(
+              imageUrl: category.imageUrl,
+              shape: BoxShape.circle,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(height: AppDimens.vSpace16 / 2),
           Text(

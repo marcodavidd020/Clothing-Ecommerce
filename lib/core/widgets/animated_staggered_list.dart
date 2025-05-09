@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:redacted/redacted.dart';
 
-/// Un widget que anima la aparición de una lista de widgets hijos de forma escalonada.
-///
-/// Cada hijo entra con una animación de deslizamiento desde abajo y un fundido de opacidad.
+/// Un widget que anima la aparición de una lista de widgets hijos de forma escalonada
+/// y opcionalmente los muestra como "redactados" mientras se animan.
 class AnimatedStaggeredList extends StatefulWidget {
   /// La lista de widgets que se animarán.
   final List<Widget> children;
@@ -17,6 +17,9 @@ class AnimatedStaggeredList extends StatefulWidget {
   /// 0.5 significa que el widget comienza un 50% de su altura por debajo de su posición final.
   final double initialOffsetY;
 
+  /// Indica si el widget debe comenzar redactado.
+  final bool initiallyRedacted;
+
   /// Crea una instancia de [AnimatedStaggeredList].
   const AnimatedStaggeredList({
     super.key,
@@ -28,6 +31,7 @@ class AnimatedStaggeredList extends StatefulWidget {
       milliseconds: 150,
     ), // Retraso entre items por defecto
     this.initialOffsetY = 0.2, // Desplazamiento vertical inicial más sutil
+    this.initiallyRedacted = true, // Por defecto, comienza redactado
   });
 
   @override
@@ -39,10 +43,13 @@ class _AnimatedStaggeredListState extends State<AnimatedStaggeredList>
   late AnimationController _animationController;
   final List<Animation<Offset>> _slideAnimations = [];
   final List<Animation<double>> _fadeAnimations = [];
+  bool _isRedacted = true;
 
   @override
   void initState() {
     super.initState();
+    _isRedacted = widget.initiallyRedacted;
+
     _animationController = AnimationController(
       duration: widget.staggerDuration,
       vsync: this,
@@ -51,16 +58,17 @@ class _AnimatedStaggeredListState extends State<AnimatedStaggeredList>
     // Calcula la duración de la animación para cada item y el intervalo de inicio
     final double totalItems = widget.children.length.toDouble();
     final double singleItemAnimationProportion =
-        1.0 / totalItems; // Proporción de la duración total por item
+        totalItems > 0 ? 1.0 / totalItems : 1.0;
     final double delayProportion =
-        widget.itemDelay.inMilliseconds / widget.staggerDuration.inMilliseconds;
+        widget.staggerDuration.inMilliseconds > 0
+            ? widget.itemDelay.inMilliseconds / widget.staggerDuration.inMilliseconds
+            : 0;
 
     for (int i = 0; i < widget.children.length; i++) {
       // El inicio de la animación para este item se basa en su índice y el itemDelay
       final double startTime = (i * delayProportion).clamp(
-        0.0,
-        1.0 - singleItemAnimationProportion,
-      );
+          0.0,
+          1.0 - singleItemAnimationProportion);
       // El final de la animación asegura que cada item tenga suficiente tiempo para animarse completamente
       final double endTime = (startTime + singleItemAnimationProportion * 2)
           .clamp(startTime, 1.0); // Ajustado para mejor visibilidad
@@ -87,6 +95,18 @@ class _AnimatedStaggeredListState extends State<AnimatedStaggeredList>
     }
 
     _animationController.forward();
+
+    // Quitar redacción después de que la animación principal haya tenido tiempo de empezar
+    // o un poco antes de que termine, para que el contenido real aparezca suavemente.
+    if (widget.initiallyRedacted) {
+      Future.delayed(widget.staggerDuration - widget.itemDelay, () { // Ajustar este delay según se vea mejor
+        if (mounted) {
+          setState(() {
+            _isRedacted = false;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -100,14 +120,20 @@ class _AnimatedStaggeredListState extends State<AnimatedStaggeredList>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(widget.children.length, (index) {
+        Widget child = widget.children[index];
+        if (_isRedacted) {
+          // Aplicar la redacción. El paquete espera que el contexto se pase.
+          // El paquete `redacted` parece usar una extensión, así que lo aplicamos así.
+          child = child.redacted(context: context, redact: true);
+        }
         return SlideTransition(
           position: _slideAnimations[index],
           child: FadeTransition(
             opacity: _fadeAnimations[index],
-            child: widget.children[index],
+            child: child,
           ),
         );
       }),
-    );
+    ).redacted(context: context, redact: _isRedacted); // Redacta el Column entero si aún se está cargando
   }
 }

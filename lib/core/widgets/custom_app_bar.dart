@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../constants/constants.dart';
+import 'widgets.dart';
 
 /// Un widget de [AppBar] personalizado y reutilizable para la aplicación.
 ///
@@ -52,14 +53,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Center(
           child: GestureDetector(
             onTap: onProfilePressed,
-            child: CircleAvatar(
-              radius:
-                  AppDimens.backButtonSize /
-                  2.2, // Ligeramente más pequeño para estética
-              backgroundImage: AssetImage(
-                profileImageUrl!,
-              ), // Asume asset local por ahora
-              // Considerar NetworkImage si profileImageUrl es una URL
+            child: SizedBox(
+              width: AppDimens.backButtonSize,
+              height: AppDimens.backButtonSize,
+              child: profileImageUrl!.startsWith('http')
+                  ? NetworkImageWithPlaceholder(
+                      imageUrl: profileImageUrl!,
+                      shape: BoxShape.circle,
+                      fit: BoxFit.cover,
+                    )
+                  : CircleAvatar(
+                      radius: AppDimens.backButtonSize / 2.2,
+                      backgroundImage: AssetImage(profileImageUrl!),
+                    ),
             ),
           ),
         ),
