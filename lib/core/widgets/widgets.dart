@@ -1,3 +1,6 @@
+/// Archivo barrel para exportar todos los widgets reutilizables del core de la aplicación.
+///
+/// Facilita la importación de múltiples widgets con una sola línea.
 export 'custom_text_field.dart';
 export 'primary_button.dart';
 export 'social_button.dart';

@@ -2,14 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../constants/constants.dart';
 
+/// Un widget de [AppBar] personalizado y reutilizable para la aplicación.
+///
+/// Ofrece opciones para mostrar/ocultar un botón de retroceso, un título personalizado,
+/// un botón de bolsa de compras y una imagen de perfil de usuario.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  /// Determina si se muestra el botón de retroceso.
+  /// Por defecto es `false` si se muestra una imagen de perfil, o `true` en otros contextos de página.
   final bool showBack;
+
+  /// Callback que se ejecuta cuando se presiona el botón de retroceso.
+  /// Si es nulo y [showBack] es true, se usará `Navigator.of(context).pop()`.
   final VoidCallback? onBack;
+
+  /// Widget opcional para mostrar como título, centrado en el AppBar.
   final Widget? title;
+
+  /// Callback opcional para el evento de presionar el botón de la bolsa de compras.
+  /// Si es provisto, se muestra el icono de la bolsa.
   final VoidCallback? onBagPressed;
+
+  /// URL o ruta local de la imagen de perfil del usuario.
+  /// Si se provee junto con [onProfilePressed], se muestra un [CircleAvatar] a la izquierda.
   final String? profileImageUrl;
+
+  /// Callback opcional para el evento de presionar la imagen de perfil.
   final VoidCallback? onProfilePressed;
 
+  /// Crea una instancia de [CustomAppBar].
   const CustomAppBar({
     super.key,
     this.showBack = false,
@@ -23,6 +43,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     Widget? leadingWidget;
+
+    // Determina el widget a mostrar en la posición 'leading' (izquierda).
+    // Prioridad: Imagen de perfil > Botón de retroceso > Espacio vacío.
     if (profileImageUrl != null && onProfilePressed != null) {
       leadingWidget = Padding(
         padding: const EdgeInsets.only(left: AppDimens.screenPadding),
@@ -30,8 +53,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: GestureDetector(
             onTap: onProfilePressed,
             child: CircleAvatar(
-              radius: AppDimens.backButtonSize / 2.2,
-              backgroundImage: AssetImage(profileImageUrl!),
+              radius:
+                  AppDimens.backButtonSize /
+                  2.2, // Ligeramente más pequeño para estética
+              backgroundImage: AssetImage(
+                profileImageUrl!,
+              ), // Asume asset local por ahora
+              // Considerar NetworkImage si profileImageUrl es una URL
             ),
           ),
         ),
@@ -59,7 +87,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       );
     } else {
-      leadingWidget = SizedBox(width: AppDimens.screenPadding + AppDimens.backButtonSize);
+      // Si no hay perfil ni botón de back, se asegura un espaciado consistente.
+      leadingWidget = SizedBox(
+        width: AppDimens.screenPadding + AppDimens.backButtonSize,
+      );
     }
 
     return AppBar(
@@ -68,38 +99,45 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       title: title,
       leading: leadingWidget,
+      leadingWidth:
+          AppDimens.screenPadding +
+          AppDimens.backButtonSize, // Ancho consistente para el leading
       actions: [
+        // Muestra el botón de la bolsa si se proporciona el callback.
         if (onBagPressed != null)
           Padding(
             padding: const EdgeInsets.only(right: AppDimens.screenPadding),
             child: GestureDetector(
               onTap: onBagPressed,
               child: Container(
-                width: AppDimens.backButtonSize,
+                width:
+                    AppDimens
+                        .backButtonSize, // Reutiliza tamaño para consistencia
                 height: AppDimens.backButtonSize,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color:
+                      AppColors
+                          .primary, // Color distintivo para el botón de bolsa
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: SvgPicture.asset(
                     AppStrings.bagIcon,
-                    width: AppDimens.iconSize,
+                    width: AppDimens.iconSize, // Tamaño de icono estándar
                     height: AppDimens.iconSize,
                     colorFilter: const ColorFilter.mode(
                       AppColors.white,
                       BlendMode.srcIn,
-                    ),
+                    ), // Icono blanco
                   ),
                 ),
               ),
             ),
           ),
       ],
-      leadingWidth: AppDimens.screenPadding + AppDimens.backButtonSize,
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight); // Altura estándar de AppBar
 }
