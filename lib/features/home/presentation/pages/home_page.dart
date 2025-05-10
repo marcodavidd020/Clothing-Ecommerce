@@ -214,8 +214,22 @@ class _HomePageState extends State<HomePage> {
 
   /// Callback para cuando se presiona un ítem de categoría individual.
   void _onCategoryTapped(CategoryItemModel category) {
-    // TODO: Implementar navegación a la pantalla de listado de productos para esa categoría.
-    print("Categoría presionada: ${category.name}");
+    // Lógica de demostración para obtener productos para la categoría seleccionada.
+    // En una app real, esto vendría de un BLoC o servicio que filtre productos.
+    final List<ProductItemModel> categoryProducts = _topSellingProducts // Usamos una lista existente como ejemplo
+        .where((p) => p.name.toLowerCase().contains(category.name.toLowerCase().substring(0,3))) // Simulación de filtro
+        .toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryProductsPage(
+          category: category,
+          products: categoryProducts.isNotEmpty ? categoryProducts : _topSellingProducts.take(2).toList(), // Fallback
+        ),
+      ),
+    );
+    print("Categoría presionada desde Home: ${category.name}");
   }
 
   @override
