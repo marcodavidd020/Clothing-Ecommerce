@@ -25,7 +25,7 @@ class CategoriesSectionWidget extends StatelessWidget {
           children: [
             Text(
               AppStrings.categoriesTitle,
-              style: AppTextStyles.categorySectionTitle,
+              style: AppTextStyles.sectionTitle,
             ),
             if (onSeeAllPressed != null)
               TextButton(

@@ -49,7 +49,7 @@ class AppTextStyles {
   );
 
   /// Estilo para el título de la sección de categorías.
-  static const TextStyle categorySectionTitle = TextStyle(
+  static const TextStyle sectionTitle = TextStyle(
     fontSize: 13,
     color: AppColors.textDark,
     fontWeight: FontWeight.bold,
@@ -58,8 +58,9 @@ class AppTextStyles {
   /// Estilo para el texto "See All" en la sección de categorías.
   static const TextStyle seeAll = TextStyle(
     fontSize: 13,
-    color: AppColors.primary,
-    fontWeight: FontWeight.bold,
+    // color: AppColors.primary,
+    color: AppColors.textDark,
+    fontWeight: FontWeight.w500,
   );
 
   /// Estilo para el nombre de cada ítem de categoría.

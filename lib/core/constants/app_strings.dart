@@ -81,4 +81,7 @@ class AppStrings {
   // Top Selling
   static const String topSellingTitle = 'Top Selling';
   static const String seeAllTopSelling = 'See All';
+
+  // New In
+  static const String newInTitle = 'New In';
 }

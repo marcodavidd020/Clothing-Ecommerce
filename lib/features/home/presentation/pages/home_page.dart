@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+  // Lista de productos de demostración
   final List<ProductItemModel> _topSellingProducts = [
     ProductItemModel(
       id: '1',
@@ -82,6 +83,40 @@ class _HomePageState extends State<HomePage> {
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 45.50,
       originalPrice: 65.00,
+    ),
+  ];
+
+  // Lista de productos para la sección New In
+  final List<ProductItemModel> _newInProducts = [
+    ProductItemModel(
+      id: '5',
+      name: "Essential Crewneck T-Shirt",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 29.99,
+    ),
+    ProductItemModel(
+      id: '6',
+      name: "Lightweight Running Shorts",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 39.99,
+      originalPrice: 49.99,
+    ),
+    ProductItemModel(
+      id: '7',
+      name: "Urban Backpack",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 59.99,
+    ),
+    ProductItemModel(
+      id: '8',
+      name: "Classic Sneakers",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 89.99,
+      originalPrice: 120.00,
     ),
   ];
 
@@ -169,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                 onCategoryTap: _onCategoryTapped,
               ),
               const SizedBox(height: AppDimens.vSpace16), // Espacio entre secciones
-              TopSellingSection(
+              ProductHorizontalListSection(
                 products: _topSellingProducts,
                 onSeeAllPressed: () {
                   // TODO: Implementar navegación a "See All" de Top Selling
@@ -180,10 +215,7 @@ class _HomePageState extends State<HomePage> {
                   print('Producto presionado: ${product.name}');
                 },
                 onFavoriteToggle: (product) {
-                  // TODO: Implementar lógica para marcar/desmarcar favorito
                   setState(() {
-                    // Lógica de ejemplo para cambiar el estado de favorito
-                    // En una app real, esto interactuaría con un BLoC o servicio.
                     final index = _topSellingProducts.indexWhere((p) => p.id == product.id);
                     if (index != -1) {
                       _topSellingProducts[index] = ProductItemModel(
@@ -199,8 +231,38 @@ class _HomePageState extends State<HomePage> {
                   print('Favorito presionado: ${product.name}, es favorito: ${!product.isFavorite}');
                 },
               ),
-              const SizedBox(height: AppDimens.vSpace16), // Espacio al final
-              // Puedes añadir más widgets aquí si es necesario
+              const SizedBox(height: AppDimens.vSpace16),
+              // Sección New In
+              ProductHorizontalListSection(
+                title: AppStrings.newInTitle,
+                titleColor: AppColors.primary,
+                products: _newInProducts,
+                onSeeAllPressed: () {
+                  // TODO: Implementar navegación a "See All" de New In
+                  print('See All New In presionado');
+                },
+                onProductTap: (product) {
+                  // TODO: Implementar navegación al detalle del producto
+                  print('Producto New In presionado: \\${product.name}');
+                },
+                onFavoriteToggle: (product) {
+                  setState(() {
+                    final index = _newInProducts.indexWhere((p) => p.id == product.id);
+                    if (index != -1) {
+                      _newInProducts[index] = ProductItemModel(
+                        id: product.id,
+                        name: product.name,
+                        imageUrl: product.imageUrl,
+                        price: product.price,
+                        originalPrice: product.originalPrice,
+                        isFavorite: !product.isFavorite,
+                      );
+                    }
+                  });
+                  print('Favorito New In presionado: \\${product.name}, es favorito: \\${!product.isFavorite}');
+                },
+              ),
+              const SizedBox(height: AppDimens.vSpace16),
             ],
           ),
         ),

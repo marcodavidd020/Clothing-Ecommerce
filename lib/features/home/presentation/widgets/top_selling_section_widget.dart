@@ -3,15 +3,19 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/product_item_widget.dart';
 
-class TopSellingSection extends StatelessWidget {
+class ProductHorizontalListSection extends StatelessWidget {
+  final String title;
+  final Color titleColor;
   final List<ProductItemModel> products;
   final VoidCallback? onSeeAllPressed;
   final Function(ProductItemModel)? onProductTap;
   final Function(ProductItemModel)? onFavoriteToggle;
 
-  const TopSellingSection({
+  const ProductHorizontalListSection({
     super.key,
     required this.products,
+    this.title = AppStrings.topSellingTitle,
+    this.titleColor = AppColors.textDark,
     this.onSeeAllPressed,
     this.onProductTap,
     this.onFavoriteToggle,
@@ -25,17 +29,25 @@ class TopSellingSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(AppStrings.topSellingTitle, style: AppTextStyles.categorySectionTitle),
+            Text(
+              title,
+              style: AppTextStyles.sectionTitle.copyWith(color: titleColor),
+            ),
             if (onSeeAllPressed != null)
               TextButton(
                 onPressed: onSeeAllPressed,
-                child: Text(AppStrings.seeAllTopSelling, style: AppTextStyles.seeAll),
+                child: Text(
+                  AppStrings.seeAllTopSelling,
+                  style: AppTextStyles.seeAll,
+                ),
               ),
           ],
         ),
         const SizedBox(height: AppDimens.vSpace16),
         SizedBox(
-          height: AppDimens.topSellingSectionHeight, // Altura aproximada para los items de producto
+          height:
+              AppDimens
+                  .topSellingSectionHeight, // Altura aproximada para los items de producto
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: products.length,
