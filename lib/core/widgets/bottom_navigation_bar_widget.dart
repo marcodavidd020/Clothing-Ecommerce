@@ -29,7 +29,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
       backgroundColor: AppColors.white,   // Fondo de la barra
       elevation: 0,                       // Sin sombra para una apariencia plana
       selectedItemColor: AppColors.primary, // Color para el ícono seleccionado (aunque el color lo gestiona el SvgPicture)
-      unselectedItemColor: AppColors.textDark.withOpacity(0.5), // Color para iconos no seleccionados
+      unselectedItemColor: AppColors.textDark.withOpacity(1), // Color para iconos no seleccionados
       showSelectedLabels: false, // No muestra etiquetas de texto para los items
       showUnselectedLabels: false,
       items: [
@@ -56,7 +56,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         height: AppDimens.iconSize,
         // Aplica el color primario si está seleccionado, sino un gris opaco.
         colorFilter: ColorFilter.mode(
-          isSelected ? AppColors.primary : AppColors.textDark.withOpacity(0.5),
+          isSelected ? AppColors.primary : AppColors.textDark.withOpacity(1),
           BlendMode.srcIn,
         ),
       ),
