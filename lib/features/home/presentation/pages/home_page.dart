@@ -21,6 +21,9 @@ class HomePage extends StatefulWidget {
 /// Estado para [HomePage] que maneja la lógica de la UI.
 /// Las animaciones de entrada ahora son gestionadas por [AnimatedStaggeredList].
 class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+  bool _showFade = true;
+
   /// Género actualmente seleccionado para filtrar contenido (ej. "Men", "Women").
   String _selectedGender = "Men"; // Podría ser una constante de AppStrings
 
@@ -137,6 +140,39 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    // Umbral para considerar que se ha llegado al final (evita parpadeos)
+    const double scrollThreshold = 10.0;
+    // Comprueba si la posición actual del scroll está cerca del final máximo
+    bool isAtBottom =
+        _scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - scrollThreshold;
+
+    // Si el estado del difuminado necesita cambiar, actualiza el estado
+    if (isAtBottom && _showFade) {
+      setState(() {
+        _showFade = false;
+      });
+    } else if (!isAtBottom && !_showFade) {
+      setState(() {
+        _showFade = true;
+      });
+    }
+  }
+
   /// Actualiza el género seleccionado y reconstruye el widget.
   void _selectGender(String gender) {
     setState(() {
@@ -206,86 +242,122 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        // Permite el scroll si el contenido es más largo que la pantalla
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.screenPadding,
-            vertical: AppDimens.vSpace16,
-          ),
-          child: AnimatedStaggeredList(
-            // Puedes ajustar staggerDuration, itemDelay, initialOffsetY si es necesario
-            children: [
-              SearchBarWidget(
-                onTap: _onSearchTapped, // Actualmente funciona como un botón
+      body: SafeArea(
+        child: ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors:
+                  _showFade
+                      ? [Colors.white, Colors.white.withOpacity(0.0)]
+                      : [
+                        Colors.white,
+                        Colors.white,
+                      ], // Sin difuminado si está al final
+              stops:
+                  _showFade
+                      ? const [
+                        AppDimens.homeContentFadeStart,
+                        AppDimens.homeContentFadeEnd,
+                      ]
+                      : null, // No se necesitan stops si no hay gradiente de opacidad
+            ).createShader(bounds);
+          },
+          blendMode: BlendMode.dstIn,
+          child: SingleChildScrollView(
+            controller: _scrollController, // Asignar el controller
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimens.screenPadding,
+                vertical: AppDimens.vSpace16,
               ),
-              const SizedBox(height: AppDimens.vSpace16),
-              CategoriesSectionWidget(
-                categories: _categories,
-                onSeeAllPressed: _onSeeAllCategoriesPressed,
-                onCategoryTap: _onCategoryTapped,
-              ),
-              const SizedBox(height: AppDimens.vSpace16), // Espacio entre secciones
-              ProductHorizontalListSection(
-                products: _topSellingProducts,
-                onSeeAllPressed: () {
-                  // TODO: Implementar navegación a "See All" de Top Selling
-                  print('See All Top Selling presionado');
-                },
-                onProductTap: (product) {
-                  // TODO: Implementar navegación al detalle del producto
-                  print('Producto presionado: ${product.name}');
-                },
-                onFavoriteToggle: (product) {
-                  setState(() {
-                    final index = _topSellingProducts.indexWhere((p) => p.id == product.id);
-                    if (index != -1) {
-                      _topSellingProducts[index] = ProductItemModel(
-                        id: product.id,
-                        name: product.name,
-                        imageUrl: product.imageUrl,
-                        price: product.price,
-                        originalPrice: product.originalPrice,
-                        isFavorite: !product.isFavorite,
+              child: AnimatedStaggeredList(
+                // Puedes ajustar staggerDuration, itemDelay, initialOffsetY si es necesario
+                children: [
+                  SearchBarWidget(
+                    onTap:
+                        _onSearchTapped, // Actualmente funciona como un botón
+                  ),
+                  const SizedBox(height: AppDimens.vSpace16),
+                  CategoriesSectionWidget(
+                    categories: _categories,
+                    onSeeAllPressed: _onSeeAllCategoriesPressed,
+                    onCategoryTap: _onCategoryTapped,
+                  ),
+                  const SizedBox(
+                    height: AppDimens.vSpace16,
+                  ), // Espacio entre secciones
+                  ProductHorizontalListSection(
+                    products: _topSellingProducts,
+                    onSeeAllPressed: () {
+                      // TODO: Implementar navegación a "See All" de Top Selling
+                      print('See All Top Selling presionado');
+                    },
+                    onProductTap: (product) {
+                      // TODO: Implementar navegación al detalle del producto
+                      print('Producto presionado: ${product.name}');
+                    },
+                    onFavoriteToggle: (product) {
+                      setState(() {
+                        final index = _topSellingProducts.indexWhere(
+                          (p) => p.id == product.id,
+                        );
+                        if (index != -1) {
+                          _topSellingProducts[index] = ProductItemModel(
+                            id: product.id,
+                            name: product.name,
+                            imageUrl: product.imageUrl,
+                            price: product.price,
+                            originalPrice: product.originalPrice,
+                            isFavorite: !product.isFavorite,
+                          );
+                        }
+                      });
+                      print(
+                        'Favorito presionado: ${product.name}, es favorito: ${!product.isFavorite}',
                       );
-                    }
-                  });
-                  print('Favorito presionado: ${product.name}, es favorito: ${!product.isFavorite}');
-                },
-              ),
-              const SizedBox(height: AppDimens.vSpace16),
-              // Sección New In
-              ProductHorizontalListSection(
-                title: AppStrings.newInTitle,
-                titleColor: AppColors.primary,
-                products: _newInProducts,
-                onSeeAllPressed: () {
-                  // TODO: Implementar navegación a "See All" de New In
-                  print('See All New In presionado');
-                },
-                onProductTap: (product) {
-                  // TODO: Implementar navegación al detalle del producto
-                  print('Producto New In presionado: \\${product.name}');
-                },
-                onFavoriteToggle: (product) {
-                  setState(() {
-                    final index = _newInProducts.indexWhere((p) => p.id == product.id);
-                    if (index != -1) {
-                      _newInProducts[index] = ProductItemModel(
-                        id: product.id,
-                        name: product.name,
-                        imageUrl: product.imageUrl,
-                        price: product.price,
-                        originalPrice: product.originalPrice,
-                        isFavorite: !product.isFavorite,
+                    },
+                  ),
+                  const SizedBox(height: AppDimens.vSpace16),
+                  // Sección New In
+                  ProductHorizontalListSection(
+                    title: AppStrings.newInTitle,
+                    titleColor: AppColors.primary,
+                    products: _newInProducts,
+                    onSeeAllPressed: () {
+                      // TODO: Implementar navegación a "See All" de New In
+                      print('See All New In presionado');
+                    },
+                    onProductTap: (product) {
+                      // TODO: Implementar navegación al detalle del producto
+                      print('Producto New In presionado: \\${product.name}');
+                    },
+                    onFavoriteToggle: (product) {
+                      setState(() {
+                        final index = _newInProducts.indexWhere(
+                          (p) => p.id == product.id,
+                        );
+                        if (index != -1) {
+                          _newInProducts[index] = ProductItemModel(
+                            id: product.id,
+                            name: product.name,
+                            imageUrl: product.imageUrl,
+                            price: product.price,
+                            originalPrice: product.originalPrice,
+                            isFavorite: !product.isFavorite,
+                          );
+                        }
+                      });
+                      print(
+                        'Favorito New In presionado: \\${product.name}, es favorito: \\${!product.isFavorite}',
                       );
-                    }
-                  });
-                  print('Favorito New In presionado: \\${product.name}, es favorito: \\${!product.isFavorite}');
-                },
+                    },
+                  ),
+                  // const SizedBox(height: AppDimens.vSpace16),
+                ],
               ),
-              const SizedBox(height: AppDimens.vSpace16),
-            ],
+            ),
           ),
         ),
       ),

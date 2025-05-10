@@ -116,4 +116,8 @@ class AppDimens {
 
   // Category Products Page
   static const double categoryProductGridAspectRatio = 0.62;
+
+  // Home Page Content Fade Effect
+  static const double homeContentFadeStart = 0.85; // Punto donde comienza el difuminado
+  static const double homeContentFadeEnd = 1.0;   // Punto donde el difuminado es completo (transparente)
 }
