@@ -84,4 +84,7 @@ class AppStrings {
 
   // New In
   static const String newInTitle = 'New In';
+
+  // All Categories Page
+  static const String shopByCategoriesTitle = 'Shop by Categories';
 }

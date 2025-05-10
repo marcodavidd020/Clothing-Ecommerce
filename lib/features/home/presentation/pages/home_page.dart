@@ -3,6 +3,7 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
+import 'all_categories_page.dart'; // Importar la nueva página
 
 /// Página principal (Home) de la aplicación.
 ///
@@ -166,7 +167,12 @@ class _HomePageState extends State<HomePage> {
 
   /// Callback para el botón "See All" en la sección de categorías.
   void _onSeeAllCategoriesPressed() {
-    // TODO: Implementar navegación a una pantalla que muestre todas las categorías.
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AllCategoriesPage(categories: _categories),
+      ),
+    );
     print("Botón 'See All Categories' presionado!");
   }
 

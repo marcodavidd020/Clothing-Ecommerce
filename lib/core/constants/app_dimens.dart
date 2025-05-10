@@ -39,6 +39,9 @@ class AppDimens {
   /// Espacio vertical de 16 unidades lógicas.
   static const double vSpace16 = 16.0;
 
+  /// Espacio vertical de 24 unidades lógicas.
+  static const double vSpace24 = 24.0;
+
   /// Espacio vertical de 32 unidades lógicas.
   static const double vSpace32 = 32.0;
 
