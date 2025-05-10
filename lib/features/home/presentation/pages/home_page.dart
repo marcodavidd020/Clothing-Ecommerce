@@ -60,6 +60,8 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 148.00,
+      averageRating: 4.5,
+      reviewCount: 120,
     ),
     ProductItemModel(
       id: '2',
@@ -68,6 +70,8 @@ class _HomePageState extends State<HomePage> {
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 55.00,
       originalPrice: 100.97,
+      averageRating: 4.0,
+      reviewCount: 85,
     ),
     ProductItemModel(
       id: '3',
@@ -75,6 +79,8 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 79.99,
+      averageRating: 3.5,
+      reviewCount: 45,
     ),
     ProductItemModel(
       id: '4',
@@ -83,6 +89,8 @@ class _HomePageState extends State<HomePage> {
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 45.50,
       originalPrice: 65.00,
+      averageRating: 5.0,
+      reviewCount: 210,
     ),
   ];
 
@@ -94,6 +102,8 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 29.99,
+      averageRating: 4.2,
+      reviewCount: 90,
     ),
     ProductItemModel(
       id: '6',
@@ -102,6 +112,8 @@ class _HomePageState extends State<HomePage> {
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 39.99,
       originalPrice: 49.99,
+      averageRating: 3.8,
+      reviewCount: 60,
     ),
     ProductItemModel(
       id: '7',
@@ -109,6 +121,8 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 59.99,
+      averageRating: 4.9,
+      reviewCount: 150,
     ),
     ProductItemModel(
       id: '8',
@@ -117,6 +131,8 @@ class _HomePageState extends State<HomePage> {
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
       price: 89.99,
       originalPrice: 120.00,
+      averageRating: 4.3,
+      // reviewCount: null, // Ejemplo sin conteo de reseñas
     ),
   ];
 

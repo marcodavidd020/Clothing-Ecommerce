@@ -33,4 +33,7 @@ class AppColors {
 
   // Color heart
   static const Color heartColor = Color(0xFFD32F2F);
+
+  // Color rating
+  static const Color ratingColor = Color(0xFFEEC73A);
 }

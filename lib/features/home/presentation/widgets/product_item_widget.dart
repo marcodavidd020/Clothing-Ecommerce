@@ -87,7 +87,25 @@ class ProductItemWidget extends StatelessWidget {
                     style: AppTextStyles.topSellingItemName,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: AppDimens.vSpace4),
+                  const SizedBox(height: AppDimens.vSpace1),
+                  // Fila para las estrellas y el número de reseñas
+                  Row(
+                    children: [
+                      _buildStarRating(product.averageRating),
+                      if (product.reviewCount != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Text(
+                            '(${product.reviewCount})',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: AppDimens.vSpace1),
                   Row(
                     children: [
                       Text(
@@ -110,5 +128,23 @@ class ProductItemWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Función helper para construir las estrellas
+  Widget _buildStarRating(double rating) {
+    List<Widget> stars = [];
+    int fullStars = rating.floor();
+    bool halfStar = (rating - fullStars) >= 0.5;
+
+    for (int i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.add(const Icon(Icons.star, color: AppColors.ratingColor, size: AppDimens.starRatingSize));
+      } else if (i == fullStars && halfStar) {
+        stars.add(const Icon(Icons.star_half, color: AppColors.ratingColor, size: AppDimens.starRatingSize));
+      } else {
+        stars.add(const Icon(Icons.star_border, color: AppColors.ratingColor, size: AppDimens.starRatingSize));
+      }
+    }
+    return Row(children: stars);
   }
 }

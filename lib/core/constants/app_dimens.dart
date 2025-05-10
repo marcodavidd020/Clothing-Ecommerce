@@ -21,6 +21,12 @@ class AppDimens {
 
   // --- Spacing --- ///
 
+  /// Espacio vertical de 1 unidad lógica.
+  static const double vSpace1 = 1.0;
+
+  /// Espacio vertical de 2 unidades lógicas.
+  static const double vSpace2 = 2.0;
+
   /// Espacio vertical de 4 unidades lógicas.
   static const double vSpace4 = 4.0;
 
@@ -100,5 +106,8 @@ class AppDimens {
   static const double productItemBorderRadius = 12.0;
 
   // Top selling section
-  static const double topSellingSectionHeight = 300.0;
+  static const double topSellingSectionHeight = 320.0;
+
+  // Star rating
+  static const double starRatingSize = 14.0;
 }
