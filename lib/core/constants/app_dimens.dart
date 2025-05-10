@@ -117,6 +117,23 @@ class AppDimens {
   // Category Products Page
   static const double categoryProductGridAspectRatio = 0.62;
 
+  // Product Detail Page
+  static const double productDetailCarouselHeight = 300.0;
+  static const double carouselIndicatorSize = 8.0;
+  static const double carouselIndicatorVerticalMargin = 10.0;
+  static const double carouselIndicatorHorizontalMargin = 2.0;
+  static const double optionSelectorArrowSize = 22.0;
+  static const double colorPickerAvatarRadius = 12.0;
+  static const double quantitySelectorFontSize = 16.0;
+  static const double quantityButtonIconSize = 18.0;
+  static const double appBarActionRightPadding = 14.0; // screenPadding (24) - 10
+  static const double productDetailNameFontSize = 16.0;
+  static const double productDetailPriceFontSize = 16.0;
+  static const double colorSelectorValueAvatarRadius = 8.0;
+  static const double descriptionTitleFontSize = 16.0;
+  static const double descriptionLineHeight = 1.5;
+  static const double quantityButtonPadding = 4.0; // AppDimens.vSpace8 / 2
+
   // Home Page Content Fade Effect
   static const double homeContentFadeStart = 0.85; // Punto donde comienza el difuminado
   static const double homeContentFadeEnd = 1.0;   // Punto donde el difuminado es completo (transparente)

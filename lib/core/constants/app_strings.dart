@@ -38,6 +38,8 @@ class AppStrings {
   static const String receiptIcon = 'assets/icons/receip.svg';
   /// Ruta al icono de perfil para la barra de navegación.
   static const String profileIcon = 'assets/icons/profile.svg';
+  /// Ruta al icono de corazón.
+  static const String heartIcon = 'assets/icons/heart.svg';
 
   // --- Textos Placeholder/Hints para Campos de Formulario --- ///
   static const String emailHint = 'Email Address';
@@ -67,7 +69,6 @@ class AppStrings {
   static const String appleIcon = 'assets/icons/apple.png';
   static const String googleIcon = 'assets/icons/google.png';
   static const String facebookIcon = 'assets/icons/facebook.png';
-  static const String heartIcon = 'assets/icons/heart.svg';
 
   // Home
   static const String homeTitle = 'Home';
@@ -90,4 +91,17 @@ class AppStrings {
 
   // Category Products Page
   static const String noProductsFound = 'No products found in this category.';
+
+  // Product Detail Page
+  static const String quantityLabel = 'Quantity';
+  static const String descriptionLabel = 'Description';
+  static const String addToBagLabel = 'Add to Bag';
+  static const String noImageAvailable = 'No Image';
+  static const String sizeLabel = 'Size';
+  static const String colorLabel = 'Color';
+  static const String defaultColorName = 'Default';
+  static const String notAvailableSize = 'N/A';
+
+  // Generic Error
+  static const String somethingWentWrong = 'Something went wrong. Please try again.';
 }

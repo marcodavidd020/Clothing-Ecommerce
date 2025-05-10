@@ -7,20 +7,23 @@ class AppColors {
   /// Color primario principal de la aplicación (ej. #8E6CEF).
   static const Color primary = Color(0xFF8E6CEF);
 
-  /// Color de relleno para campos de entrada (ej. #F0F0F0).
-  static const Color inputFill = Color(0xFFF0F0F0);
+  /// Color de relleno para campos de entrada (ej. #F3F4F6).
+  static const Color inputFill = Color(0xFFF3F4F6);
 
   /// Color de fondo para botones sociales (ej. #F4F4F4).
   static const Color socialBackground = Color(0xFFF4F4F4);
 
-  /// Color negro estándar.
-  static const Color black = Colors.black;
+  /// Color oscuro para texto principal (ej. #1F2937).
+  static const Color textDark = Color(0xFF1F2937);
 
-  /// Color oscuro para texto principal (ej. #272727).
-  static const Color textDark = Color(0xFF272727);
+  /// Color gris más claro para texto secundario (ej. #6B7280).
+  static const Color textLight = Color(0xFF6B7280);
 
   /// Color blanco estándar.
   static const Color white = Colors.white;
+
+  /// Color negro estándar.
+  static const Color black = Colors.black;
 
   /// Color para enlaces, usualmente igual al primario.
   static const Color link = black;
@@ -36,4 +39,7 @@ class AppColors {
 
   // Color rating
   static const Color ratingColor = Color(0xFFEEC73A);
+
+  // Semantic Colors
+  static const Color error = Colors.red; // Color estándar para errores
 }

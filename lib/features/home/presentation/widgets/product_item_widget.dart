@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
+import 'package:flutter_application_ecommerce/features/product_detail/presentation/pages/product_detail_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProductItemWidget extends StatelessWidget {
@@ -19,7 +20,17 @@ class ProductItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (onTap != null) {
+          onTap!();
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(product: product),
+          ),
+        );
+      },
       child: Container(
         width: AppDimens.productItemWidth,
         decoration: BoxDecoration(

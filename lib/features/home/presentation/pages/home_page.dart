@@ -63,19 +63,41 @@ class _HomePageState extends State<HomePage> {
       name: "Men's Harrington Jacket",
       imageUrl:
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      additionalImageUrls: [
+        'https://static.vecteezy.com/system/resources/previews/008/530/102/original/sport-t-shirt-cutout-file-png.png',
+        'https://static.vecteezy.com/system/resources/previews/008/530/103/original/sport-t-shirt-cutout-file-png.png',
+      ],
       price: 148.00,
       averageRating: 4.5,
       reviewCount: 120,
+      description:
+          "Built for life and made to last, this full-zip corduroy jacket is part of our Nike Life collection. The spacious fit gives you room to layer, while the soft corduroy keeps you comfortable around the clock. Inspired by classic workwear, it's a timeless piece you can count on for years to come.",
+      availableSizes: ["S", "M", "L", "XL"],
+      availableColors: [
+        ProductColorOption(name: "Green", color: Colors.green.shade300),
+        ProductColorOption(name: "Black", color: Colors.black),
+        ProductColorOption(name: "Beige", color: Colors.brown.shade200),
+      ],
     ),
     ProductItemModel(
       id: '2',
       name: "Max Cirro Men's Slides",
       imageUrl:
-          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+          'https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1663099829-sandal-slides-for-men-1663099812.jpg?crop=1xw:1xh;center,top&resize=980:*',
+      additionalImageUrls: [
+        'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/abc77aa4-1731-4591-bd65-55f4179026d7/max-cirro-mens-slides-sM9N3M.png',
+      ],
       price: 55.00,
       originalPrice: 100.97,
       averageRating: 4.0,
       reviewCount: 85,
+      description:
+          "Ultra-comfortable and easy to wear, these slides are perfect for relaxing or running errands. The plush strap and contoured footbed provide all-day comfort.",
+      availableSizes: ["8", "9", "10", "11", "12"],
+      availableColors: [
+        ProductColorOption(name: "Black/White", color: Colors.black),
+        ProductColorOption(name: "Red", color: Colors.red),
+      ],
     ),
     ProductItemModel(
       id: '3',
@@ -105,9 +127,18 @@ class _HomePageState extends State<HomePage> {
       name: "Essential Crewneck T-Shirt",
       imageUrl:
           'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      additionalImageUrls: [],
       price: 29.99,
       averageRating: 4.2,
       reviewCount: 90,
+      description:
+          "A classic crewneck t-shirt made from soft, breathable cotton. A staple for any wardrobe.",
+      availableSizes: ["XS", "S", "M", "L"],
+      availableColors: [
+        ProductColorOption(name: "White", color: Colors.white),
+        ProductColorOption(name: "Black", color: Colors.black),
+        ProductColorOption(name: "Navy", color: Colors.blue.shade900),
+      ],
     ),
     ProductItemModel(
       id: '6',
@@ -216,17 +247,26 @@ class _HomePageState extends State<HomePage> {
   void _onCategoryTapped(CategoryItemModel category) {
     // Lógica de demostración para obtener productos para la categoría seleccionada.
     // En una app real, esto vendría de un BLoC o servicio que filtre productos.
-    final List<ProductItemModel> categoryProducts = _topSellingProducts // Usamos una lista existente como ejemplo
-        .where((p) => p.name.toLowerCase().contains(category.name.toLowerCase().substring(0,3))) // Simulación de filtro
-        .toList();
+    final List<ProductItemModel> categoryProducts =
+        _topSellingProducts // Usamos una lista existente como ejemplo
+            .where(
+              (p) => p.name.toLowerCase().contains(
+                category.name.toLowerCase().substring(0, 3),
+              ),
+            ) // Simulación de filtro
+            .toList();
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CategoryProductsPage(
-          category: category,
-          products: categoryProducts.isNotEmpty ? categoryProducts : _topSellingProducts.take(2).toList(), // Fallback
-        ),
+        builder:
+            (context) => CategoryProductsPage(
+              category: category,
+              products:
+                  categoryProducts.isNotEmpty
+                      ? categoryProducts
+                      : _topSellingProducts.take(2).toList(), // Fallback
+            ),
       ),
     );
     print("Categoría presionada desde Home: ${category.name}");
