@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
-import '../widgets/categories_section_widget.dart'; // Importación directa
+import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
 
 /// Página principal (Home) de la aplicación.
 ///
@@ -23,8 +23,7 @@ class _HomePageState extends State<HomePage> {
   /// Género actualmente seleccionado para filtrar contenido (ej. "Men", "Women").
   String _selectedGender = "Men"; // Podría ser una constante de AppStrings
 
-  // Lista de datos de ejemplo para las categorías.
-  // En una aplicación real, esto vendría de un repositorio/API.
+  // Lista de categorías para el demo
   final List<CategoryItemModel> _categories = [
     CategoryItemModel(
       imageUrl:
@@ -50,6 +49,39 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           "https://media.endclothing.com/media/f_auto,q_auto:eco,w_400,h_400/prodmedia/media/catalog/product/1/9/19-03-25-TC_OERI008C99PLA0041007_2_1.jpg",
       name: AppStrings.accessoriesLabel,
+    ),
+  ];
+
+  final List<ProductItemModel> _topSellingProducts = [
+    ProductItemModel(
+      id: '1',
+      name: "Men's Harrington Jacket",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 148.00,
+    ),
+    ProductItemModel(
+      id: '2',
+      name: "Max Cirro Men's Slides",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 55.00,
+      originalPrice: 100.97,
+    ),
+    ProductItemModel(
+      id: '3',
+      name: "Modern Fit Denim Shirt",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 79.99,
+    ),
+    ProductItemModel(
+      id: '4',
+      name: "Classic Cotton Polo",
+      imageUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
+      price: 45.50,
+      originalPrice: 65.00,
     ),
   ];
 
@@ -136,14 +168,39 @@ class _HomePageState extends State<HomePage> {
                 onSeeAllPressed: _onSeeAllCategoriesPressed,
                 onCategoryTap: _onCategoryTapped,
               ),
-              Padding(
-                padding: const EdgeInsets.all(AppDimens.screenPadding),
-                child: Center(
-                  child: Text(
-                    'Contenido principal para $_selectedGender',
-                  ), // Placeholder
-                ),
+              const SizedBox(height: AppDimens.vSpace16), // Espacio entre secciones
+              TopSellingSection(
+                products: _topSellingProducts,
+                onSeeAllPressed: () {
+                  // TODO: Implementar navegación a "See All" de Top Selling
+                  print('See All Top Selling presionado');
+                },
+                onProductTap: (product) {
+                  // TODO: Implementar navegación al detalle del producto
+                  print('Producto presionado: ${product.name}');
+                },
+                onFavoriteToggle: (product) {
+                  // TODO: Implementar lógica para marcar/desmarcar favorito
+                  setState(() {
+                    // Lógica de ejemplo para cambiar el estado de favorito
+                    // En una app real, esto interactuaría con un BLoC o servicio.
+                    final index = _topSellingProducts.indexWhere((p) => p.id == product.id);
+                    if (index != -1) {
+                      _topSellingProducts[index] = ProductItemModel(
+                        id: product.id,
+                        name: product.name,
+                        imageUrl: product.imageUrl,
+                        price: product.price,
+                        originalPrice: product.originalPrice,
+                        isFavorite: !product.isFavorite,
+                      );
+                    }
+                  });
+                  print('Favorito presionado: ${product.name}, es favorito: ${!product.isFavorite}');
+                },
               ),
+              const SizedBox(height: AppDimens.vSpace16), // Espacio al final
+              // Puedes añadir más widgets aquí si es necesario
             ],
           ),
         ),

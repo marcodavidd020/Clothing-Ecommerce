@@ -137,3 +137,4 @@ class _AnimatedStaggeredListState extends State<AnimatedStaggeredList>
     ).redacted(context: context, redact: _isRedacted); // Redacta el Column entero si aún se está cargando
   }
 }
+ 

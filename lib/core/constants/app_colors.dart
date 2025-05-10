@@ -24,4 +24,13 @@ class AppColors {
 
   /// Color para enlaces, usualmente igual al primario.
   static const Color link = black;
+
+  /// Color gris para texto secundario (ej. #808080).
+  static const Color textGray = Color(0xFF808080);
+
+  /// Color gris para fondo (ej. #F0F0F0).
+  static const Color backgroundGray = Color(0xFFF0F0F0);
+
+  // Color heart
+  static const Color heartColor = Color(0xFFD32F2F);
 }

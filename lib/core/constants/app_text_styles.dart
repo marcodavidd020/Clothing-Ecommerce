@@ -69,4 +69,30 @@ class AppTextStyles {
     fontWeight: FontWeight.w100, // El más ligero de Gabarito
     letterSpacing: -0.295753,
   );
+
+  /// Estilo para el nombre de cada ítem de producto Top Selling con el precio tachado.
+  static const TextStyle topSellingItemWithPrice = TextStyle(
+    fontSize: 12,
+    color: AppColors.textGray,
+    fontWeight: FontWeight.w600, // El más ligero de Gabarito
+    letterSpacing: -0.295753,
+    decoration: TextDecoration.lineThrough,
+    decorationColor: AppColors.textGray,
+  );
+
+  /// Estilo para el nombre de cada ítem de producto Top Selling con el precio original.
+  static const TextStyle topSellingItem = TextStyle(
+    fontSize: 12,
+    color: AppColors.textDark,
+    fontWeight: FontWeight.w600, // El más ligero de Gabarito
+    letterSpacing: -0.295753,
+  );
+
+  // Estilo del texto del nombre del producto de top selling
+  static const TextStyle topSellingItemName = TextStyle(
+    fontSize: 12,
+    color: AppColors.textDark,
+    fontWeight: FontWeight.normal, // El más ligero de Gabarito
+    letterSpacing: -0.295753,
+  );
 }

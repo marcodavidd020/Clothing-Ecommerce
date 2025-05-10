@@ -21,7 +21,10 @@ class AppDimens {
 
   // --- Spacing --- ///
 
-    /// Espacio vertical de 8 unidades lógicas, comúnmente la mitad de vSpace16.
+  /// Espacio vertical de 4 unidades lógicas.
+  static const double vSpace4 = 4.0;
+
+  /// Espacio vertical de 8 unidades lógicas, comúnmente la mitad de vSpace16.
   static const double vSpace8 = 8.0;
 
   /// Espacio vertical de 12 unidades lógicas.
@@ -74,8 +77,28 @@ class AppDimens {
   static const double categoriesItemPadding = 16.0;
 
   // Size height
-  static const double categoriesItemHeight = 120.0;
+  static const double categoriesItemHeight = 105.0;
 
   // Image
   static const double categoriesItemImageSize = 70.0;
+
+  // Heart position
+  static const double heartPositionTop = 8.0;
+  static const double heartPositionRight = 8.0;
+
+  // Heart padding
+  static const double heartPadding = 6.0;
+
+  // Heart size
+  static const double heartSizeIcon = 16.0;
+
+  // Product item
+  static const double productItemWidth = 180.0;
+  static const double productItemHeight = 220.0;
+
+  // Product item border radius
+  static const double productItemBorderRadius = 12.0;
+
+  // Top selling section
+  static const double topSellingSectionHeight = 300.0;
 }

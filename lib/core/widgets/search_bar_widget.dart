@@ -9,10 +9,10 @@ import '../constants/constants.dart';
 class SearchBarWidget extends StatelessWidget {
   /// Controlador opcional si se usa como un [TextField] activo.
   final TextEditingController? controller;
-  
+
   /// Callback opcional que se activa cuando el texto cambia (si es un [TextField]).
   final ValueChanged<String>? onChanged;
-  
+
   /// Callback opcional para cuando se presiona la barra (si actúa como botón).
   /// Si se provee, el widget muestra un [Text] placeholder en lugar de un [TextField].
   final VoidCallback? onTap;
@@ -28,15 +28,20 @@ class SearchBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Si onTap es null, el GestureDetector no interfiere con el TextField
+      onTap:
+          onTap, // Si onTap es null, el GestureDetector no interfiere con el TextField
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimens.contentPaddingHorizontal,
-          vertical: AppDimens.genderSelectorPadding, // Reutiliza padding para consistencia de altura
+          vertical:
+              AppDimens
+                  .genderSelectorPadding, // Reutiliza padding para consistencia de altura
         ),
         decoration: BoxDecoration(
           color: AppColors.inputFill,
-          borderRadius: BorderRadius.circular(AppDimens.buttonRadius), // Bordes muy redondeados
+          borderRadius: BorderRadius.circular(
+            AppDimens.buttonRadius,
+          ), // Bordes muy redondeados
         ),
         child: Row(
           children: [
@@ -44,29 +49,37 @@ class SearchBarWidget extends StatelessWidget {
               AppStrings.searchIcon,
               width: AppDimens.iconSize,
               height: AppDimens.iconSize,
-              colorFilter: const ColorFilter.mode(AppColors.textDark, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(
+                AppColors.textDark,
+                BlendMode.srcIn,
+              ),
             ),
             const SizedBox(width: AppDimens.iconLabelGap),
             Expanded(
               // Si onTap está definido, se comporta como un botón mostrando un hint.
               // De lo contrario, es un campo de texto funcional.
-              child: onTap != null
-                  ? Text(
-                      AppStrings.emailHint.split(' ').first, // Usando "Search" como placeholder visual
-                      style: AppTextStyles.inputHint
-                    )
-                  : TextField(
-                      controller: controller,
-                      onChanged: onChanged,
-                      style: AppTextStyles.inputText,
-                      decoration: InputDecoration(
-                        hintText: AppStrings.emailHint.split(' ').first, // Placeholder "Search"
-                        hintStyle: AppTextStyles.inputHint,
-                        border: InputBorder.none, // Sin borde interno del TextField
-                        isDense: true, // Reduce la altura interna
-                        contentPadding: EdgeInsets.zero, // Sin padding interno del TextField
+              child:
+                  onTap != null
+                      ? Text(
+                        AppStrings.homeSearchHint,
+                        style: AppTextStyles.inputHint,
+                      )
+                      : TextField(
+                        controller: controller,
+                        onChanged: onChanged,
+                        style: AppTextStyles.inputText,
+                        decoration: InputDecoration(
+                          hintText: AppStrings.homeSearchHint,
+                          hintStyle: AppTextStyles.inputHint,
+                          border:
+                              InputBorder
+                                  .none, // Sin borde interno del TextField
+                          isDense: true, // Reduce la altura interna
+                          contentPadding:
+                              EdgeInsets
+                                  .zero, // Sin padding interno del TextField
+                        ),
                       ),
-                    ),
             ),
           ],
         ),

@@ -67,6 +67,7 @@ class AppStrings {
   static const String appleIcon = 'assets/icons/apple.png';
   static const String googleIcon = 'assets/icons/google.png';
   static const String facebookIcon = 'assets/icons/facebook.png';
+  static const String heartIcon = 'assets/icons/heart.svg';
 
   // Home
   static const String homeTitle = 'Home';
@@ -76,4 +77,8 @@ class AppStrings {
 
   // Search
   static const String homeSearchHint = 'Search';
+
+  // Top Selling
+  static const String topSellingTitle = 'Top Selling';
+  static const String seeAllTopSelling = 'See All';
 }
