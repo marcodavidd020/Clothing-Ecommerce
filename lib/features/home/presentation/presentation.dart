@@ -1,5 +1,6 @@
 export 'pages/home_page.dart';
 export 'pages/all_categories_page.dart';
+export 'pages/category_products_page.dart';
 
 export 'widgets/category_item_widget.dart';
 export 'widgets/categories_section_widget.dart';

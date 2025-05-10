@@ -19,6 +19,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Widget opcional para mostrar como título, centrado en el AppBar.
   final Widget? title;
 
+  /// Texto opcional para mostrar como título. Si se provee `title` (Widget), este será ignorado.
+  final String? titleText;
+
   /// Callback opcional para el evento de presionar el botón de la bolsa de compras.
   /// Si es provisto, se muestra el icono de la bolsa.
   final VoidCallback? onBagPressed;
@@ -36,6 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = false,
     this.onBack,
     this.title,
+    this.titleText,
     this.onBagPressed,
     this.profileImageUrl,
     this.onProfilePressed,
@@ -103,7 +107,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: true,
-      title: title,
+      title: title ?? (titleText != null ? Text(titleText!, style: AppTextStyles.heading.copyWith(fontSize: 18)) : null),
       leading: leadingWidget,
       leadingWidth:
           AppDimens.screenPadding +

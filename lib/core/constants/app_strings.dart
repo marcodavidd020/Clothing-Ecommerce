@@ -87,4 +87,7 @@ class AppStrings {
 
   // All Categories Page
   static const String shopByCategoriesTitle = 'Shop by Categories';
+
+  // Category Products Page
+  static const String noProductsFound = 'No products found in this category.';
 }

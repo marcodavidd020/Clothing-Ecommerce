@@ -113,4 +113,7 @@ class AppDimens {
 
   // Star rating
   static const double starRatingSize = 14.0;
+
+  // Category Products Page
+  static const double categoryProductGridAspectRatio = 0.62;
 }
