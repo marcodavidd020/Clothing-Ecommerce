@@ -253,7 +253,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Text(
                     loadedState.product.description,
                     style: AppTextStyles.inputText.copyWith(
-                      color: Colors.grey[700],
+                      color: AppColors.textGray,
                       height: AppDimens.descriptionLineHeight,
                     ),
                   ),

@@ -132,7 +132,7 @@ class AppDimens {
   static const double colorSelectorValueAvatarRadius = 8.0;
   static const double descriptionTitleFontSize = 16.0;
   static const double descriptionLineHeight = 1.5;
-  static const double quantityButtonPadding = 4.0; // AppDimens.vSpace8 / 2
+  static const double quantityButtonPadding = 8.0; // AppDimens.vSpace8 / 2
 
   // Home Page Content Fade Effect
   static const double homeContentFadeStart = 0.85; // Punto donde comienza el difuminado

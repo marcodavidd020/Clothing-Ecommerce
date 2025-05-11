@@ -40,9 +40,9 @@ class QuantitySelectorWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimens.contentPaddingHorizontal,
-        vertical: AppDimens.vSpace8,
+        vertical: AppDimens.contentPaddingVertical,
       ),
-      margin: const EdgeInsets.only(bottom: AppDimens.vSpace12),
+      // margin: const EdgeInsets.only(bottom: AppDimens.vSpace12),
       decoration: BoxDecoration(
         color: AppColors.inputFill,
         borderRadius: BorderRadius.circular(AppDimens.buttonRadius / 4),
@@ -61,7 +61,7 @@ class QuantitySelectorWidget extends StatelessWidget {
               _buildQuantityButton(icon: Icons.remove, onPressed: onDecrement),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.vSpace16,
+                  horizontal: AppDimens.vSpace24,
                 ),
                 child: Text(
                   '$quantity',
