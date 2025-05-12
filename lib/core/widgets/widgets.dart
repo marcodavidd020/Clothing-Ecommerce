@@ -10,3 +10,5 @@ export 'search_bar_widget.dart';
 export 'bottom_navigation_bar_widget.dart';
 export 'animated_staggered_list.dart';
 export 'network_image_with_placeholder.dart';
+export 'option_item_widget.dart';
+export 'option_selector_widget.dart';

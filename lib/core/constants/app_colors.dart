@@ -42,4 +42,12 @@ class AppColors {
 
   // Semantic Colors
   static const Color error = Colors.red; // Color estándar para errores
+
+  // Option Selector Colors
+  static const Color optionOrange = Color(0xFFFFA500);
+  static const Color optionRed = Color(0xFFFF0000);
+  static const Color optionYellow = Color(0xFFFFEB3B);
+  static const Color optionBlue = Color(0xFF2196F3);
+  static const Color optionUnselectedBackground = Color(0xFFF3F4F6); // Usando inputFill por defecto
+  static const Color optionBorder = Color(0xFFE0E0E0); // Un gris claro para bordes
 }

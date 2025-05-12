@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Importar flutter_bloc
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
-import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
+import 'package:flutter_application_ecommerce/core/widgets/widgets.dart' as core_widgets;
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart'; // Usaremos el modelo de producto de home
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/widgets/widgets.dart'; // Importar widgets
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart'; // Importar el BLoC
@@ -37,24 +37,39 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   void _showSizePicker(BuildContext context, ProductDetailLoaded state) {
     if (state.product.availableSizes.isEmpty) return;
+
+    final productDetailBloc = context.read<ProductDetailBloc>(); // Leer el BLoC aquí
+
+    final List<core_widgets.OptionData> sizeOptions = state.product.availableSizes.map((size) {
+      return core_widgets.OptionData(text: size);
+    }).toList();
+    int selectedSizeIndex = state.product.availableSizes.indexOf(state.selectedSize);
+    if (selectedSizeIndex == -1) selectedSizeIndex = 0;
+
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (BuildContext modalContext) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: state.product.availableSizes.length,
-          itemBuilder: (ctx, index) {
-            final size = state.product.availableSizes[index];
-            return ListTile(
-              title: Text(size, textAlign: TextAlign.center),
-              onTap: () {
-                context.read<ProductDetailBloc>().add(
-                  ProductDetailSizeSelected(newSize: size),
-                );
+        return StatefulBuilder(
+          builder: (BuildContext sfContext, StateSetter setStateModal) {
+            return core_widgets.OptionSelectorWidget(
+              title: AppStrings.sizeLabel,
+              options: sizeOptions,
+              selectedIndex: selectedSizeIndex,
+              onOptionSelected: (index) {
+                setStateModal(() {
+                  selectedSizeIndex = index;
+                });
+                productDetailBloc.add(
+                      ProductDetailSizeSelected(newSize: state.product.availableSizes[index]),
+                    );
+              },
+              onClose: () {
                 Navigator.pop(modalContext);
               },
             );
-          },
+          }
         );
       },
     );
@@ -62,31 +77,40 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   void _showColorPicker(BuildContext context, ProductDetailLoaded state) {
     if (state.product.availableColors.isEmpty) return;
+
+    final productDetailBloc = context.read<ProductDetailBloc>(); // Leer el BLoC aquí
+
+    final List<core_widgets.OptionData> colorOptions = state.product.availableColors.map((colorChoice) {
+      return core_widgets.OptionData(text: colorChoice.name, colorValue: colorChoice.color);
+    }).toList();
+    int selectedColorIndex = state.product.availableColors.indexWhere((c) => c.name == state.selectedColor.name);
+    if (selectedColorIndex == -1) selectedColorIndex = 0;
+
     showModalBottomSheet(
-      context: context,
-      builder: (BuildContext modalContext) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: state.product.availableColors.length,
-          itemBuilder: (ctx, index) {
-            final colorOption = state.product.availableColors[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundColor: colorOption.color,
-                radius: AppDimens.colorPickerAvatarRadius,
-              ),
-              title: Text(colorOption.name),
-              onTap: () {
-                context.read<ProductDetailBloc>().add(
-                  ProductDetailColorSelected(newColor: colorOption),
-                );
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext modalContext) {
+          return StatefulBuilder(
+              builder: (BuildContext sfContext, StateSetter setStateModal) {
+            return core_widgets.OptionSelectorWidget(
+              title: AppStrings.colorLabel,
+              options: colorOptions,
+              selectedIndex: selectedColorIndex,
+              onOptionSelected: (index) {
+                setStateModal(() {
+                  selectedColorIndex = index;
+                });
+                productDetailBloc.add(
+                      ProductDetailColorSelected(newColor: state.product.availableColors[index]),
+                    );
+              },
+              onClose: () {
                 Navigator.pop(modalContext);
               },
             );
-          },
-        );
-      },
-    );
+          });
+        });
   }
 
   @override
@@ -98,7 +122,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ..add(ProductDetailLoadRequested(product: widget.product)),
       child: Scaffold(
         // El appBar y el body ahora usarán BlocBuilder para acceder al estado
-        appBar: CustomAppBar(
+        appBar: core_widgets.CustomAppBar(
           showBack: true,
           actions: [
             Padding(
@@ -270,7 +294,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             if (state is ProductDetailLoaded) {
               return Padding(
                 padding: const EdgeInsets.all(AppDimens.screenPadding),
-                child: PrimaryButton(
+                child: core_widgets.PrimaryButton(
                   label:
                       '\$${(state.product.price * state.quantity).toStringAsFixed(2)}    ${AppStrings.addToBagLabel}',
                   onPressed: () {
@@ -283,7 +307,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
               );
             }
-            return const SizedBox.shrink(); // No mostrar nada si no está cargado
+            return const SizedBox.shrink();
           },
         ),
       ),

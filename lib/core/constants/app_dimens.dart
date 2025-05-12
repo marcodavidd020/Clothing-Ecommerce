@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Define dimensiones y espaciados estándar utilizados en la aplicación.
 ///
 /// Ayuda a mantener la consistencia en el diseño de la interfaz de usuario.
@@ -137,4 +139,17 @@ class AppDimens {
   // Home Page Content Fade Effect
   static const double homeContentFadeStart = 0.85; // Punto donde comienza el difuminado
   static const double homeContentFadeEnd = 1.0;   // Punto donde el difuminado es completo (transparente)
+
+  static const double bottomNavBarIconSize = 24.0;
+  static const double bottomNavBarElevation = 0.0; // Sin elevación
+
+  // Dimensiones para el Selector de Opciones (Color/Talla)
+  static const double optionItemBorderRadius = 25.0; // Radio de borde para cada ítem
+  static const double optionColorCircleSize = 24.0; // Tamaño del círculo de color
+  static const double optionTextIconSpacing = 16.0; // Espacio entre texto y círculo/icono
+  static const EdgeInsets optionItemPadding = EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0);
+  static const EdgeInsets optionListPadding = EdgeInsets.symmetric(vertical: 8.0); // Padding para la lista de opciones
+
+  // Splash Page
+  static const double splashLogoHeight = 100.0;
 }
