@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/features/product_detail/product_detail.dart';
 
 class QuantitySelectorWidget extends StatelessWidget {
   final int quantity;
@@ -51,7 +52,7 @@ class QuantitySelectorWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            AppStrings.quantityLabel,
+            ProductDetailStrings.quantityLabel,
             style: AppTextStyles.inputText.copyWith(
               fontWeight: FontWeight.w500,
             ),

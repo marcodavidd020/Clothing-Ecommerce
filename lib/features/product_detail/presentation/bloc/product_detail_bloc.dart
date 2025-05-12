@@ -1,7 +1,7 @@
+import 'package:flutter_application_ecommerce/features/product_detail/product_detail.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart'; // Corregido para usar el barrel file
-import 'package:flutter_application_ecommerce/core/constants/app_strings.dart'; // Para valores por defecto
 import 'package:flutter/material.dart'; // Para Color
 import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart'; // Bloc del carrito
 
@@ -28,12 +28,12 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
     final initialSize =
         product.availableSizes.isNotEmpty
             ? product.availableSizes.first
-            : AppStrings.notAvailableSize;
+            : ProductDetailStrings.notAvailableSize;
     final initialColor =
         product.availableColors.isNotEmpty
             ? product.availableColors.first
             : ProductColorOption(
-              name: AppStrings.defaultColorName,
+              name: ProductDetailStrings.defaultColorName,
               color: Colors.grey,
             );
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
+import 'package:flutter_application_ecommerce/features/product_detail/core/core.dart';
 
 class ImageCarouselWidget extends StatefulWidget {
   final List<String> imageList; // Imagen principal + adicionales
@@ -21,7 +22,7 @@ class _ImageCarouselWidgetState extends State<ImageCarouselWidget> {
       return Container(
         height: AppDimens.productDetailCarouselHeight,
         color: Colors.grey[300],
-        child: const Center(child: Text(AppStrings.noImageAvailable)),
+        child: const Center(child: Text(ProductDetailStrings.noImageAvailable)),
       );
     }
 

@@ -129,11 +129,7 @@ class AppDimens {
   static const double quantitySelectorFontSize = 16.0;
   static const double quantityButtonIconSize = 18.0;
   static const double appBarActionRightPadding = 14.0; // screenPadding (24) - 10
-  static const double productDetailNameFontSize = 16.0;
-  static const double productDetailPriceFontSize = 16.0;
-  static const double colorSelectorValueAvatarRadius = 8.0;
-  static const double descriptionTitleFontSize = 16.0;
-  static const double descriptionLineHeight = 1.5;
+
   static const double quantityButtonPadding = 8.0; // AppDimens.vSpace8 / 2
 
   // Home Page Content Fade Effect

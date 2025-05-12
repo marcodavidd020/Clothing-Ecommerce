@@ -93,18 +93,11 @@ class AppStrings {
   static const String noProductsFound = 'No products found in this category.';
 
   // Product Detail Page
-  static const String quantityLabel = 'Quantity';
-  static const String descriptionLabel = 'Description';
-  static const String addToBagLabel = 'Add to Bag';
-  static const String noImageAvailable = 'No Image';
-  static const String sizeLabel = 'Size';
-  static const String colorLabel = 'Color';
-  static const String defaultColorName = 'Default';
-  static const String notAvailableSize = 'N/A';
+  // static const String quantityLabel = 'Quantity';
+  // static const String noImageAvailable = 'No Image';
+  // static const String defaultColorName = 'Default';
+  // static const String notAvailableSize = 'N/A';
 
   // Generic Error
   static const String somethingWentWrong = 'Something went wrong. Please try again.';
-
-  // Cart (referencia a mensaje global usado en varias partes)
-  static const String addedToCartMessage = 'Product added to cart';
 }
