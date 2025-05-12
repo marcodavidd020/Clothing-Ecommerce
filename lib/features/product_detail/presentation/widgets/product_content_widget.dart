@@ -15,6 +15,9 @@ class ProductContentWidget extends StatelessWidget {
 
   /// Callback for when the color selector is tapped.
   final Function(BuildContext, ProductDetailLoaded) onColorTap;
+  
+  /// Key for the product image to use in animations.
+  final Key? imageKey;
 
   /// Creates an instance of [ProductContentWidget].
   const ProductContentWidget({
@@ -22,6 +25,7 @@ class ProductContentWidget extends StatelessWidget {
     required this.state,
     required this.onSizeTap,
     required this.onColorTap,
+    this.imageKey,
   });
 
   @override
@@ -33,6 +37,7 @@ class ProductContentWidget extends StatelessWidget {
         children: [
           const SizedBox(height: AppDimens.vSpace16),
           ImageCarouselWidget(
+            key: imageKey,
             imageList: [
               state.product.imageUrl,
               ...state.product.additionalImageUrls,

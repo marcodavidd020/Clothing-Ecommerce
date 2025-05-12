@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart'
     as core_widgets;
-import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/core/core.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

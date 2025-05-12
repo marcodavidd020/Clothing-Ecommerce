@@ -23,10 +23,34 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  // Keys for animation
+  final GlobalKey _currentImageKey = GlobalKey();
+  final GlobalKey _cartButtonKey = GlobalKey();
+
+  // Referencia al carrusel para obtener la imagen actual
+  final GlobalKey _carouselKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     // Product loading is handled in BlocProvider.create
+  }
+
+  /// Run the add to cart animation and then call the actual add to cart function later
+  void _animateAddToCart(ProductDetailLoaded state) {
+    // Obtener la URL de la imagen principal del producto
+    String imageUrl = widget.product.imageUrl;
+
+    // Iniciar la animación simplificada desde el carrusel hasta el carrito
+    AddToCartAnimationHelper.runAddToCartAnimation(
+      context: context,
+      sourceKey: _currentImageKey,
+      targetKey: _cartButtonKey,
+      imageUrl: imageUrl,
+      onComplete: () {
+        // No intentamos acceder al bloc aquí - lo haremos en el botón
+      },
+    );
   }
 
   @override
@@ -36,85 +60,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     // Create product detail content with BlocProvider
     Widget productDetailContent = BlocProvider(
-      create: (context) => ProductDetailBloc(cartBloc: cartBloc)
-        ..add(ProductDetailLoadRequested(product: widget.product)),
-      child: Scaffold(
-        appBar: core_widgets.CustomAppBar(
-          showBack: true,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(
-                right: AppDimens.appBarActionRightPadding,
-              ),
-              child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
-                builder: (context, state) {
-                  bool isFavorite = false;
-                  if (state is ProductDetailLoaded) {
-                    isFavorite = state.isFavorite;
-                  }
-                  return FavoriteButtonWidget(
-                    isFavorite: isFavorite,
-                    onTap: () => FavoriteHelper.toggleFavorite(
-                      context,
-                      widget.product.name,
-                      isFavorite,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-        body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
-          builder: (context, state) {
-            if (state is ProductDetailInitial || state is ProductDetailError) {
-              return Center(
-                child: state is ProductDetailInitial
-                    ? const CircularProgressIndicator()
-                    : const Text(
-                        ProductDetailStrings.somethingWentWrong,
-                        style: AppTextStyles.errorText,
-                      ),
-              );
-            }
-
-            // Once loaded, state is ProductDetailLoaded
-            final loadedState = state as ProductDetailLoaded;
-
-            return ProductContentWidget(
-              state: loadedState,
-              onSizeTap: OptionPickerHelper.showSizePicker,
-              onColorTap: OptionPickerHelper.showColorPicker,
-            );
-          },
-        ),
-        bottomNavigationBar: BlocBuilder<ProductDetailBloc, ProductDetailState>(
-          builder: (context, state) {
-            if (state is ProductDetailLoaded) {
-              return BlocListener<CartBloc, CartState>(
-                listener: (context, cartState) {
-                  // Show confirmation when product is added to cart
-                  if (cartState is CartLoaded) {
-                    CartIntegrationHelper.showAddedToCartMessage(
-                      context,
-                      ProductDetailStrings.addedToCartMessage,
-                    );
-                  }
-                },
-                child: AddToCartButtonWidget(
-                  totalPrice: state.product.price * state.quantity,
-                  onPressed: () {
-                    // Dispatch event to add to cart
-                    context.read<ProductDetailBloc>().add(
-                          const ProductAddToCartRequested(),
-                        );
-                  },
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+      create:
+          (context) =>
+              ProductDetailBloc(cartBloc: cartBloc)
+                ..add(ProductDetailLoadRequested(product: widget.product)),
+      child: Builder(
+        // Añadimos un Builder para tener acceso al context con el provider
+        builder: (builderContext) {
+          return _ProductDetailScaffold(
+            product: widget.product,
+            currentImageKey: _currentImageKey,
+            cartButtonKey: _cartButtonKey,
+            carouselKey: _carouselKey,
+            onAddToCart: _animateAddToCart,
+            builderContext: builderContext,
+          );
+        },
       ),
     );
 
@@ -128,5 +89,296 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     // If CartBloc is available, just return the content
     return productDetailContent;
+  }
+}
+
+/// Scaffold widget for the product detail page.
+class _ProductDetailScaffold extends StatelessWidget {
+  final ProductItemModel product;
+  final GlobalKey currentImageKey;
+  final GlobalKey cartButtonKey;
+  final GlobalKey carouselKey;
+  final Function(ProductDetailLoaded) onAddToCart;
+  final BuildContext builderContext;
+
+  const _ProductDetailScaffold({
+    required this.product,
+    required this.currentImageKey,
+    required this.cartButtonKey,
+    required this.carouselKey,
+    required this.onAddToCart,
+    required this.builderContext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
+      bottomNavigationBar: _buildBottomNavBar(context),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return core_widgets.CustomAppBar(
+      showBack: true,
+      actions: [_buildFavoriteButton(context), _buildCartButton()],
+    );
+  }
+
+  Widget _buildFavoriteButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: AppDimens.appBarActionRightPadding),
+      child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        builder: (context, state) {
+          bool isFavorite = false;
+          if (state is ProductDetailLoaded) {
+            isFavorite = state.isFavorite;
+          }
+          return FavoriteButtonWidget(
+            isFavorite: isFavorite,
+            onTap:
+                () => FavoriteHelper.toggleFavorite(
+                  context,
+                  product.name,
+                  isFavorite,
+                ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCartButton() {
+    return Padding(
+      padding: const EdgeInsets.only(right: AppDimens.screenPadding / 2),
+      child: CartIconWidget(key: cartButtonKey),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+      builder: (context, state) {
+        if (state is ProductDetailInitial) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is ProductDetailError) {
+          return const Center(
+            child: Text(
+              ProductDetailStrings.somethingWentWrong,
+              style: AppTextStyles.errorText,
+            ),
+          );
+        }
+
+        final loadedState = state as ProductDetailLoaded;
+        return _ProductDetailContent(
+          loadedState: loadedState,
+          currentImageKey: currentImageKey,
+          carouselKey: carouselKey,
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomNavBar(BuildContext context) {
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+      builder: (context, state) {
+        if (state is ProductDetailLoaded) {
+          return BlocListener<CartBloc, CartState>(
+            listener: (context, cartState) {
+              // Show confirmation when product is added to cart
+              if (cartState is CartLoaded) {
+                CartIntegrationHelper.showAddedToCartMessage(
+                  context,
+                  ProductDetailStrings.addedToCartMessage,
+                );
+              }
+            },
+            child: AddToCartButtonWidget(
+              totalPrice: state.product.price * state.quantity,
+              onPressed: () {
+                // Primero, animar el añadir al carrito
+                onAddToCart(state);
+
+                // Luego, ahora que estamos dentro del BuildContext correcto,
+                // podemos acceder al bloc y agregar el producto al carrito
+                Future.delayed(const Duration(milliseconds: 1200), () {
+                  if (builderContext.mounted) {
+                    builderContext.read<ProductDetailBloc>().add(
+                      const ProductAddToCartRequested(),
+                    );
+                  }
+                });
+              },
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}
+
+/// Content widget for the product detail page.
+class _ProductDetailContent extends StatelessWidget {
+  final ProductDetailLoaded loadedState;
+  final GlobalKey currentImageKey;
+  final GlobalKey carouselKey;
+
+  const _ProductDetailContent({
+    required this.loadedState,
+    required this.currentImageKey,
+    required this.carouselKey,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [_buildMainContent(context), _buildLoadingIndicator(context)],
+    );
+  }
+
+  Widget _buildMainContent(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.screenPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: AppDimens.vSpace16),
+          _buildImageCarousel(),
+          const SizedBox(height: AppDimens.vSpace16),
+          _buildProductName(),
+          const SizedBox(height: AppDimens.vSpace8),
+          _buildProductPrice(),
+          const SizedBox(height: AppDimens.vSpace24),
+          _buildSizeSelector(context),
+          _buildColorSelector(context),
+          _buildQuantitySelector(context),
+          const SizedBox(height: AppDimens.vSpace16),
+          _buildDescriptionTitle(),
+          const SizedBox(height: AppDimens.vSpace8),
+          _buildDescriptionText(),
+          const SizedBox(height: AppDimens.vSpace32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageCarousel() {
+    return ImageCarouselWidget(
+      key: carouselKey,
+      imageList: [
+        loadedState.product.imageUrl,
+        ...loadedState.product.additionalImageUrls,
+      ],
+      currentImageKey: currentImageKey,
+    );
+  }
+
+  Widget _buildProductName() {
+    return Text(
+      loadedState.product.name,
+      style: AppTextStyles.heading.copyWith(
+        fontSize: ProductDetailUI.nameFontSize,
+      ),
+    );
+  }
+
+  Widget _buildProductPrice() {
+    return Text(
+      '\$${loadedState.product.price.toStringAsFixed(2)}',
+      style: AppTextStyles.heading.copyWith(
+        fontSize: ProductDetailUI.priceFontSize,
+        color: AppColors.primary,
+      ),
+    );
+  }
+
+  Widget _buildSizeSelector(BuildContext context) {
+    return OptionSelectorWidget(
+      label: ProductDetailStrings.sizeLabel,
+      valueDisplay: Text(
+        loadedState.selectedSize,
+        style: AppTextStyles.inputText.copyWith(fontWeight: FontWeight.bold),
+      ),
+      onTap: () => OptionPickerHelper.showSizePicker(context, loadedState),
+    );
+  }
+
+  Widget _buildColorSelector(BuildContext context) {
+    return OptionSelectorWidget(
+      label: ProductDetailStrings.colorLabel,
+      valueDisplay: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            backgroundColor: loadedState.selectedColor.color,
+            radius: ProductDetailUI.colorSelectorValueAvatarRadius,
+          ),
+          const SizedBox(width: AppDimens.vSpace8),
+          Text(
+            loadedState.selectedColor.name,
+            style: AppTextStyles.inputText.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+      onTap: () => OptionPickerHelper.showColorPicker(context, loadedState),
+    );
+  }
+
+  Widget _buildQuantitySelector(BuildContext context) {
+    return QuantitySelectorWidget(
+      quantity: loadedState.quantity,
+      onDecrement: () {
+        if (loadedState.quantity > 1) {
+          context.read<ProductDetailBloc>().add(
+            ProductDetailQuantityChanged(newQuantity: loadedState.quantity - 1),
+          );
+        }
+      },
+      onIncrement: () {
+        context.read<ProductDetailBloc>().add(
+          ProductDetailQuantityChanged(newQuantity: loadedState.quantity + 1),
+        );
+      },
+    );
+  }
+
+  Widget _buildDescriptionTitle() {
+    return Text(
+      ProductDetailStrings.descriptionLabel,
+      style: AppTextStyles.heading.copyWith(
+        fontSize: ProductDetailUI.descriptionTitleFontSize,
+      ),
+    );
+  }
+
+  Widget _buildDescriptionText() {
+    return Text(
+      loadedState.product.description,
+      style: AppTextStyles.inputText.copyWith(
+        color: AppColors.textGray,
+        height: ProductDetailUI.descriptionLineHeight,
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator(BuildContext context) {
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, cartState) {
+        if (cartState is CartLoading) {
+          return const Positioned(
+            top: 20,
+            right: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
   }
 }
