@@ -7,11 +7,13 @@ class ImageCarouselWidget extends StatefulWidget {
   final List<String> imageList; // Imagen principal + adicionales
   final GlobalKey?
   currentImageKey; // Key para la imagen actual (para animación)
+  final bool isVisible; // Parámetro para controlar la visibilidad
 
   const ImageCarouselWidget({
     super.key,
     required this.imageList,
     this.currentImageKey,
+    this.isVisible = true, // Por defecto es visible
   });
 
   @override
@@ -62,11 +64,18 @@ class _ImageCarouselWidgetState extends State<ImageCarouselWidget> {
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimens.screenPadding / 2,
                 ),
-                // Usar la key solo para la imagen actual
-                child: NetworkImageWithPlaceholder(
-                  key: index == _currentImageIndex ? imageKey : null,
-                  imageUrl: widget.imageList[index],
-                  fit: BoxFit.contain,
+                // Usar la key solo para la imagen actual y controlar su visibilidad
+                child: Opacity(
+                  opacity:
+                      index == _currentImageIndex && !widget.isVisible
+                          ? 0.0
+                          : 1.0,
+                  child: NetworkImageWithPlaceholder(
+                    key: index == _currentImageIndex ? imageKey : null,
+                    imageUrl: widget.imageList[index],
+                    fit: BoxFit.contain,
+                    transparent: true,
+                  ),
                 ),
               );
             },

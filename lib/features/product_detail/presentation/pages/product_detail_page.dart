@@ -26,9 +26,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   // Keys for animation
   final GlobalKey _currentImageKey = GlobalKey();
   final GlobalKey _cartButtonKey = GlobalKey();
-
-  // Referencia al carrusel para obtener la imagen actual
   final GlobalKey _carouselKey = GlobalKey();
+  
+  // Estado para controlar la visibilidad de la imagen durante la animación
+  bool _imageVisibleInCarousel = true;
 
   @override
   void initState() {
@@ -38,17 +39,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   /// Run the add to cart animation and then call the actual add to cart function later
   void _animateAddToCart(ProductDetailLoaded state) {
-    // Obtener la URL de la imagen principal del producto
     String imageUrl = widget.product.imageUrl;
 
-    // Iniciar la animación simplificada desde el carrusel hasta el carrito
+    // Ocultar la imagen en el carrusel durante la animación
+    setState(() {
+      _imageVisibleInCarousel = false;
+    });
+
     AddToCartAnimationHelper.runAddToCartAnimation(
       context: context,
       sourceKey: _currentImageKey,
       targetKey: _cartButtonKey,
       imageUrl: imageUrl,
       onComplete: () {
-        // No intentamos acceder al bloc aquí - lo haremos en el botón
+        // Restaurar la visibilidad de la imagen cuando la animación termina
+        if (mounted) {
+          setState(() {
+            _imageVisibleInCarousel = true;
+          });
+        }
       },
     );
   }
@@ -74,6 +83,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             carouselKey: _carouselKey,
             onAddToCart: _animateAddToCart,
             builderContext: builderContext,
+            imageVisible: _imageVisibleInCarousel,
           );
         },
       ),
@@ -100,6 +110,7 @@ class _ProductDetailScaffold extends StatelessWidget {
   final GlobalKey carouselKey;
   final Function(ProductDetailLoaded) onAddToCart;
   final BuildContext builderContext;
+  final bool imageVisible;
 
   const _ProductDetailScaffold({
     required this.product,
@@ -108,6 +119,7 @@ class _ProductDetailScaffold extends StatelessWidget {
     required this.carouselKey,
     required this.onAddToCart,
     required this.builderContext,
+    required this.imageVisible,
   });
 
   @override
@@ -160,7 +172,7 @@ class _ProductDetailScaffold extends StatelessWidget {
         if (state is ProductDetailInitial) {
           return const Center(child: CircularProgressIndicator());
         }
-
+        
         if (state is ProductDetailError) {
           return const Center(
             child: Text(
@@ -175,6 +187,7 @@ class _ProductDetailScaffold extends StatelessWidget {
           loadedState: loadedState,
           currentImageKey: currentImageKey,
           carouselKey: carouselKey,
+          imageVisible: imageVisible,
         );
       },
     );
@@ -224,11 +237,13 @@ class _ProductDetailContent extends StatelessWidget {
   final ProductDetailLoaded loadedState;
   final GlobalKey currentImageKey;
   final GlobalKey carouselKey;
+  final bool imageVisible;
 
   const _ProductDetailContent({
     required this.loadedState,
     required this.currentImageKey,
     required this.carouselKey,
+    required this.imageVisible,
   });
 
   @override
@@ -272,6 +287,7 @@ class _ProductDetailContent extends StatelessWidget {
         ...loadedState.product.additionalImageUrls,
       ],
       currentImageKey: currentImageKey,
+      isVisible: imageVisible,
     );
   }
 

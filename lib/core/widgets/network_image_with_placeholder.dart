@@ -18,6 +18,9 @@ class NetworkImageWithPlaceholder extends StatefulWidget {
   /// Forma de la imagen.
   final BoxShape shape;
 
+  /// Si el fondo es transparente.
+  final bool transparent;
+
   /// Crea una instancia de [NetworkImageWithPlaceholder].
   const NetworkImageWithPlaceholder({
     super.key,
@@ -26,6 +29,8 @@ class NetworkImageWithPlaceholder extends StatefulWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.shape = BoxShape.rectangle,
+    // Fondo transparente boolean
+    this.transparent = false,
   });
 
   @override
@@ -62,7 +67,7 @@ class _NetworkImageWithPlaceholderState
       height: widget.height,
       decoration: BoxDecoration(
         shape: widget.shape,
-        color: Colors.grey[200], // Un color de fondo base
+        color: widget.transparent ? Colors.transparent : Colors.grey[200], // Un color de fondo base
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
