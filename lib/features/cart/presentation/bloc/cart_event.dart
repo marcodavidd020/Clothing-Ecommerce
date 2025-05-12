@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_application_ecommerce/features/cart/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 
 /// Eventos para el BLoC del carrito

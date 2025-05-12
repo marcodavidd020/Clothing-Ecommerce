@@ -14,14 +14,15 @@ alwaysApply: true
 // Flutter Best Practices
 
 const flutterBestPractices = [
-    "Adapt to existing project architecture while maintaining clean code principles",
-    "Use Flutter 3.x features and Material 3 design",
-    "Implement clean architecture with BLoC pattern",
-    "Follow proper state management principles",
-    "Use proper dependency injection",
-    "Implement proper error handling",
-    "Follow platform-specific design guidelines",
-    "Use proper localization techniques",
+"Adapt to existing project architecture while maintaining clean code principles",
+"Use Flutter 3.x features and Material 3 design",
+"Implement clean architecture with BLoC pattern",
+"Follow proper state management principles",
+"Use proper dependency injection",
+"Implement proper error handling",
+"Follow platform-specific design guidelines",
+"Use proper localization techniques",
+"Modularize features with their own constants and resources",
 ];
 
 // Project Structure
@@ -30,36 +31,61 @@ const flutterBestPractices = [
 
 const projectStructure = `
 lib/
+core/
+constants/ # Global shared constants
+theme/
+utils/
+widgets/ # Reusable widgets across the app
+
+features/ # Organized by functional modules
+feature_name/
+core/ # Module-specific core
+constants/ # Module-specific constants (strings, UI, etc.)
+data/
+datasources/
+models/
+repositories/
+domain/
+entities/
+repositories/
+usecases/
+presentation/
+bloc/
+pages/
+widgets/
+l10n/
+main.dart
+test/
+unit/
+widget/
+integration/
+`;
+
+// Example Structure: Cart Module
+const cartModuleStructure = `features/cart/
   core/
     constants/
-    theme/
-    utils/
+      cart_constants.dart   # Barrel file for constants
+      cart_strings.dart     # Cart-specific text strings
+      cart_ui.dart          # UI dimensions and constants
+    core.dart               # Barrel file for core
+  domain/
+    entities/
+      cart_item_model.dart  # Cart item model
+    domain.dart             # Barrel file for domain
+  presentation/
+    bloc/                   # Cart state using BLoC
+    pages/
+      cart_page.dart        # Main cart page
     widgets/
-  features/
-    feature_name/
-      data/
-        datasources/
-        models/
-        repositories/
-      domain/
-        entities/
-        repositories/
-        usecases/
-      presentation/
-        bloc/
-        pages/
-        widgets/
-  l10n/
-  main.dart
-test/
-  unit/
-  widget/
-  integration/
-`;
+      cart_item_widget.dart # Widget for cart item
+      confirm_dialog_widget.dart # Confirmation dialog
+      widgets.dart          # Barrel file for widgets`;
 
 // Coding Guidelines
 
 const codingGuidelines = `
+
 1. Use proper null safety practices
 2. Implement proper error handling with Either type
 3. Follow proper naming conventions
@@ -70,11 +96,15 @@ const codingGuidelines = `
 8. Implement proper dependency injection using GetIt
 9. Use proper asset management
 10. Follow proper testing practices
-`;
+11. Maintain module-specific constants in their respective modules
+12. Use barrel files to simplify imports
+13. Avoid global constants for module-specific elements
+    `;
 
 // Widget Guidelines
 
 const widgetGuidelines = `
+
 1. Keep widgets small and focused
 2. Use const constructors when possible
 3. Implement proper widget keys
@@ -83,11 +113,12 @@ const widgetGuidelines = `
 6. Implement proper error boundaries
 7. Use proper performance optimization techniques
 8. Follow proper accessibility guidelines
-`;
+   `;
 
 // Performance Guidelines
 
 const performanceGuidelines = `
+
 1. Use proper image caching
 2. Implement proper list view optimization
 3. Use proper build methods optimization
@@ -95,11 +126,12 @@ const performanceGuidelines = `
 5. Implement proper memory management
 6. Use proper platform channels when needed
 7. Follow proper compilation optimization techniques
-`;
+   `;
 
 // Testing Guidelines
 
-const testingTestingGuidelines = `
+const testingGuidelines = `
+
 1. Write unit tests for business logic
 2. Implement widget tests for UI components
 3. Use integration tests for feature testing
@@ -107,5 +139,17 @@ const testingTestingGuidelines = `
 5. Use proper test coverage tools
 6. Follow proper test naming conventions
 7. Implement proper CI/CD testing
-`;
+   `;
 
+// Modularity Guidelines
+
+const modularityGuidelines = `
+
+1. Each module should be self-contained with its own constants
+2. Keep global constants only for elements shared throughout the app
+3. Use barrel files to facilitate importing multiple elements
+4. Create a specific core for each module (core/)
+5. Separate UI, strings, and other constants into distinct files
+6. Avoid duplicating constants between modules
+7. Maintain consistency in structure across all modules
+   `;
