@@ -1,0 +1,78 @@
+{
+  "topSellingProducts": [
+    {
+      "id": "prod1",
+      "name": "Classic Hoodie",
+      "imageUrl": "https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png",
+      "price": 49.99,
+      "originalPrice": 59.99,
+      "isFavorite": false,
+      "averageRating": 4.5,
+      "reviewCount": 120,
+      "description": "A comfortable classic hoodie for everyday wear.",
+      "availableSizes": ["S", "M", "L", "XL"],
+      "availableColors": [
+        {
+          "name": "Black",
+          "colorCode": "#000000"
+        },
+        {
+          "name": "Gray",
+          "colorCode": "#808080"
+        }
+      ],
+      "additionalImageUrls": [
+        "https://static.vecteezy.com/system/resources/previews/008/530/102/original/sport-t-shirt-cutout-file-png.png",
+        "https://static.vecteezy.com/system/resources/previews/008/530/103/original/sport-t-shirt-cutout-file-png.png"
+      ]
+    },
+    {
+      "id": "prod2",
+      "name": "Slim Fit Jeans",
+      "imageUrl": "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1663099829-sandal-slides-for-men-1663099812.jpg?crop=1xw:1xh;center,top&resize=980:*",
+      "additionalImageUrls": [
+        "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/abc77aa4-1731-4591-bd65-55f4179026d7/max-cirro-mens-slides-sM9N3M.png"
+      ],
+      "price": 39.99,
+      "originalPrice": 45.99,
+      "isFavorite": false,
+      "averageRating": 4.2,
+      "reviewCount": 85,
+      "description": "Modern slim fit jeans with stretch fabric.",
+      "availableSizes": ["30", "32", "34", "36"],
+      "availableColors": [
+        {
+          "name": "Blue",
+          "colorCode": "#0000FF"
+        },
+        {
+          "name": "Black",
+          "colorCode": "#000000"
+        }
+      ]
+    },
+    {
+      "id": "prod3",
+      "name": "Running Shoes",
+      "imageUrl": "https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png",
+      "price": 79.99,
+      "originalPrice": 99.99,
+      "isFavorite": false,
+      "averageRating": 4.7,
+      "reviewCount": 210,
+      "description": "Lightweight running shoes with excellent cushioning.",
+      "availableSizes": ["40", "41", "42", "43", "44"],
+      "availableColors": [
+        {
+          "name": "Black/White",
+          "colorCode": "#000000"
+        },
+        {
+          "name": "Blue",
+          "colorCode": "#0000FF"
+        }
+      ],
+      "additionalImageUrls": []
+    }
+  ]
+}

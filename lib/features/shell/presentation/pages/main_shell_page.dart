@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/pages/home_page.dart';
-// TODO: Importar las páginas reales para Notifications, Receipts y Profile cuando estén creadas.
-// import 'package:flutter_application_ecommerce/features/notifications/presentation/pages/notifications_page.dart'; 
-// import 'package:flutter_application_ecommerce/features/receipts/presentation/pages/receipts_page.dart';
-// import 'package:flutter_application_ecommerce/features/profile/presentation/pages/profile_page.dart';
 
 /// Widget principal que actúa como un "caparazón" (shell) para la navegación
 /// principal de la aplicación mediante una [BottomNavigationBarWidget].
 ///
 /// Gestiona el estado de la pestaña actual y muestra la página correspondiente.
+/// Esta implementación reemplaza a ShellPage y ya no utiliza GoRouter.
 class MainShellPage extends StatefulWidget {
   /// Crea una instancia de [MainShellPage].
   const MainShellPage({super.key});
@@ -23,7 +20,6 @@ class _MainShellPageState extends State<MainShellPage> {
   int _currentIndex = 0;
 
   /// Lista de widgets (páginas) que se mostrarán según la selección en la barra de navegación.
-  /// Actualmente, solo [HomePage] es una página real; las otras son placeholders.
   final List<Widget> _pages = [
     const HomePage(),
     const Center(child: Text('Notifications Page')), // Placeholder para la página de Notificaciones

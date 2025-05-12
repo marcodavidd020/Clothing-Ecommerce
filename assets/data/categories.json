@@ -1,0 +1,24 @@
+{
+    "categories": [
+        {
+            "imageUrl": "https://pvh-brands.imgix.net/catalog/product/media/DM0DM19741_C8T_MO-ST-F1_099.jpg?w=&h=&crop=edges&fit=crop&auto=compress&auto=format",
+            "name": "Hoodies"
+        },
+        {
+            "imageUrl": "https://duer.ca/cdn/shop/products/MSTS1013-LIVE-LITE-JOURNEY-SHORT-SAPPHIRE_7___FT_1.jpg?v=1743715634&width=1200",
+            "name": "Shorts"
+        },
+        {
+            "imageUrl": "https://images.ctfassets.net/hnk2vsx53n6l/3hw2iDbUASUCISMRCQZu1d/b8e1d9bf0c5b895f42159ab1d7505016/c57f27605095ed093092327ad747982c2ce4bf7d.png?fm=webp",
+            "name": "Shoes"
+        },
+        {
+            "imageUrl": "https://www.zaappy.com/cdn/shop/products/2_50e00087-247a-4e62-b1b0-530a7cb59ed7.jpg?v=1674566146",
+            "name": "Bags"
+        },
+        {
+            "imageUrl": "https://media.endclothing.com/media/f_auto,q_auto:eco,w_400,h_400/prodmedia/media/catalog/product/1/9/19-03-25-TC_OERI008C99PLA0041007_2_1.jpg",
+            "name": "Accessories"
+        }
+    ]
+} 

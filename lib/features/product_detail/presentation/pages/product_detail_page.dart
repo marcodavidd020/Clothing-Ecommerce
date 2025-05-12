@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_ecommerce/core/helpers/helpers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Importar flutter_bloc
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart'
@@ -27,7 +28,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   final GlobalKey _currentImageKey = GlobalKey();
   final GlobalKey _cartButtonKey = GlobalKey();
   final GlobalKey _carouselKey = GlobalKey();
-  
+
   // Estado para controlar la visibilidad de la imagen durante la animación
   bool _imageVisibleInCarousel = true;
 
@@ -132,8 +133,14 @@ class _ProductDetailScaffold extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    // To back Home
+    void onBack() {
+      NavigationHelper.goToHome(context);
+    }
+
     return core_widgets.CustomAppBar(
       showBack: true,
+      onBack: onBack,
       title: _buildFavoriteButton(context),
       actions: [_buildCartButton()],
     );
@@ -172,7 +179,7 @@ class _ProductDetailScaffold extends StatelessWidget {
         if (state is ProductDetailInitial) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (state is ProductDetailError) {
           return const Center(
             child: Text(

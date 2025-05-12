@@ -31,34 +31,34 @@ const flutterBestPractices = [
 
 const projectStructure = `
 lib/
-core/
-constants/ # Global shared constants
-theme/
-utils/
-widgets/ # Reusable widgets across the app
+    core/
+        constants/ # Global shared constants
+        theme/
+        utils/
+        widgets/ # Reusable widgets across the app
 
 features/ # Organized by functional modules
-feature_name/
-core/ # Module-specific core
-constants/ # Module-specific constants (strings, UI, etc.)
-data/
-datasources/
-models/
-repositories/
-domain/
-entities/
-repositories/
-usecases/
-presentation/
-bloc/
-pages/
-widgets/
-l10n/
-main.dart
+    feature_name/
+        core/ # Module-specific core
+            constants/ # Module-specific constants (strings, UI, etc.)
+        data/
+            datasources/
+            models/
+            repositories/
+        domain/
+            entities/
+            repositories/
+            usecases/
+        presentation/
+            bloc/
+            pages/
+            widgets/
+    l10n/
+    main.dart
 test/
-unit/
-widget/
-integration/
+    unit/
+    widget/
+    integration/
 `;
 
 // Example Structure: Cart Module

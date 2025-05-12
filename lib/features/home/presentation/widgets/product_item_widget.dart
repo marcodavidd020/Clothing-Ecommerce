@@ -24,12 +24,12 @@ class ProductItemWidget extends StatelessWidget {
         if (onTap != null) {
           onTap!();
         }
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetailPage(product: product),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => ProductDetailPage(product: product),
+        //   ),
+        // );
       },
       child: Container(
         width: AppDimens.productItemWidth,

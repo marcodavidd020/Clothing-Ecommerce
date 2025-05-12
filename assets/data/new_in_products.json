@@ -1,0 +1,73 @@
+{
+  "newInProducts": [
+    {
+      "id": "prod4",
+      "name": "Casual T-Shirt",
+      "imageUrl": "https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png",
+      "price": 19.99,
+      "originalPrice": 24.99,
+      "isFavorite": false,
+      "averageRating": 4.3,
+      "reviewCount": 48,
+      "description": "Comfortable casual t-shirt with modern design.",
+      "availableSizes": ["S", "M", "L", "XL"],
+      "availableColors": [
+        {
+          "name": "White",
+          "colorCode": "#FFFFFF"
+        },
+        {
+          "name": "Black",
+          "colorCode": "#000000"
+        }
+      ],
+      "additionalImageUrls": []
+    },
+    {
+      "id": "prod5",
+      "name": "Sport Backpack",
+      "imageUrl": "https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png",
+      "price": 29.99,
+      "originalPrice": 35.99,
+      "isFavorite": false,
+      "averageRating": 4.4,
+      "reviewCount": 32,
+      "description": "Spacious backpack perfect for sports and outdoor activities.",
+      "availableSizes": ["One Size"],
+      "availableColors": [
+        {
+          "name": "Black",
+          "colorCode": "#000000"
+        },
+        {
+          "name": "Gray",
+          "colorCode": "#808080"
+        }
+      ],
+      "additionalImageUrls": []
+    },
+    {
+      "id": "prod6",
+      "name": "Winter Jacket",
+      "imageUrl": "https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png",
+      "price": 89.99,
+      "originalPrice": 109.99,
+      "isFavorite": false,
+      "averageRating": 4.6,
+      "reviewCount": 25,
+      "description": "Warm winter jacket with waterproof material.",
+      "availableSizes": ["S", "M", "L", "XL", "XXL"],
+      "availableColors": [
+        {
+          "name": "Navy Blue",
+          "colorCode": "#000080"
+        },
+        {
+          "name": "Dark Green",
+          "colorCode": "#006400"
+        }
+      ],
+      "additionalImageUrls": []
+    }
+  ]
+}
