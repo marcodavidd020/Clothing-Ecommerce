@@ -50,11 +50,11 @@ class CategoryProductsPage extends StatelessWidget {
                     final product = products[index];
                     return ProductItemWidget(
                       product: product,
-                      onTap: () {
+                      onTap: (product) {
                         // TODO: Navegar a la página de detalle del producto
                         print('Producto seleccionado: ${product.name}');
                       },
-                      onFavoriteToggle: () {
+                      onFavoriteToggle: (product) {
                         // TODO: Implementar lógica de favorito (probablemente con BLoC/Provider)
                         print('Toggle favorito para: ${product.name}');
                       },

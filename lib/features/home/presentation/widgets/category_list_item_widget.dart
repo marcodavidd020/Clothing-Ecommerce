@@ -7,11 +7,7 @@ class CategoryListItemWidget extends StatelessWidget {
   final CategoryItemModel category;
   final VoidCallback? onTap;
 
-  const CategoryListItemWidget({
-    super.key,
-    required this.category,
-    this.onTap,
-  });
+  const CategoryListItemWidget({super.key, required this.category, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +18,17 @@ class CategoryListItemWidget extends StatelessWidget {
         padding: const EdgeInsets.all(AppDimens.contentPaddingHorizontal),
         decoration: BoxDecoration(
           color: AppColors.inputFill, // Un color de fondo claro
-          borderRadius: BorderRadius.circular(AppDimens.buttonRadius / 4), // Bordes redondeados
+          borderRadius: BorderRadius.circular(
+            AppDimens.buttonRadius / 4,
+          ), // Bordes redondeados
         ),
         child: Row(
           children: [
             SizedBox(
               width: 50, // Tamaño fijo para la imagen
               height: 50,
-              child: ClipRRect( // Envolver con ClipRRect para bordes redondeados
+              child: ClipRRect(
+                // Envolver con ClipRRect para bordes redondeados
                 borderRadius: BorderRadius.circular(AppDimens.buttonRadius / 5),
                 child: NetworkImageWithPlaceholder(
                   imageUrl: category.imageUrl,
@@ -54,10 +53,10 @@ class CategoryListItemWidget extends StatelessWidget {
               Icons.arrow_forward_ios,
               size: 16,
               color: AppColors.textDark,
-            )
+            ),
           ],
         ),
       ),
     );
   }
-} 
+}

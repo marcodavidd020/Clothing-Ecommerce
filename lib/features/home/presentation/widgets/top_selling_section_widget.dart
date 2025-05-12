@@ -55,8 +55,8 @@ class ProductHorizontalListSection extends StatelessWidget {
               final product = products[index];
               return ProductItemWidget(
                 product: product,
-                onTap: () => onProductTap?.call(product),
-                onFavoriteToggle: () => onFavoriteToggle?.call(product),
+                onTap: onProductTap,
+                onFavoriteToggle: onFavoriteToggle,
               );
             },
             separatorBuilder:
