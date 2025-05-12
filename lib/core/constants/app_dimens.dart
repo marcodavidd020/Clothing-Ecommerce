@@ -128,7 +128,7 @@ class AppDimens {
   static const double colorPickerAvatarRadius = 12.0;
   static const double quantitySelectorFontSize = 16.0;
   static const double quantityButtonIconSize = 18.0;
-  static const double appBarActionRightPadding = 14.0; // screenPadding (24) - 10
+  static const double appBarActionRightPadding = 24.0; // screenPadding (24) - 10
 
   static const double quantityButtonPadding = 8.0; // AppDimens.vSpace8 / 2
 

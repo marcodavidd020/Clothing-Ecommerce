@@ -23,7 +23,7 @@ class CartPage extends StatelessWidget {
             builder: (context, state) {
               if (state is CartLoaded && !state.isEmpty) {
                 return Padding(
-                  padding: const EdgeInsets.only(right: AppDimens.screenPadding),
+                  padding: const EdgeInsets.only(right: AppDimens.appBarActionRightPadding),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppColors.inputFill,

@@ -298,7 +298,7 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: AppDimens.screenPadding),
+            padding: const EdgeInsets.only(right: AppDimens.appBarActionRightPadding),
             child: CartBadgeWidget(
               onPressed: () {
                 Navigator.of(context).push(
