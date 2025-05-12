@@ -49,3 +49,8 @@ class ProductDetailQuantityChanged extends ProductDetailEvent {
   @override
   List<Object?> get props => [newQuantity];
 }
+
+// Evento cuando se añade el producto al carrito
+class ProductAddToCartRequested extends ProductDetailEvent {
+  const ProductAddToCartRequested();
+}

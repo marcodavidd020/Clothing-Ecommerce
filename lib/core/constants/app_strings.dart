@@ -104,4 +104,7 @@ class AppStrings {
 
   // Generic Error
   static const String somethingWentWrong = 'Something went wrong. Please try again.';
+
+  // Cart (referencia a mensaje global usado en varias partes)
+  static const String addedToCartMessage = 'Product added to cart';
 }

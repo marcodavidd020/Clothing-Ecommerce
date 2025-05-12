@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Importar flutter_bloc
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
-import 'package:flutter_application_ecommerce/core/widgets/widgets.dart' as core_widgets;
+import 'package:flutter_application_ecommerce/core/widgets/widgets.dart'
+    as core_widgets;
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart'; // Usaremos el modelo de producto de home
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/widgets/widgets.dart'; // Importar widgets
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart'; // Importar el BLoC
+import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart'; // Importar bloc del carrito
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -38,12 +40,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void _showSizePicker(BuildContext context, ProductDetailLoaded state) {
     if (state.product.availableSizes.isEmpty) return;
 
-    final productDetailBloc = context.read<ProductDetailBloc>(); // Leer el BLoC aquí
+    final productDetailBloc =
+        context.read<ProductDetailBloc>(); // Leer el BLoC aquí
 
-    final List<core_widgets.OptionData> sizeOptions = state.product.availableSizes.map((size) {
-      return core_widgets.OptionData(text: size);
-    }).toList();
-    int selectedSizeIndex = state.product.availableSizes.indexOf(state.selectedSize);
+    final List<core_widgets.OptionData> sizeOptions =
+        state.product.availableSizes.map((size) {
+          return core_widgets.OptionData(text: size);
+        }).toList();
+    int selectedSizeIndex = state.product.availableSizes.indexOf(
+      state.selectedSize,
+    );
     if (selectedSizeIndex == -1) selectedSizeIndex = 0;
 
     showModalBottomSheet(
@@ -62,14 +68,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   selectedSizeIndex = index;
                 });
                 productDetailBloc.add(
-                      ProductDetailSizeSelected(newSize: state.product.availableSizes[index]),
-                    );
+                  ProductDetailSizeSelected(
+                    newSize: state.product.availableSizes[index],
+                  ),
+                );
               },
               onClose: () {
                 Navigator.pop(modalContext);
               },
             );
-          }
+          },
         );
       },
     );
@@ -78,21 +86,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void _showColorPicker(BuildContext context, ProductDetailLoaded state) {
     if (state.product.availableColors.isEmpty) return;
 
-    final productDetailBloc = context.read<ProductDetailBloc>(); // Leer el BLoC aquí
+    final productDetailBloc =
+        context.read<ProductDetailBloc>(); // Leer el BLoC aquí
 
-    final List<core_widgets.OptionData> colorOptions = state.product.availableColors.map((colorChoice) {
-      return core_widgets.OptionData(text: colorChoice.name, colorValue: colorChoice.color);
-    }).toList();
-    int selectedColorIndex = state.product.availableColors.indexWhere((c) => c.name == state.selectedColor.name);
+    final List<core_widgets.OptionData> colorOptions =
+        state.product.availableColors.map((colorChoice) {
+          return core_widgets.OptionData(
+            text: colorChoice.name,
+            colorValue: colorChoice.color,
+          );
+        }).toList();
+    int selectedColorIndex = state.product.availableColors.indexWhere(
+      (c) => c.name == state.selectedColor.name,
+    );
     if (selectedColorIndex == -1) selectedColorIndex = 0;
 
     showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext modalContext) {
-          return StatefulBuilder(
-              builder: (BuildContext sfContext, StateSetter setStateModal) {
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext modalContext) {
+        return StatefulBuilder(
+          builder: (BuildContext sfContext, StateSetter setStateModal) {
             return core_widgets.OptionSelectorWidget(
               title: AppStrings.colorLabel,
               options: colorOptions,
@@ -102,23 +117,40 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   selectedColorIndex = index;
                 });
                 productDetailBloc.add(
-                      ProductDetailColorSelected(newColor: state.product.availableColors[index]),
-                    );
+                  ProductDetailColorSelected(
+                    newColor: state.product.availableColors[index],
+                  ),
+                );
               },
               onClose: () {
                 Navigator.pop(modalContext);
               },
             );
-          });
-        });
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
+    // Intentar obtener el CartBloc existente del árbol de widgets
+    CartBloc? cartBloc;
+    try {
+      // Usar mayBeOf en lugar de of para no lanzar excepción si no existe
+      cartBloc = BlocProvider.of<CartBloc>(context, listen: false);
+    } catch (_) {
+      // Si no hay CartBloc disponible, no asignamos ninguno
+      print(
+        'CartBloc no disponible en el contexto superior. Se creará uno local.',
+      );
+    }
+
+    // Creamos un BlocProvider para CartBloc solo si no existe uno en el árbol
+    Widget productDetailContent = BlocProvider(
       create:
           (context) =>
-              ProductDetailBloc()
+              ProductDetailBloc(cartBloc: cartBloc)
                 ..add(ProductDetailLoadRequested(product: widget.product)),
       child: Scaffold(
         // El appBar y el body ahora usarán BlocBuilder para acceder al estado
@@ -292,18 +324,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         bottomNavigationBar: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (context, state) {
             if (state is ProductDetailLoaded) {
-              return Padding(
-                padding: const EdgeInsets.all(AppDimens.screenPadding),
-                child: core_widgets.PrimaryButton(
-                  label:
-                      '\$${(state.product.price * state.quantity).toStringAsFixed(2)}    ${AppStrings.addToBagLabel}',
-                  onPressed: () {
-                    // TODO: Implementar AddToCart event y lógica en BLoC
-                    // context.read<ProductDetailBloc>().add(ProductAddToCartRequested());
-                    print(
-                      'Añadido al carrito: ${state.product.name}, Talla: ${state.selectedSize}, Color: ${state.selectedColor.name}, Cantidad: ${state.quantity}',
+              return BlocListener<CartBloc, CartState>(
+                listener: (context, cartState) {
+                  // Mostrar confirmación cuando se añade al carrito
+                  if (cartState is CartLoaded) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(AppStrings.addedToCartMessage),
+                        backgroundColor: AppColors.primary,
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
                     );
-                  },
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(AppDimens.screenPadding),
+                  child: core_widgets.PrimaryButton(
+                    label:
+                        '\$${(state.product.price * state.quantity).toStringAsFixed(2)}    ${AppStrings.addToBagLabel}',
+                    onPressed: () {
+                      // Disparar evento para añadir al carrito
+                      context.read<ProductDetailBloc>().add(
+                        const ProductAddToCartRequested(),
+                      );
+                    },
+                  ),
                 ),
               );
             }
@@ -312,5 +358,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
       ),
     );
+
+    // Si no hay un CartBloc en el árbol, envolvemos con uno local
+    if (cartBloc == null) {
+      return BlocProvider(
+        create: (context) => CartBloc()..add(const CartLoadRequested()),
+        child: productDetailContent,
+      );
+    }
+
+    // Si ya hay un CartBloc disponible, solo devolvemos el contenido
+    return productDetailContent;
   }
 }

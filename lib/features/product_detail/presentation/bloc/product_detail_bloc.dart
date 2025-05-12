@@ -3,16 +3,21 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart'; // Corregido para usar el barrel file
 import 'package:flutter_application_ecommerce/core/constants/app_strings.dart'; // Para valores por defecto
 import 'package:flutter/material.dart'; // Para Color
+import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart'; // Bloc del carrito
 
 part 'product_detail_event.dart';
 part 'product_detail_state.dart';
 
 class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
-  ProductDetailBloc() : super(ProductDetailInitial()) {
+  final CartBloc?
+  cartBloc; // Opcional para permitir tests sin dependencia del CartBloc
+
+  ProductDetailBloc({this.cartBloc}) : super(ProductDetailInitial()) {
     on<ProductDetailLoadRequested>(_onProductDetailLoadRequested);
     on<ProductDetailSizeSelected>(_onProductDetailSizeSelected);
     on<ProductDetailColorSelected>(_onProductDetailColorSelected);
     on<ProductDetailQuantityChanged>(_onProductDetailQuantityChanged);
+    on<ProductAddToCartRequested>(_onProductAddToCartRequested);
   }
 
   void _onProductDetailLoadRequested(
@@ -72,6 +77,35 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       if (event.newQuantity >= 1) {
         // Asegurar que la cantidad no sea menor a 1
         emit(currentState.copyWith(quantity: event.newQuantity));
+      }
+    }
+  }
+
+  void _onProductAddToCartRequested(
+    ProductAddToCartRequested event,
+    Emitter<ProductDetailState> emit,
+  ) {
+    if (state is ProductDetailLoaded) {
+      final currentState = state as ProductDetailLoaded;
+      final product = currentState.product;
+      final size = currentState.selectedSize;
+      final color = currentState.selectedColor;
+      final quantity = currentState.quantity;
+
+      if (cartBloc != null) {
+        // Añadir al carrito usando CartBloc
+        cartBloc!.add(
+          CartItemAdded(
+            product: product,
+            size: size,
+            color: color,
+            quantity: quantity,
+          ),
+        );
+
+        // Opcional: Mostrar algún estado de confirmación
+        // Por ejemplo, podrías tener un estado ProductDetailAddedToCart
+        // O simplemente usar un SnackBar directamente desde la UI
       }
     }
   }

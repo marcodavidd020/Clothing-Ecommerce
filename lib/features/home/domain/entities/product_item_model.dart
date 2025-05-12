@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart'; // Necesario para Color
+// import 'package:flutter/material.dart'; // Necesario para Color
 import 'product_color_option_model.dart';
 
 class ProductItemModel {

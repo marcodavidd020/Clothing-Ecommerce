@@ -4,6 +4,7 @@ import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
 import 'all_categories_page.dart'; // Importar la nueva página
+import 'package:flutter_application_ecommerce/features/cart/presentation/pages/cart_page.dart';
 
 /// Página principal (Home) de la aplicación.
 ///
@@ -295,6 +296,20 @@ class _HomePageState extends State<HomePage> {
             }
           },
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppDimens.screenPadding),
+            child: CartBadgeWidget(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const CartPage(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: ShaderMask(
