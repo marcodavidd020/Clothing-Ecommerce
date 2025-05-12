@@ -10,8 +10,8 @@ class CartIconWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: AppDimens.backButtonSize * 0.8,
-      height: AppDimens.backButtonSize * 0.8,
+      width: AppDimens.backButtonSize,
+      height: AppDimens.backButtonSize,
       decoration: BoxDecoration(
         color: AppColors.inputFill,
         shape: BoxShape.circle,
@@ -19,8 +19,8 @@ class CartIconWidget extends StatelessWidget {
       child: Center(
         child: SvgPicture.asset(
           AppStrings.bagIcon,
-          width: AppDimens.iconSize * 0.8,
-          height: AppDimens.iconSize * 0.8,
+          width: AppDimens.iconSize,
+          height: AppDimens.iconSize,
           colorFilter: const ColorFilter.mode(
             AppColors.primary,
             BlendMode.srcIn,
@@ -29,4 +29,4 @@ class CartIconWidget extends StatelessWidget {
       ),
     );
   }
-} 
+}

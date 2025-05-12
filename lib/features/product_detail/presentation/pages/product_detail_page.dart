@@ -122,36 +122,34 @@ class _ProductDetailScaffold extends StatelessWidget {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return core_widgets.CustomAppBar(
       showBack: true,
-      actions: [_buildFavoriteButton(context), _buildCartButton()],
+      title: _buildFavoriteButton(context),
+      actions: [_buildCartButton()],
     );
   }
 
   Widget _buildFavoriteButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: AppDimens.appBarActionRightPadding),
-      child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
-        builder: (context, state) {
-          bool isFavorite = false;
-          if (state is ProductDetailLoaded) {
-            isFavorite = state.isFavorite;
-          }
-          return FavoriteButtonWidget(
-            isFavorite: isFavorite,
-            onTap:
-                () => FavoriteHelper.toggleFavorite(
-                  context,
-                  product.name,
-                  isFavorite,
-                ),
-          );
-        },
-      ),
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+      builder: (context, state) {
+        bool isFavorite = false;
+        if (state is ProductDetailLoaded) {
+          isFavorite = state.isFavorite;
+        }
+        return FavoriteButtonWidget(
+          isFavorite: isFavorite,
+          onTap:
+              () => FavoriteHelper.toggleFavorite(
+                context,
+                product.name,
+                isFavorite,
+              ),
+        );
+      },
     );
   }
 
   Widget _buildCartButton() {
     return Padding(
-      padding: const EdgeInsets.only(right: AppDimens.screenPadding / 2),
+      padding: const EdgeInsets.only(right: AppDimens.screenPadding),
       child: CartIconWidget(key: cartButtonKey),
     );
   }
