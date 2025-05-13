@@ -36,7 +36,7 @@ class DebounceButton extends StatefulWidget {
 class _DebounceButtonState extends State<DebounceButton> {
   /// Indica si el botón está habilitado para recibir clics
   bool _isEnabled = true;
-  
+
   /// Timer para controlar el tiempo de espera entre clics
   Timer? _timer;
 
@@ -77,4 +77,4 @@ class _DebounceButtonState extends State<DebounceButton> {
       child: widget.child,
     );
   }
-} 
+}

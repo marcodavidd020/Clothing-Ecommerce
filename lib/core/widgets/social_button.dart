@@ -8,10 +8,10 @@ import '../constants/constants.dart';
 class SocialButton extends StatelessWidget {
   /// Ruta del asset para el icono (SVG o PNG).
   final String assetPath;
-  
+
   /// Texto que se muestra en el botón.
   final String label;
-  
+
   /// Callback que se ejecuta cuando el botón es presionado.
   final VoidCallback onPressed;
 
@@ -35,7 +35,9 @@ class SocialButton extends StatelessWidget {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: AppColors.socialBackground,
-          padding: const EdgeInsets.symmetric(vertical: AppDimens.socialButtonPaddingVertical),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppDimens.socialButtonPaddingVertical,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimens.buttonRadius),
           ),
@@ -48,18 +50,21 @@ class SocialButton extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: AppDimens.socialButtonIconLeft),
-                child: isSvg
-                    ? SvgPicture.asset(
-                        assetPath,
-                        width: AppDimens.iconSize,
-                        height: AppDimens.iconSize,
-                      )
-                    : Image.asset(
-                        assetPath,
-                        width: AppDimens.iconSize,
-                        height: AppDimens.iconSize,
-                      ),
+                padding: const EdgeInsets.only(
+                  left: AppDimens.socialButtonIconLeft,
+                ),
+                child:
+                    isSvg
+                        ? SvgPicture.asset(
+                          assetPath,
+                          width: AppDimens.iconSize,
+                          height: AppDimens.iconSize,
+                        )
+                        : Image.asset(
+                          assetPath,
+                          width: AppDimens.iconSize,
+                          height: AppDimens.iconSize,
+                        ),
               ),
             ),
             // Texto del botón

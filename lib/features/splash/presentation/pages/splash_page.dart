@@ -1,12 +1,14 @@
 import 'dart:async'; // Necesario para Future.delayed
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Importar BlocProvider
+import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart'; // Importar AuthBloc
 import 'package:go_router/go_router.dart';
 
 /// Página de Splash (pantalla de carga inicial) de la aplicación.
 ///
 /// Muestra un logo animado durante un tiempo determinado y luego
-/// navega a la pantalla principal.
+/// navega a la pantalla principal o de inicio de sesión, según el estado de autenticación.
 class SplashPage extends StatefulWidget {
   /// Crea una instancia de [SplashPage].
   const SplashPage({super.key});
@@ -56,12 +58,22 @@ class _SplashPageState extends State<SplashPage>
   /// Programa la navegación a la siguiente pantalla después de un retraso.
   ///
   /// Espera un tiempo suficiente para mostrar la animación del splash
-  /// y luego navega a la pantalla principal usando GoRouter.
+  /// y luego verifica si el usuario está autenticado para navegar
+  /// a la pantalla principal o de inicio de sesión.
   void _navigateToNextScreen() {
     // Esperar 2 segundos antes de navegar a la siguiente pantalla
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        context.goNamed(AppRoutes.mainName);
+        // Verificar el estado de autenticación
+        final authState = context.read<AuthBloc>().state;
+        
+        if (authState is Authenticated) {
+          // Si el usuario está autenticado, ir a la pantalla principal
+          context.goNamed(AppRoutes.mainName);
+        } else {
+          // Si el usuario no está autenticado, ir a la pantalla de inicio de sesión
+          context.goNamed(AppRoutes.signInName);
+        }
       }
     });
   }

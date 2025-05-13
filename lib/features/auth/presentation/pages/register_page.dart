@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
+import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
+import '../bloc/bloc.dart';
+import '../helpers/helpers.dart';
 
 /// Página para el registro de nuevos usuarios.
 ///
@@ -17,7 +21,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   // Clave global para identificar y validar el formulario.
   final _formKey = GlobalKey<FormState>();
-  
+
   // Controladores para los campos de texto del formulario.
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -36,115 +40,147 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   /// Maneja la acción de continuar con el registro.
-  /// Valida el formulario y, si es válido, procedería con la lógica de registro.
+  /// Valida el formulario y, si es válido, despacha el evento de registro.
   void _onContinue() {
-    // `currentState!.validate()` ejecuta los validadores de cada TextFormField.
     if (_formKey.currentState!.validate()) {
-      // TODO: Implementar la lógica de registro (ej. llamar a un BLoC/Cubit o servicio).
-      print('Formulario de registro válido');
-      print('Nombre: ${_firstNameController.text}');
-      // Considerar navegar a otra página o mostrar un feedback al usuario.
+      AuthBlocHandler.register(
+        context,
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
     }
   }
 
-  /// Maneja la acción de presionar "Reset" en el enlace de contraseña olvidada.
-  /// (Actualmente placeholder, podría navegar a una pantalla de reseteo).
+  /// Maneja la acción de resetear contraseña (actualmente placeholder).
   void _onResetPassword() {
-    // TODO: Implementar la lógica para resetear contraseña.
+    // Implementación futura: navegar a pantalla de reseteo
     print('Reset password presionado');
+  }
+
+  /// Maneja la acción de volver atrás.
+  void _onBack() {
+    NavigationHelper.goToSignIn(context);
+  }
+
+  /// Construye el título de la página.
+  Widget _buildTitle() {
+    return AuthUIHelpers.buildAuthTitle(AppStrings.registerTitle);
+  }
+
+  /// Construye el formulario de registro.
+  Widget _buildForm(bool isLoading) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          _buildNameFields(),
+          AuthUIHelpers.smallVerticalSpace,
+          _buildEmailField(),
+          AuthUIHelpers.smallVerticalSpace,
+          _buildPasswordField(),
+          AuthUIHelpers.mediumVerticalSpace,
+          _buildSubmitButton(isLoading),
+        ],
+      ),
+    );
+  }
+
+  /// Construye los campos de nombre y apellido.
+  Widget _buildNameFields() {
+    return Column(
+      children: [
+        CustomTextField(
+          controller: _firstNameController,
+          hintText: AppStrings.firstnameHint,
+          validator: AuthFormValidators.validateName,
+        ),
+        AuthUIHelpers.smallVerticalSpace,
+        CustomTextField(
+          controller: _lastNameController,
+          hintText: AppStrings.lastnameHint,
+          validator: AuthFormValidators.validateLastName,
+        ),
+      ],
+    );
+  }
+
+  /// Construye el campo de email.
+  Widget _buildEmailField() {
+    return AuthUIHelpers.buildEmailField(
+      controller: _emailController,
+      validator: AuthFormValidators.validateEmail,
+    );
+  }
+
+  /// Construye el campo de contraseña.
+  Widget _buildPasswordField() {
+    return AuthUIHelpers.buildPasswordField(
+      controller: _passwordController,
+      validator: AuthFormValidators.validatePassword,
+    );
+  }
+
+  /// Construye el botón de envío.
+  Widget _buildSubmitButton(bool isLoading) {
+    return AuthUIHelpers.buildPrimaryButton(
+      label: AppStrings.continueLabel,
+      onPressed: _onContinue,
+      isLoading: isLoading,
+    );
+  }
+
+  /// Construye el enlace para resetear contraseña.
+  Widget _buildResetPasswordLink() {
+    return RichText(
+      text: TextSpan(
+        text: AppStrings.forgotPasswordLabel,
+        style: TextStyle(color: AppColors.textDark),
+        children: [
+          TextSpan(
+            text: AppStrings.resetLabel,
+            style: AppTextStyles.link,
+            recognizer: TapGestureRecognizer()..onTap = _onResetPassword,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Utiliza el CustomAppBar con el botón de retroceso visible.
-      appBar: const CustomAppBar(showBack: true),
-      body: SafeArea( // Asegura que el contenido no se solape con áreas del sistema (notch, etc.)
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.screenPadding, // Padding horizontal estándar
-          ),
-          child: SingleChildScrollView( // Permite scroll si el contenido excede la altura
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Alinea hijos a la izquierda
-              children: [
-                const SizedBox(height: AppDimens.vSpace16),
-                Text(AppStrings.registerTitle, style: AppTextStyles.heading),
-                const SizedBox(height: AppDimens.vSpace32),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        controller: _firstNameController,
-                        hintText: AppStrings.firstnameHint,
-                        validator: (value) => value == null || value.isEmpty
-                            ? AppStrings.enterFirstnameError
-                            : null,
-                      ),
-                      const SizedBox(height: AppDimens.vSpace16),
-                      CustomTextField(
-                        controller: _lastNameController,
-                        hintText: AppStrings.lastnameHint,
-                        validator: (value) => value == null || value.isEmpty
-                            ? AppStrings.enterLastnameError
-                            : null,
-                      ),
-                      const SizedBox(height: AppDimens.vSpace16),
-                      CustomTextField(
-                        controller: _emailController,
-                        hintText: AppStrings.emailHint,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) { // Validación de email más robusta
-                          if (value == null || value.isEmpty) return AppStrings.enterEmailError;
-                          final regex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-                          if (!regex.hasMatch(value)) return AppStrings.invalidEmailError;
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppDimens.vSpace16),
-                      CustomTextField(
-                        controller: _passwordController,
-                        hintText: AppStrings.passwordHint,
-                        obscureText: true,
-                        validator: (value) { // Validación de contraseña más robusta
-                          if (value == null || value.isEmpty) return AppStrings.enterPasswordError;
-                          if (value.length < 6) return AppStrings.invalidPasswordError;
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppDimens.vSpace32),
-                      PrimaryButton(
-                        label: AppStrings.continueLabel,
-                        onPressed: _onContinue,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppDimens.vSpace16),
-                // Enlace para "Forgot Password? Reset"
-                // Aunque esta es la página de registro, se mantiene por consistencia con el diseño original.
-                // Podría ser más apropiado un enlace a "Already have an account? Sign In".
-                RichText(
-                  text: TextSpan(
-                    text: AppStrings.forgotPasswordLabel,
-                    style: TextStyle(color: AppColors.textDark), // Estilo base del texto
-                    children: [
-                      TextSpan(
-                        text: AppStrings.resetLabel,
-                        style: AppTextStyles.link, // Estilo específico para el enlace
-                        recognizer: TapGestureRecognizer()..onTap = _onResetPassword,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppDimens.vSpace16), // Espacio adicional al final
-              ],
-            ),
-          ),
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: AuthBlocHandler.handleAuthState,
+      builder: (context, state) {
+        final isLoading = AuthBlocHandler.isLoading(state);
+        return Scaffold(
+          appBar: CustomAppBar(showBack: true, onBack: _onBack),
+          body: SafeArea(child: _buildPageContent(isLoading)),
+        );
+      },
+    );
+  }
+
+  /// Construye el contenido principal de la página.
+  Widget _buildPageContent(bool isLoading) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.screenPadding),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AuthUIHelpers.smallVerticalSpace,
+            _buildTitle(),
+            AuthUIHelpers.mediumVerticalSpace,
+            _buildForm(isLoading),
+            AuthUIHelpers.smallVerticalSpace,
+            if (!isLoading) _buildResetPasswordLink(),
+            AuthUIHelpers.smallVerticalSpace,
+            if (isLoading) AuthUIHelpers.loadingIndicator,
+          ],
         ),
       ),
     );
   }
 }
- 

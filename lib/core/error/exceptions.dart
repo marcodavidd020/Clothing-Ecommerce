@@ -22,3 +22,10 @@ class UnknownException implements Exception {
 
   UnknownException({required this.message});
 }
+
+/// Excepción específica para errores de autenticación
+class AuthenticationException implements Exception {
+  final String message;
+
+  AuthenticationException({required this.message});
+}

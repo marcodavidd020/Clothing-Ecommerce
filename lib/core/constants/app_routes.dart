@@ -24,6 +24,11 @@ class AppRoutes {
   /// Ruta para la página de detalle de producto
   static const String productDetail = '/product-detail/:productId';
 
+  /// Rutas de autenticación
+  static const String signIn = '/auth/signin';
+  static const String register = '/auth/register';
+  static const String resetPassword = '/auth/reset-password';
+
   /// Nombres de rutas para usar con GoRouter
   static const String splashName = 'splash';
   static const String mainName = 'main';
@@ -32,6 +37,11 @@ class AppRoutes {
   static const String productDetailName = 'product-detail';
   static const String categoriesName = 'categories';
   static const String categoryProductsName = 'category-products';
+  
+  /// Nombres de rutas de autenticación
+  static const String signInName = 'signin';
+  static const String registerName = 'register';
+  static const String resetPasswordName = 'reset-password';
 
   /// Parámetros
   static const String productIdParam = 'productId';

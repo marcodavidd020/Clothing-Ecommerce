@@ -56,7 +56,8 @@ class _NetworkImageWithPlaceholderState
     super.didUpdateWidget(oldWidget);
     if (widget.imageUrl != oldWidget.imageUrl) {
       // Si la URL de la imagen cambia, reiniciar el estado de carga.
-      _loadState = widget.imageUrl.isEmpty ? LoadState.error : LoadState.loading;
+      _loadState =
+          widget.imageUrl.isEmpty ? LoadState.error : LoadState.loading;
     }
   }
 
@@ -67,7 +68,10 @@ class _NetworkImageWithPlaceholderState
       height: widget.height,
       decoration: BoxDecoration(
         shape: widget.shape,
-        color: widget.transparent ? Colors.transparent : Colors.grey[200], // Un color de fondo base
+        color:
+            widget.transparent
+                ? Colors.transparent
+                : Colors.grey[200], // Un color de fondo base
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -78,14 +82,16 @@ class _NetworkImageWithPlaceholderState
             Container(
               color: Colors.grey[300],
             ).redacted(context: context, redact: true),
-          
+
           // Placeholder de error
           if (_loadState == LoadState.error)
             Center(
               child: Icon(
                 Icons.broken_image_outlined,
                 color: Colors.grey[400],
-                size: (widget.width ?? widget.height ?? 50) * 0.5, // Tamaño relativo del icono
+                size:
+                    (widget.width ?? widget.height ?? 50) *
+                    0.5, // Tamaño relativo del icono
               ),
             ),
 
@@ -99,13 +105,13 @@ class _NetworkImageWithPlaceholderState
                   // Si se carga síncronamente (ej. desde caché), puede que el estado de carga necesite actualizarse aquí mismo.
                   // Pero es más seguro hacerlo después del build con Future.delayed.
                   if (_loadState == LoadState.loading) {
-                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                           setState(() {
-                            _loadState = LoadState.loaded;
-                           });
-                        }
-                     });
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _loadState = LoadState.loaded;
+                        });
+                      }
+                    });
                   }
                   return child;
                 }
@@ -140,16 +146,16 @@ class _NetworkImageWithPlaceholderState
                 if (_loadState != LoadState.error) {
                   // Usamos addPostFrameCallback para asegurar que setState se llama después del build
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                     if (mounted) {
-                       setState(() {
-                         _loadState = LoadState.error;
-                       });
-                     }
+                    if (mounted) {
+                      setState(() {
+                        _loadState = LoadState.error;
+                      });
+                    }
                   });
                 }
                 // Ya no se muestra el placeholder de error aquí directamente,
                 // el Stack lo manejará basado en _loadState.
-                return const SizedBox.shrink(); 
+                return const SizedBox.shrink();
               },
             ),
         ],
@@ -159,8 +165,4 @@ class _NetworkImageWithPlaceholderState
 }
 
 // Enum para gestionar los estados de carga de la imagen
-enum LoadState {
-  loading,
-  loaded,
-  error,
-}
+enum LoadState { loading, loaded, error }

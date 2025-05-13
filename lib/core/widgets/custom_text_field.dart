@@ -8,16 +8,16 @@ import '../constants/app_text_styles.dart';
 class CustomTextField extends StatelessWidget {
   /// Controlador para el campo de texto.
   final TextEditingController controller;
-  
+
   /// Texto que se muestra como placeholder cuando el campo está vacío.
   final String hintText;
-  
+
   /// Tipo de teclado que se mostrará.
   final TextInputType? keyboardType;
-  
+
   /// Si es `true`, el texto se ofuscará (útil para contraseñas).
   final bool obscureText;
-  
+
   /// Función validadora para el campo de texto.
   final String? Function(String?)? validator;
 

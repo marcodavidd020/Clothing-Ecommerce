@@ -48,4 +48,14 @@ class NavigationHelper {
   static void goToCategoryProducts(BuildContext context, String categoryId) {
     AppRouter.goToCategoryProducts(context, categoryId: categoryId);
   }
+
+  /// Navegar a la página de inicio de sesión
+  static void goToSignIn(BuildContext context) {
+    AppRouter.goToSignIn(context);
+  }
+
+  /// Navegar a la página de registro
+  static void goToRegister(BuildContext context) {
+    AppRouter.goToRegister(context);
+  }
 }

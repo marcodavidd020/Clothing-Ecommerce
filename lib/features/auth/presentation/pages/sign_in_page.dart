@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
-import 'package:flutter_application_ecommerce/features/shell/presentation/presentation.dart';
-import 'register_page.dart';
+import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
+import '../bloc/bloc.dart';
+import '../helpers/helpers.dart';
 
 /// Página de inicio de sesión para usuarios existentes.
 ///
@@ -37,33 +39,36 @@ class _SignInPageState extends State<SignInPage> {
   /// Si no se muestra el paso de contraseña, valida el email y avanza al paso de contraseña.
   /// Si ya se muestra el paso de contraseña, valida la contraseña y procede al inicio de sesión.
   void _onContinue() {
+    if (!_formKey.currentState!.validate()) return;
+
     if (!_showPasswordStep) {
-      if (_formKey.currentState!.validate()) {
-        setState(() {
-          _showPasswordStep = true; // Muestra el campo de contraseña
-        });
-      }
+      setState(() => _showPasswordStep = true);
     } else {
-      if (_formKey.currentState!.validate()) {
-        // TODO: Implementar lógica de inicio de sesión real (ej. API call).
-        print(
-          'Login con: ${_emailController.text} y ${_passwordController.text}',
-        );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainShellPage()),
-        );
-      }
+      _submitSignInRequest();
     }
   }
 
-  /// Navega a la página de registro [RegisterPage].
-  void _onCreateAccount() {
-    Navigator.of(
+  /// Envía la solicitud de inicio de sesión al BLoC
+  void _submitSignInRequest() {
+    AuthBlocHandler.signIn(
       context,
-    ).push(MaterialPageRoute(builder: (_) => const RegisterPage()));
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
   }
 
-  // --- Callbacks para botones sociales (actualmente placeholders) --- ///
+  /// Navega a la página de registro
+  void _onCreateAccount() {
+    NavigationHelper.goToRegister(context);
+  }
+
+  /// Maneja la acción de resetear contraseña (actualmente placeholder)
+  void _onResetPassword() {
+    print('Reset password for ${_emailController.text}');
+    // Implementación futura: NavigationHelper.goToResetPassword(context);
+  }
+
+  /// Maneja los eventos de botones sociales (actualmente placeholders)
   void _onContinueWithApple() {
     print('Continue with Apple');
   }
@@ -76,134 +81,153 @@ class _SignInPageState extends State<SignInPage> {
     print('Continue with Facebook');
   }
 
-  void _onResetPassword() {
-    print('Reset password for ${_emailController.text}');
+  /// Maneja la acción de regresar al paso anterior
+  void _onBackPressed() {
+    setState(() => _showPasswordStep = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // El CustomAppBar muestra el botón de retroceso solo si _showPasswordStep es true.
-      appBar: CustomAppBar(
-        showBack: _showPasswordStep,
-        onBack:
-            () => setState(
-              () => _showPasswordStep = false,
-            ), // Acción para volver al paso de email
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.screenPadding,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: AppDimens.vSpace16),
-                Text(AppStrings.signInTitle, style: AppTextStyles.heading),
-                const SizedBox(height: AppDimens.vSpace32),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // Muestra campo de email o contraseña según el paso actual.
-                      if (!_showPasswordStep) ...[
-                        CustomTextField(
-                          controller: _emailController,
-                          hintText: AppStrings.emailHint,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.isEmpty)
-                              return AppStrings.enterEmailError;
-                            final regex = RegExp(
-                              r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-                            );
-                            if (!regex.hasMatch(value))
-                              return AppStrings.invalidEmailError;
-                            return null;
-                          },
-                        ),
-                      ] else ...[
-                        CustomTextField(
-                          controller: _passwordController,
-                          hintText: AppStrings.passwordHint,
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty)
-                              return AppStrings.enterPasswordError;
-                            if (value.length < 6)
-                              return AppStrings.invalidPasswordError;
-                            return null;
-                          },
-                        ),
-                      ],
-                      const SizedBox(height: AppDimens.vSpace32),
-                      PrimaryButton(
-                        label: AppStrings.continueLabel,
-                        onPressed: _onContinue,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppDimens.vSpace16),
-                // Muestra "Crear cuenta" o "Resetear contraseña" según el paso.
-                if (!_showPasswordStep)
-                  RichText(
-                    text: TextSpan(
-                      text: AppStrings.dontHaveAccount,
-                      style: TextStyle(color: AppColors.textDark),
-                      children: [
-                        TextSpan(
-                          text: AppStrings.createAccountLabel,
-                          style: AppTextStyles.link,
-                          recognizer:
-                              TapGestureRecognizer()..onTap = _onCreateAccount,
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  RichText(
-                    text: TextSpan(
-                      text: AppStrings.forgotPasswordLabel,
-                      style: TextStyle(color: AppColors.textDark),
-                      children: [
-                        TextSpan(
-                          text: AppStrings.resetLabel,
-                          style: AppTextStyles.link,
-                          recognizer:
-                              TapGestureRecognizer()..onTap = _onResetPassword,
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: AppDimens.vSpace32),
-                // Muestra botones sociales solo en el paso de ingreso de email.
-                if (!_showPasswordStep) ...[
-                  SocialButton(
-                    assetPath: AppStrings.appleIcon,
-                    label: AppStrings.continueWithApple,
-                    onPressed: _onContinueWithApple,
-                  ),
-                  const SizedBox(height: AppDimens.vSpace16),
-                  SocialButton(
-                    assetPath: AppStrings.googleIcon,
-                    label: AppStrings.continueWithGoogle,
-                    onPressed: _onContinueWithGoogle,
-                  ),
-                  const SizedBox(height: AppDimens.vSpace16),
-                  SocialButton(
-                    assetPath: AppStrings.facebookIcon,
-                    label: AppStrings.continueWithFacebook,
-                    onPressed: _onContinueWithFacebook,
-                  ),
-                ],
-              ],
-            ),
-          ),
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: AuthBlocHandler.handleAuthState,
+      builder: (context, state) {
+        final isLoading = AuthBlocHandler.isLoading(state);
+        return Scaffold(
+          appBar: _buildAppBar(),
+          body: SafeArea(child: _buildPageContent(isLoading)),
+        );
+      },
+    );
+  }
+
+  /// Construye la barra de aplicación con botón de retroceso condicional
+  CustomAppBar _buildAppBar() {
+    return CustomAppBar(
+      showBack: _showPasswordStep,
+      onBack: _showPasswordStep ? _onBackPressed : null,
+    );
+  }
+
+  /// Construye el contenido principal de la página
+  Widget _buildPageContent(bool isLoading) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.screenPadding),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AuthUIHelpers.smallVerticalSpace,
+            _buildTitle(),
+            AuthUIHelpers.mediumVerticalSpace,
+            _buildForm(isLoading),
+            AuthUIHelpers.smallVerticalSpace,
+            _buildActionLink(),
+            AuthUIHelpers.mediumVerticalSpace,
+            if (!_showPasswordStep && !isLoading) _buildSocialButtons(),
+            if (isLoading) AuthUIHelpers.loadingIndicator,
+          ],
         ),
       ),
+    );
+  }
+
+  /// Construye el título de la página
+  Widget _buildTitle() {
+    return AuthUIHelpers.buildAuthTitle(AppStrings.signInTitle);
+  }
+
+  /// Construye el formulario según el paso actual
+  Widget _buildForm(bool isLoading) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          if (!_showPasswordStep)
+            AuthUIHelpers.buildEmailField(
+              controller: _emailController,
+              validator: AuthFormValidators.validateEmail,
+            )
+          else
+            AuthUIHelpers.buildPasswordField(
+              controller: _passwordController,
+              validator: AuthFormValidators.validatePassword,
+            ),
+          AuthUIHelpers.mediumVerticalSpace,
+          AuthUIHelpers.buildPrimaryButton(
+            label: AppStrings.continueLabel,
+            onPressed: _onContinue,
+            isLoading: isLoading,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Construye el enlace de acción (crear cuenta o resetear contraseña)
+  Widget _buildActionLink() {
+    if (!_showPasswordStep) {
+      return _buildCreateAccountLink();
+    } else {
+      return _buildResetPasswordLink();
+    }
+  }
+
+  /// Construye el enlace para crear cuenta
+  Widget _buildCreateAccountLink() {
+    return RichText(
+      text: TextSpan(
+        text: AppStrings.dontHaveAccount,
+        style: TextStyle(color: AppColors.textDark),
+        children: [
+          TextSpan(
+            text: AppStrings.createAccountLabel,
+            style: AppTextStyles.link,
+            recognizer: TapGestureRecognizer()..onTap = _onCreateAccount,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Construye el enlace para resetear contraseña
+  Widget _buildResetPasswordLink() {
+    return RichText(
+      text: TextSpan(
+        text: AppStrings.forgotPasswordLabel,
+        style: TextStyle(color: AppColors.textDark),
+        children: [
+          TextSpan(
+            text: AppStrings.resetLabel,
+            style: AppTextStyles.link,
+            recognizer: TapGestureRecognizer()..onTap = _onResetPassword,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Construye los botones de inicio de sesión con redes sociales
+  Widget _buildSocialButtons() {
+    return Column(
+      children: [
+        SocialButton(
+          assetPath: AppStrings.appleIcon,
+          label: AppStrings.continueWithApple,
+          onPressed: _onContinueWithApple,
+        ),
+        AuthUIHelpers.smallVerticalSpace,
+        SocialButton(
+          assetPath: AppStrings.googleIcon,
+          label: AppStrings.continueWithGoogle,
+          onPressed: _onContinueWithGoogle,
+        ),
+        AuthUIHelpers.smallVerticalSpace,
+        SocialButton(
+          assetPath: AppStrings.facebookIcon,
+          label: AppStrings.continueWithFacebook,
+          onPressed: _onContinueWithFacebook,
+        ),
+      ],
     );
   }
 }

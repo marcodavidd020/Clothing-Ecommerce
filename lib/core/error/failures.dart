@@ -30,3 +30,8 @@ class CacheFailure extends Failure {
 class UnknownFailure extends Failure {
   const UnknownFailure({required String message}) : super(message);
 }
+
+/// Falla específica para errores de autenticación
+class AuthenticationFailure extends Failure {
+  const AuthenticationFailure({required String message}) : super(message);
+}

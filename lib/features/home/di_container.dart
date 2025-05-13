@@ -12,44 +12,60 @@ class HomeDIContainer {
   /// Registra las dependencias del módulo Home
   static void register(GetIt sl) {
     // DataSources
-    sl.registerLazySingleton<CategoryDataSource>(
-      () => CategoryLocalDataSource(),
-    );
-    sl.registerLazySingleton<ProductDataSource>(
-      () => ProductLocalDataSource(),
-    );
+    if (!sl.isRegistered<CategoryDataSource>()) {
+      sl.registerLazySingleton<CategoryDataSource>(
+        () => CategoryLocalDataSource(),
+      );
+    }
+    
+    if (!sl.isRegistered<ProductDataSource>()) {
+      sl.registerLazySingleton<ProductDataSource>(() => ProductLocalDataSource());
+    }
 
     // Repositories
-    sl.registerLazySingleton<HomeRepository>(
-      () => HomeRepositoryImpl(
-        categoryDataSource: sl<CategoryDataSource>(),
-        productDataSource: sl<ProductDataSource>(),
-      ),
-    );
+    if (!sl.isRegistered<HomeRepository>()) {
+      sl.registerLazySingleton<HomeRepository>(
+        () => HomeRepositoryImpl(
+          categoryDataSource: sl<CategoryDataSource>(),
+          productDataSource: sl<ProductDataSource>(),
+        ),
+      );
+    }
 
     // UseCases
-    sl.registerLazySingleton(
-      () => GetCategoriesUseCase(sl<HomeRepository>()),
-    );
-    sl.registerLazySingleton(
-      () => GetTopSellingProductsUseCase(sl<HomeRepository>()),
-    );
-    sl.registerLazySingleton(
-      () => GetNewInProductsUseCase(sl<HomeRepository>()),
-    );
-    sl.registerLazySingleton(
-      () => GetProductsByCategoryUseCase(sl<HomeRepository>()),
-    );
+    if (!sl.isRegistered<GetCategoriesUseCase>()) {
+      sl.registerLazySingleton(() => GetCategoriesUseCase(sl<HomeRepository>()));
+    }
+    
+    if (!sl.isRegistered<GetTopSellingProductsUseCase>()) {
+      sl.registerLazySingleton(
+        () => GetTopSellingProductsUseCase(sl<HomeRepository>()),
+      );
+    }
+    
+    if (!sl.isRegistered<GetNewInProductsUseCase>()) {
+      sl.registerLazySingleton(
+        () => GetNewInProductsUseCase(sl<HomeRepository>()),
+      );
+    }
+    
+    if (!sl.isRegistered<GetProductsByCategoryUseCase>()) {
+      sl.registerLazySingleton(
+        () => GetProductsByCategoryUseCase(sl<HomeRepository>()),
+      );
+    }
 
     // BLoC
-    sl.registerFactory(
-      () => HomeBloc(
-        getCategoriesUseCase: sl<GetCategoriesUseCase>(),
-        getTopSellingProductsUseCase: sl<GetTopSellingProductsUseCase>(),
-        getNewInProductsUseCase: sl<GetNewInProductsUseCase>(),
-        getProductsByCategoryUseCase: sl<GetProductsByCategoryUseCase>(),
-      ),
-    );
+    if (!sl.isRegistered<HomeBloc>()) {
+      sl.registerFactory(
+        () => HomeBloc(
+          getCategoriesUseCase: sl<GetCategoriesUseCase>(),
+          getTopSellingProductsUseCase: sl<GetTopSellingProductsUseCase>(),
+          getNewInProductsUseCase: sl<GetNewInProductsUseCase>(),
+          getProductsByCategoryUseCase: sl<GetProductsByCategoryUseCase>(),
+        ),
+      );
+    }
   }
 
   /// Proporciona todos los providers de BLoC para el módulo Home
@@ -60,4 +76,4 @@ class HomeDIContainer {
       ),
     ];
   }
-} 
+}

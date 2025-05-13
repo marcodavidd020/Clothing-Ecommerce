@@ -8,6 +8,7 @@ import 'package:flutter_application_ecommerce/features/splash/presentation/pages
 import 'package:flutter_application_ecommerce/features/shell/presentation/pages/main_shell_page.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/pages/all_categories_page.dart';
+import 'package:flutter_application_ecommerce/features/auth/presentation/presentation.dart';
 
 /// Configuración del sistema de rutas de la aplicación con GoRouter.
 ///
@@ -33,7 +34,7 @@ class AppRouter {
     navigatorKey: navigatorKey,
     debugLogDiagnostics: true,
     initialLocation: AppRoutes.splash,
-    routes: [_splashRoute, _mainRoute, _productDetailRoute],
+    routes: [_splashRoute, _mainRoute, _productDetailRoute, _signInRoute, _registerRoute],
   );
 
   /// Ruta de splash
@@ -93,6 +94,20 @@ class AppRouter {
 
       return ProductDetailPage(product: product);
     },
+  );
+
+  /// Ruta de inicio de sesión
+  static final GoRoute _signInRoute = GoRoute(
+    path: AppRoutes.signIn,
+    name: AppRoutes.signInName,
+    builder: (context, state) => const SignInPage(),
+  );
+
+  /// Ruta de registro
+  static final GoRoute _registerRoute = GoRoute(
+    path: AppRoutes.register,
+    name: AppRoutes.registerName,
+    builder: (context, state) => const RegisterPage(),
   );
 
   /// Métodos de navegación
@@ -157,6 +172,16 @@ class AppRouter {
       AppRoutes.categoryProductsName,
       pathParameters: {AppRoutes.categoryIdParam: categoryId},
     );
+  }
+
+  /// Navega a la página de inicio de sesión
+  static void goToSignIn(BuildContext context) {
+    context.goNamed(AppRoutes.signInName);
+  }
+
+  /// Navega a la página de registro
+  static void goToRegister(BuildContext context) {
+    context.goNamed(AppRoutes.registerName);
   }
 
   /// Método para eliminar un ID de producto de la lista de abiertos

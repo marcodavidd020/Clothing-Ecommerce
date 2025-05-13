@@ -8,7 +8,7 @@ import '../constants/constants.dart';
 class GenderSelectorButton extends StatelessWidget {
   /// El texto del género actualmente seleccionado (ej. "Hombres").
   final String selectedGender;
-  
+
   /// Callback que se ejecuta cuando el botón es presionado.
   final VoidCallback onPressed;
 
@@ -30,7 +30,9 @@ class GenderSelectorButton extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: AppColors.inputFill, // Fondo del botón
-          borderRadius: BorderRadius.circular(AppDimens.buttonRadius), // Bordes redondeados
+          borderRadius: BorderRadius.circular(
+            AppDimens.buttonRadius,
+          ), // Bordes redondeados
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min, // Se ajusta al contenido
@@ -42,10 +44,14 @@ class GenderSelectorButton extends StatelessWidget {
                 color: AppColors.textDark,
               ),
             ),
-            const SizedBox(width: AppDimens.genderSelectorPadding), // Espacio entre texto e icono
+            const SizedBox(
+              width: AppDimens.genderSelectorPadding,
+            ), // Espacio entre texto e icono
             SvgPicture.asset(
               AppStrings.arrowDownIcon,
-              width: AppDimens.backIconSize, // Reutilizando un tamaño de icono pequeño
+              width:
+                  AppDimens
+                      .backIconSize, // Reutilizando un tamaño de icono pequeño
               height: AppDimens.backIconSize,
               colorFilter: const ColorFilter.mode(
                 AppColors.textDark,
