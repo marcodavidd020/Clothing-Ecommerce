@@ -7,6 +7,7 @@ import 'package:flutter_application_ecommerce/features/product_detail/presentati
 import 'package:flutter_application_ecommerce/features/splash/presentation/pages/splash_page.dart';
 import 'package:flutter_application_ecommerce/features/shell/presentation/pages/main_shell_page.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/pages/all_categories_page.dart';
 
 /// Configuración del sistema de rutas de la aplicación con GoRouter.
 ///
@@ -47,7 +48,7 @@ class AppRouter {
     path: AppRoutes.main,
     name: AppRoutes.mainName,
     builder: (context, state) => const MainShellPage(),
-    routes: [_homeRoute, _cartRoute],
+    routes: [_homeRoute, _cartRoute, _categoriesRoute],
   );
 
   /// Ruta de inicio
@@ -62,6 +63,13 @@ class AppRouter {
     path: 'cart',
     name: AppRoutes.cartName,
     builder: (context, state) => const CartPage(),
+  );
+
+  /// Ruta de categorías
+  static final GoRoute _categoriesRoute = GoRoute(
+    path: 'categories',
+    name: AppRoutes.categoriesName,
+    builder: (context, state) => const AllCategoriesPage(),
   );
 
   /// Ruta de detalle de producto

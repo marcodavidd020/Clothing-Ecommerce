@@ -82,13 +82,8 @@ class _HomePageState extends State<HomePage> {
     // TODO: Implementar navegación a búsqueda
   }
 
-  void _onSeeAllCategoriesPressed(List<CategoryItemModel> categories) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AllCategoriesPage(categories: categories),
-      ),
-    );
+  void _onSeeAllCategoriesPressed() {
+    NavigationHelper.goToCategories(context);
   }
 
   void _onCategoryTapped(CategoryItemModel category) {
@@ -212,7 +207,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCategoriesSection(HomeLoaded state) {
     return CategoriesSectionWidget(
       categories: state.categories,
-      onSeeAllPressed: () => _onSeeAllCategoriesPressed(state.categories),
+      onSeeAllPressed: _onSeeAllCategoriesPressed,
       onCategoryTap: _onCategoryTapped,
     );
   }

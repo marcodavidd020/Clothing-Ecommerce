@@ -135,7 +135,7 @@ class _ProductDetailScaffold extends StatelessWidget {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     // To back Home
     void onBack() {
-      NavigationHelper.goToHome(context);
+      NavigationHelper.goToMainShell(context);
     }
 
     return core_widgets.CustomAppBar(
