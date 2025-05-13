@@ -31,13 +31,13 @@ class AuthDIContainer {
         () => SignInUseCase(sl()), // Inyectar Repositorio
       );
     }
-    
+
     if (!sl.isRegistered<RegisterUseCase>()) {
       sl.registerLazySingleton(
         () => RegisterUseCase(sl()), // Inyectar Repositorio
       );
     }
-    
+
     if (!sl.isRegistered<SignOutUseCase>()) {
       sl.registerLazySingleton(
         () => SignOutUseCase(sl()), // Inyectar Repositorio

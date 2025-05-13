@@ -19,15 +19,19 @@ class InjectionContainer {
     // Registrar todos los módulos en GetIt
     HomeDIContainer.register(sl);
     AuthDIContainer.register(sl); // Registrar AuthDIContainer
-    
+
     // Envolver la aplicación con los providers necesarios
     return MultiRepositoryProvider(
-      providers: repositoryProviders, // Mantener si RepositoryModule se usa solo para providers
+      providers:
+          repositoryProviders, // Mantener si RepositoryModule se usa solo para providers
       child: Builder(
         builder: (context) {
           return MultiBlocProvider(
             // Pasar la instancia de GetIt a BlocModule
-            providers: BlocModule.providers(context, sl), // Modificar para pasar sl
+            providers: BlocModule.providers(
+              context,
+              sl,
+            ), // Modificar para pasar sl
             child: child,
           );
         },
@@ -36,11 +40,11 @@ class InjectionContainer {
   }
 
   /// Obtiene todos los providers de repositorios para MultiRepositoryProvider
-  static List<RepositoryProvider> get repositoryProviders => 
+  static List<RepositoryProvider> get repositoryProviders =>
       RepositoryModule.providers;
 
   // Método para resetear el contenedor (útil para pruebas)
   static Future<void> reset() async {
     await sl.reset();
   }
-} 
+}

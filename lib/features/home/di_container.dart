@@ -17,9 +17,11 @@ class HomeDIContainer {
         () => CategoryLocalDataSource(),
       );
     }
-    
+
     if (!sl.isRegistered<ProductDataSource>()) {
-      sl.registerLazySingleton<ProductDataSource>(() => ProductLocalDataSource());
+      sl.registerLazySingleton<ProductDataSource>(
+        () => ProductLocalDataSource(),
+      );
     }
 
     // Repositories
@@ -34,21 +36,23 @@ class HomeDIContainer {
 
     // UseCases
     if (!sl.isRegistered<GetCategoriesUseCase>()) {
-      sl.registerLazySingleton(() => GetCategoriesUseCase(sl<HomeRepository>()));
+      sl.registerLazySingleton(
+        () => GetCategoriesUseCase(sl<HomeRepository>()),
+      );
     }
-    
+
     if (!sl.isRegistered<GetTopSellingProductsUseCase>()) {
       sl.registerLazySingleton(
         () => GetTopSellingProductsUseCase(sl<HomeRepository>()),
       );
     }
-    
+
     if (!sl.isRegistered<GetNewInProductsUseCase>()) {
       sl.registerLazySingleton(
         () => GetNewInProductsUseCase(sl<HomeRepository>()),
       );
     }
-    
+
     if (!sl.isRegistered<GetProductsByCategoryUseCase>()) {
       sl.registerLazySingleton(
         () => GetProductsByCategoryUseCase(sl<HomeRepository>()),

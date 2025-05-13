@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart'; // Importar flutter_bloc
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart'; // Importar NavigationHelper
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
+// import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart'; // Importar el HomeBloc
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/category_list_item_widget.dart';
 // import 'category_products_page.dart'; // Ya no se importa directamente aquí
