@@ -17,6 +17,9 @@ class Authenticated extends AuthState {
 /// Estado cuando el usuario no está autenticado
 class Unauthenticated extends AuthState {}
 
+/// Nuevo estado para cuando el registro es exitoso pero se necesita iniciar sesión
+class RegistrationSuccessNeedSignIn extends AuthState {}
+
 /// Estado de error
 class AuthError extends AuthState {
   final String message;

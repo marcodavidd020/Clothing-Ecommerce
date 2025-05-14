@@ -98,5 +98,44 @@ void main() {
 
       AppLogger.logError('Registro fallido: Datos de registro inválidos');
     });
+
+    test('should successfully get user profile', () async {
+      // Primero hacemos login para obtener el token
+      final signInParams = SignInParams(
+        email: 'marco@gmail.com',
+        password: '12345678',
+      );
+
+      await dataSource.signIn(params: signInParams);
+
+      // Luego obtenemos el perfil
+      final profile = await dataSource.getProfile();
+
+      // assert
+      expect(profile, isA<UserModel>());
+      expect(profile.email, equals(signInParams.email));
+      expect(profile.firstName, isNotNull);
+      expect(profile.lastName, isNotNull);
+      expect(profile.isActive, isTrue);
+
+      AppLogger.logSuccess('Perfil obtenido exitosamente: ${profile.email}');
+    });
+
+    test('should fail to get profile without authentication', () async {
+      // Crear una nueva instancia sin token
+      final newDioClient = DioClient(
+        dio: Dio(),
+        networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+      );
+      final newDataSource = AuthRemoteDataSource(dioClient: newDioClient);
+
+      // act & assert
+      expect(
+        () => newDataSource.getProfile(),
+        throwsA(isA<AuthenticationException>()),
+      );
+
+      AppLogger.logError('Error al obtener perfil: No autenticado');
+    });
   });
 }

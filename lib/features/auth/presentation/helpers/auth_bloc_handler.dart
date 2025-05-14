@@ -17,6 +17,9 @@ class AuthBlocHandler {
   static void handleAuthState(BuildContext context, AuthState state) {
     if (state is Authenticated) {
       NavigationHelper.goToMainShell(context);
+    } else if (state is RegistrationSuccessNeedSignIn) {
+      AuthUIHelpers.showSuccessMessage(context, "¡Registro exitoso! Por favor, inicia sesión.");
+      NavigationHelper.goToSignIn(context);
     } else if (state is AuthError) {
       AuthUIHelpers.showErrorMessage(context, state.message);
     }

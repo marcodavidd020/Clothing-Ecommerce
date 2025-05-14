@@ -5,89 +5,108 @@ import 'package:flutter_application_ecommerce/features/auth/data/datasources/aut
 import 'package:flutter_application_ecommerce/features/auth/data/models/models.dart'; // Importa UserMode y los Params
 import 'package:flutter_application_ecommerce/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter_application_ecommerce/features/auth/domain/repositories/repositories.dart';
+import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
 
 /// Implementación del repositorio de autenticación
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthDataSource dataSource;
+  final AuthDataSource remoteDataSource;
+  final AuthStorage? authStorage;
 
-  AuthRepositoryImpl({required this.dataSource});
+  AuthRepositoryImpl({required this.remoteDataSource, this.authStorage});
 
   @override
-  Future<Either<Failure, UserEntity>> signIn({required SignInParams params}) async {
+  Future<Either<Failure, UserEntity>> signIn({
+    required SignInParams params,
+  }) async {
     try {
-      final Map<String, dynamic> responseData = await dataSource.signIn(params: params);
-      final userModel = UserModel.fromLoginResponse(responseData, params.email);
-      return Right(userModel);
-    } on AuthenticationException catch (e) {
-      String errorMessage = e.message;
-      if (e.errors != null && e.errors!.isNotEmpty) {
-        final firstError = e.errors!.first;
-        if (firstError['errors'] is List &&
-            (firstError['errors'] as List).isNotEmpty) {
-          errorMessage = (firstError['errors'] as List).first as String;
-        }
+      final response = await remoteDataSource.signIn(params: params);
+
+      // Si la respuesta es exitosa, intentamos obtener el perfil del usuario
+      try {
+        final userData = await remoteDataSource.getProfile();
+        return Right(userData);
+      } catch (e) {
+        // Si no se puede obtener el perfil, usamos los datos de la respuesta de login
+        final Map<String, dynamic> data =
+            response['data'] as Map<String, dynamic>;
+        final UserModel user = UserModel.fromLoginResponse(
+          response,
+          params.email,
+        );
+        return Right(user);
       }
-      return Left(AuthenticationFailure(message: errorMessage));
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
     } on NetworkException catch (e) {
       return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      return Left(
-        UnknownFailure(
-          message:
-              "Error inesperado durante el inicio de sesión: ${e.toString()}",
-        ),
-      );
+      return Left(UnknownFailure(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, UserEntity>> register({required RegisterParams params}) async {
+  Future<Either<Failure, UserEntity>> register({
+    required RegisterParams params,
+  }) async {
     try {
-      final userModel = await dataSource.register(params: params);
-      return Right(userModel);
-    } on AuthenticationException catch (e) {
-      String errorMessage = e.message;
-      if (e.errors != null && e.errors!.isNotEmpty) {
-        final firstError = e.errors!.first;
-        if (firstError['errors'] is List &&
-            (firstError['errors'] as List).isNotEmpty) {
-          errorMessage = (firstError['errors'] as List).first as String;
-        }
-      }
-      return Left(AuthenticationFailure(message: errorMessage));
+      final user = await remoteDataSource.register(params: params);
+      return Right(user);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
     } on NetworkException catch (e) {
       return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      return Left(
-        UnknownFailure(
-          message: "Error inesperado durante el registro: ${e.toString()}",
-        ),
-      );
+      return Left(UnknownFailure(message: e.toString()));
     }
   }
 
   @override
   Future<Either<Failure, void>> signOut() async {
     try {
-      await dataSource.signOut();
+      await remoteDataSource.signOut();
       return const Right(null);
-    } on AuthenticationException catch (e) { // Se mantiene como AuthenticationFailure porque es específico de auth
-      return Left(AuthenticationFailure(message: e.message));
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
     } catch (e) {
-      return Left(
-        UnknownFailure(
-          message:
-              "Error inesperado durante el cierre de sesión: ${e.toString()}",
-        ),
-      );
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> isAuthenticated() async {
+    try {
+      if (authStorage != null) {
+        return Right(await authStorage!.isLoggedIn());
+      }
+      return const Right(false);
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> getCurrentUser() async {
+    try {
+      if (authStorage != null) {
+        final user = await authStorage!.getUserData();
+        if (user != null) {
+          return Right(user);
+        }
+      }
+
+      // Si no hay usuario en almacenamiento local, intentamos obtenerlo de la API
+      try {
+        final userData = await remoteDataSource.getProfile();
+        return Right(userData);
+      } catch (e) {
+        return Left(AuthenticationFailure(message: 'Usuario no autenticado'));
+      }
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
     }
   }
 }

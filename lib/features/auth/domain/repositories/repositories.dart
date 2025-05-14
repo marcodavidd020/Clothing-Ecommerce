@@ -10,9 +10,19 @@ abstract class AuthRepository {
 
   /// Intenta registrar un nuevo usuario.
   /// Retorna Right con UserEntity si tiene éxito, Left con Failure si falla.
-  Future<Either<Failure, UserEntity>> register({required RegisterParams params});
+  Future<Either<Failure, UserEntity>> register({
+    required RegisterParams params,
+  });
 
   /// Intenta cerrar la sesión actual.
   /// Retorna `Right<Failure, void>` si tiene éxito, Left con Failure si falla.
   Future<Either<Failure, void>> signOut();
+
+  /// Verifica si el usuario está autenticado.
+  /// Retorna `Right<Failure, bool>` con true si está autenticado, false si no.
+  Future<Either<Failure, bool>> isAuthenticated();
+
+  /// Obtiene el usuario actual autenticado.
+  /// Retorna `Right<Failure, UserEntity>` con los datos del usuario si está autenticado.
+  Future<Either<Failure, UserEntity>> getCurrentUser();
 }

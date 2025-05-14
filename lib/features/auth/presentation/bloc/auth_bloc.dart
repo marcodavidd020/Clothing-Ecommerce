@@ -37,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     result.fold((failure) => emit(AuthError(message: failure.message)), (user) {
       AppLogger.logSuccess('Usuario autenticado exitosamente: ${user.email}');
+      // Asumimos que si el inicio de sesión es exitoso, siempre hay tokens.
       emit(Authenticated());
     });
   }
@@ -47,8 +48,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     AppLogger.logInfo('[AuthBloc] Emitting AuthLoading');
     emit(AuthLoading());
-    // DESCOMENTA LA SIGUIENTE LÍNEA PARA FORZAR LA VISUALIZACIÓN DEL LOADER:
-    // await Future.delayed(const Duration(seconds: 3));
     AppLogger.logInfo('[AuthBloc] Calling registerUseCase.execute');
     final result = await registerUseCase.execute(params: event.params);
     AppLogger.logInfo('[AuthBloc] registerUseCase.execute completed');
@@ -59,11 +58,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthError(message: failure.message));
       },
       (user) {
-        AppLogger.logSuccess(
-          'Usuario registrado y autenticado exitosamente: ${user.email}',
-        );
-        AppLogger.logInfo('[AuthBloc] Emitting Authenticated');
-        emit(Authenticated());
+        // Verificar si el usuario tiene tokens
+        if (user.accessToken != null && user.accessToken!.isNotEmpty) {
+          AppLogger.logSuccess(
+            'Usuario registrado y autenticado exitosamente (con tokens): ${user.email}',
+          );
+          AppLogger.logInfo('[AuthBloc] Emitting Authenticated');
+          emit(Authenticated());
+        } else {
+          AppLogger.logInfo(
+            'Usuario registrado exitosamente (sin tokens): ${user.email}. Necesita iniciar sesión.',
+          );
+          AppLogger.logInfo('[AuthBloc] Emitting RegistrationSuccessNeedSignIn');
+          emit(RegistrationSuccessNeedSignIn());
+        }
       },
     );
   }

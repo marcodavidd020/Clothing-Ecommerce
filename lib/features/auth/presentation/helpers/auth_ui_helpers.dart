@@ -48,6 +48,17 @@ class AuthUIHelpers {
     );
   }
 
+  /// Muestra un mensaje de éxito
+  static void showSuccessMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green, // Color verde para éxito
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   /// Construye un campo de texto para email
   static Widget buildEmailField({
     required TextEditingController controller,

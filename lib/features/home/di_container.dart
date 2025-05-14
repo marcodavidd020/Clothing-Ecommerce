@@ -3,6 +3,12 @@ import 'package:get_it/get_it.dart';
 import 'package:flutter_application_ecommerce/features/home/data/data.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_categories_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_new_in_products_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_products_by_category_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_top_selling_products_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/repositories/home_repository.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
 
 /// Configuración de inyección de dependencias para el módulo Home
 class HomeDIContainer {
@@ -36,37 +42,29 @@ class HomeDIContainer {
 
     // UseCases
     if (!sl.isRegistered<GetCategoriesUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetCategoriesUseCase(sl<HomeRepository>()),
-      );
+      sl.registerLazySingleton(() => GetCategoriesUseCase(sl<HomeRepository>()));
     }
 
     if (!sl.isRegistered<GetTopSellingProductsUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetTopSellingProductsUseCase(sl<HomeRepository>()),
-      );
+      sl.registerLazySingleton(() => GetTopSellingProductsUseCase(sl<HomeRepository>()));
     }
 
     if (!sl.isRegistered<GetNewInProductsUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetNewInProductsUseCase(sl<HomeRepository>()),
-      );
+      sl.registerLazySingleton(() => GetNewInProductsUseCase(sl<HomeRepository>()));
     }
 
     if (!sl.isRegistered<GetProductsByCategoryUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetProductsByCategoryUseCase(sl<HomeRepository>()),
-      );
+      sl.registerLazySingleton(() => GetProductsByCategoryUseCase(sl<HomeRepository>()));
     }
 
     // BLoC
     if (!sl.isRegistered<HomeBloc>()) {
       sl.registerFactory(
         () => HomeBloc(
-          getCategoriesUseCase: sl<GetCategoriesUseCase>(),
-          getTopSellingProductsUseCase: sl<GetTopSellingProductsUseCase>(),
-          getNewInProductsUseCase: sl<GetNewInProductsUseCase>(),
-          getProductsByCategoryUseCase: sl<GetProductsByCategoryUseCase>(),
+          getCategoriesUseCase: sl(),
+          getTopSellingProductsUseCase: sl(),
+          getNewInProductsUseCase: sl(),
+          getProductsByCategoryUseCase: sl(),
         ),
       );
     }
