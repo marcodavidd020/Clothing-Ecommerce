@@ -21,6 +21,9 @@ class CustomTextField extends StatelessWidget {
   /// Función validadora para el campo de texto.
   final String? Function(String?)? validator;
 
+  /// Controla si el campo de texto está habilitado para la interacción.
+  final bool enabled;
+
   /// Crea una instancia de [CustomTextField].
   const CustomTextField({
     super.key,
@@ -29,6 +32,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.obscureText = false,
     this.validator,
+    this.enabled = true,
   });
 
   @override
@@ -39,6 +43,7 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
+      enabled: enabled,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: AppTextStyles.inputHint,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart';
+import '../../data/models/models.dart' show RegisterParams;
+import '../../data/models/request/request.dart' show SignInParams;
 import 'auth_ui_helpers.dart';
 
 /// Clase auxiliar para manejar interacciones comunes con AuthBloc
@@ -21,34 +23,15 @@ class AuthBlocHandler {
   }
 
   /// Despacha evento de inicio de sesión al AuthBloc
-  static void signIn(
-    BuildContext context, {
-    required String email,
-    required String password,
-  }) {
+  static void signIn(BuildContext context, {required SignInParams params}) {
     final authBloc = context.read<AuthBloc>();
-    authBloc.add(SignInRequested(email: email, password: password));
+    authBloc.add(SignInRequested(params: params));
   }
 
   /// Despacha evento de registro al AuthBloc
-  static void register(
-    BuildContext context, {
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String password,
-    String? phone,
-  }) {
+  static void register(BuildContext context, {required RegisterParams params}) {
     final authBloc = context.read<AuthBloc>();
-    authBloc.add(
-      RegisterRequested(
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        phone: phone,
-      ),
-    );
+    authBloc.add(RegisterRequested(params: params));
   }
 
   /// Despacha evento de cierre de sesión al AuthBloc

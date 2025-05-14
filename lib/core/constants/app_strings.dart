@@ -95,11 +95,8 @@ class AppStrings {
   // Category Products Page
   static const String noProductsFound = 'No products found in this category.';
 
-  // Product Detail Page
-  // static const String quantityLabel = 'Quantity';
-  // static const String noImageAvailable = 'No Image';
-  // static const String defaultColorName = 'Default';
-  // static const String notAvailableSize = 'N/A';
+  // Loading
+  static const String loading = 'Loading...';
 
   // Generic Error
   static const String somethingWentWrong = 'Something went wrong. Please try again.';

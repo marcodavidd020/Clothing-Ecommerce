@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
+import '../../data/models/request/request.dart' show SignInParams;
 import '../bloc/bloc.dart';
 import '../helpers/helpers.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 /// Página de inicio de sesión para usuarios existentes.
 ///
@@ -52,8 +54,10 @@ class _SignInPageState extends State<SignInPage> {
   void _submitSignInRequest() {
     AuthBlocHandler.signIn(
       context,
-      email: _emailController.text,
-      password: _passwordController.text,
+      params: SignInParams(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ),
     );
   }
 
@@ -64,21 +68,21 @@ class _SignInPageState extends State<SignInPage> {
 
   /// Maneja la acción de resetear contraseña (actualmente placeholder)
   void _onResetPassword() {
-    print('Reset password for ${_emailController.text}');
+    AppLogger.logInfo('Reset password for ${_emailController.text}');
     // Implementación futura: NavigationHelper.goToResetPassword(context);
   }
 
   /// Maneja los eventos de botones sociales (actualmente placeholders)
   void _onContinueWithApple() {
-    print('Continue with Apple');
+    AppLogger.logInfo('Continue with Apple');
   }
 
   void _onContinueWithGoogle() {
-    print('Continue with Google');
+    AppLogger.logInfo('Continue with Google');
   }
 
   void _onContinueWithFacebook() {
-    print('Continue with Facebook');
+    AppLogger.logInfo('Continue with Facebook');
   }
 
   /// Maneja la acción de regresar al paso anterior
@@ -94,7 +98,10 @@ class _SignInPageState extends State<SignInPage> {
         final isLoading = AuthBlocHandler.isLoading(state);
         return Scaffold(
           appBar: _buildAppBar(),
-          body: SafeArea(child: _buildPageContent(isLoading)),
+          body: LoadingOverlay(
+            isLoading: isLoading,
+            child: SafeArea(child: _buildPageContent(isLoading)),
+          ),
         );
       },
     );
@@ -124,7 +131,6 @@ class _SignInPageState extends State<SignInPage> {
             _buildActionLink(),
             AuthUIHelpers.mediumVerticalSpace,
             if (!_showPasswordStep && !isLoading) _buildSocialButtons(),
-            if (isLoading) AuthUIHelpers.loadingIndicator,
           ],
         ),
       ),
@@ -146,11 +152,13 @@ class _SignInPageState extends State<SignInPage> {
             AuthUIHelpers.buildEmailField(
               controller: _emailController,
               validator: AuthFormValidators.validateEmail,
+              enabled: !isLoading,
             )
           else
             AuthUIHelpers.buildPasswordField(
               controller: _passwordController,
               validator: AuthFormValidators.validatePassword,
+              enabled: !isLoading,
             ),
           AuthUIHelpers.mediumVerticalSpace,
           AuthUIHelpers.buildPrimaryButton(

@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: _showFade
-          ? [Colors.white, Colors.white.withOpacity(0.0)]
+          ? [Colors.white, Colors.white.withAlpha(0)]
           : [Colors.white, Colors.white],
       stops: _showFade
           ? const [

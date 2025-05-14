@@ -5,27 +5,16 @@ abstract class AuthEvent {}
 
 /// Evento para solicitar inicio de sesión
 class SignInRequested extends AuthEvent {
-  final String email;
-  final String password;
+  final SignInParams params;
 
-  SignInRequested({required this.email, required this.password});
+  SignInRequested({required this.params});
 }
 
 /// Evento para solicitar registro
 class RegisterRequested extends AuthEvent {
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String password;
-  final String? phone;
+  final RegisterParams params;
 
-  RegisterRequested({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.password,
-    this.phone,
-  });
+  RegisterRequested({required this.params});
 }
 
 /// Evento para cerrar sesión

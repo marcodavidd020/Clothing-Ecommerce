@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_application_ecommerce/features/auth/data/data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
 import '../bloc/bloc.dart';
 import '../helpers/helpers.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 /// Página para el registro de nuevos usuarios.
 ///
@@ -47,11 +49,13 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_formKey.currentState!.validate()) {
       AuthBlocHandler.register(
         context,
-        firstName: _firstNameController.text,
-        lastName: _lastNameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+        params: RegisterParams(
+          firstName: _firstNameController.text,
+          lastName: _lastNameController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+          phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+        ),
       );
     }
   }
@@ -59,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
   /// Maneja la acción de resetear contraseña (actualmente placeholder).
   void _onResetPassword() {
     // Implementación futura: navegar a pantalla de reseteo
-    print('Reset password presionado');
+    AppLogger.logInfo('Reset password presionado');
   }
 
   /// Maneja la acción de volver atrás.
@@ -78,13 +82,13 @@ class _RegisterPageState extends State<RegisterPage> {
       key: _formKey,
       child: Column(
         children: [
-          _buildNameFields(),
+          _buildNameFields(isLoading),
           AuthUIHelpers.smallVerticalSpace,
-          _buildEmailField(),
+          _buildEmailField(isLoading),
           AuthUIHelpers.smallVerticalSpace,
-          _buildPhoneField(),
+          _buildPhoneField(isLoading),
           AuthUIHelpers.smallVerticalSpace,
-          _buildPasswordField(),
+          _buildPasswordField(isLoading),
           AuthUIHelpers.mediumVerticalSpace,
           _buildSubmitButton(isLoading),
         ],
@@ -93,47 +97,52 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   /// Construye los campos de nombre y apellido.
-  Widget _buildNameFields() {
+  Widget _buildNameFields(bool isLoading) {
     return Column(
       children: [
         CustomTextField(
           controller: _firstNameController,
           hintText: AppStrings.firstnameHint,
           validator: AuthFormValidators.validateName,
+          enabled: !isLoading,
         ),
         AuthUIHelpers.smallVerticalSpace,
         CustomTextField(
           controller: _lastNameController,
           hintText: AppStrings.lastnameHint,
           validator: AuthFormValidators.validateLastName,
+          enabled: !isLoading,
         ),
       ],
     );
   }
 
   /// Construye el campo de email.
-  Widget _buildEmailField() {
+  Widget _buildEmailField(bool isLoading) {
     return AuthUIHelpers.buildEmailField(
       controller: _emailController,
       validator: AuthFormValidators.validateEmail,
+      enabled: !isLoading,
     );
   }
 
   /// Construye el campo de teléfono.
-  Widget _buildPhoneField() {
+  Widget _buildPhoneField(bool isLoading) {
     return CustomTextField(
       controller: _phoneController,
       hintText: AppStrings.phoneHint,
       validator: AuthFormValidators.validatePhone,
       keyboardType: TextInputType.phone,
+      enabled: !isLoading,
     );
   }
 
   /// Construye el campo de contraseña.
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(bool isLoading) {
     return AuthUIHelpers.buildPasswordField(
       controller: _passwordController,
       validator: AuthFormValidators.validatePassword,
+      enabled: !isLoading,
     );
   }
 
@@ -171,7 +180,10 @@ class _RegisterPageState extends State<RegisterPage> {
         final isLoading = AuthBlocHandler.isLoading(state);
         return Scaffold(
           appBar: CustomAppBar(showBack: true, onBack: _onBack),
-          body: SafeArea(child: _buildPageContent(isLoading)),
+          body: LoadingOverlay(
+            isLoading: isLoading,
+            child: SafeArea(child: _buildPageContent(isLoading)),
+          ),
         );
       },
     );
@@ -191,8 +203,6 @@ class _RegisterPageState extends State<RegisterPage> {
             _buildForm(isLoading),
             AuthUIHelpers.smallVerticalSpace,
             if (!isLoading) _buildResetPasswordLink(),
-            AuthUIHelpers.smallVerticalSpace,
-            if (isLoading) AuthUIHelpers.loadingIndicator,
           ],
         ),
       ),

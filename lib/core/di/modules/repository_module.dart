@@ -15,47 +15,57 @@ class RepositoryModule {
   /// Registra los repositorios en GetIt
   static void register(GetIt sl) {
     // Registrar servicios externos
-    sl.registerLazySingleton<Dio>(() => Dio());
-    sl.registerLazySingleton<Connectivity>(() => Connectivity());
-    sl.registerLazySingleton<InternetConnectionChecker>(
-      () => InternetConnectionChecker.createInstance(),
-    );
+    if (!sl.isRegistered<Dio>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<Dio>(() => Dio());
+    }
+    if (!sl.isRegistered<Connectivity>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<Connectivity>(() => Connectivity());
+    }
+    if (!sl.isRegistered<InternetConnectionChecker>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<InternetConnectionChecker>(
+        () => InternetConnectionChecker.createInstance(),
+      );
+    }
 
     // Registrar servicios core
-    sl.registerLazySingleton<NetworkInfo>(
-      () => NetworkInfoImpl(sl<InternetConnectionChecker>()),
-    );
-
-    sl.registerLazySingleton<DioClient>(
-      () => DioClient(dio: sl<Dio>(), networkInfo: sl<NetworkInfo>()),
-    );
+    if (!sl.isRegistered<NetworkInfo>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<NetworkInfo>(
+        () => NetworkInfoImpl(sl<InternetConnectionChecker>()),
+      );
+    }
+    if (!sl.isRegistered<DioClient>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<DioClient>(
+        () => DioClient(dio: sl<Dio>(), networkInfo: sl<NetworkInfo>()),
+      );
+    }
 
     // Registrar fuentes de datos
-    sl.registerLazySingleton<CategoryLocalDataSource>(
-      () => CategoryLocalDataSource(),
-    );
-
-    sl.registerLazySingleton<ProductLocalDataSource>(
-      () => ProductLocalDataSource(),
-    );
+    if (!sl.isRegistered<CategoryLocalDataSource>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<CategoryLocalDataSource>(
+        () => CategoryLocalDataSource(),
+      );
+    }
+    if (!sl.isRegistered<ProductLocalDataSource>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<ProductLocalDataSource>(
+        () => ProductLocalDataSource(),
+      );
+    }
 
     // Registrar repositorios
-    sl.registerLazySingleton<HomeRepository>(
-      () => HomeRepositoryImpl(
-        categoryDataSource: sl<CategoryLocalDataSource>(),
-        productDataSource: sl<ProductLocalDataSource>(),
-      ),
-    );
+    if (!sl.isRegistered<HomeRepository>()) { // Verificar antes de registrar
+      sl.registerLazySingleton<HomeRepository>(
+        () => HomeRepositoryImpl(
+          categoryDataSource: sl<CategoryLocalDataSource>(),
+          productDataSource: sl<ProductLocalDataSource>(),
+        ),
+      );
+    }
   }
 
   /// Proporciona todos los providers de Repository para MultiRepositoryProvider
   static List<RepositoryProvider> providers = [
     RepositoryProvider<HomeRepository>(
-      create:
-          (context) => HomeRepositoryImpl(
-            categoryDataSource: CategoryLocalDataSource(),
-            productDataSource: ProductLocalDataSource(),
-          ),
+      create: (context) => GetIt.instance<HomeRepository>(), // Obtener de GetIt
     ),
     // Aquí se pueden agregar más repositorios a medida que la aplicación crezca
   ];

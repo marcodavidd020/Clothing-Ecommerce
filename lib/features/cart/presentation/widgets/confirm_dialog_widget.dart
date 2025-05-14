@@ -59,7 +59,9 @@ class ConfirmDialogWidget extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(CartUI.shadowOpacity),
+                color: Colors.black.withAlpha(
+                  (CartUI.shadowOpacity * 255).round(),
+                ),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),

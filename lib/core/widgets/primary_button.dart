@@ -9,7 +9,7 @@ class PrimaryButton extends StatelessWidget {
   final String label;
 
   /// Callback que se ejecuta cuando el botón es presionado.
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed; // Hacer onPressed nullable cuando está deshabilitado
 
   /// Altura del botón. Por defecto es [AppDimens.buttonHeight].
   final double height;
@@ -17,6 +17,9 @@ class PrimaryButton extends StatelessWidget {
   /// Si es `true`, el botón tendrá un fondo con degradado.
   /// Si es `false` (por defecto), usará [AppColors.primary] como color de fondo.
   final bool gradient;
+
+  /// Si es `true`, el botón se muestra en estado de carga (deshabilitado).
+  final bool isLoading;
 
   /// Crea una instancia de [PrimaryButton].
   const PrimaryButton({
@@ -26,6 +29,7 @@ class PrimaryButton extends StatelessWidget {
     this.height =
         AppDimens.buttonHeight, // Usar constante para altura por defecto
     this.gradient = false,
+    this.isLoading = false, // Añadir parámetro isLoading, por defecto false
   });
 
   @override
@@ -45,9 +49,11 @@ class PrimaryButton extends StatelessWidget {
                 )
                 : null,
         borderRadius: BorderRadius.circular(AppDimens.buttonRadius),
+        // Opcional: añadir un efecto visual de deshabilitado si no se usa onPressed = null
+        // color: isLoading ? Colors.grey : (gradient ? null : AppColors.primary),
       ),
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed, // Deshabilitar si isLoading es true
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent, // El color lo da el Container
           shadowColor: Colors.transparent, // Sin sombra propia

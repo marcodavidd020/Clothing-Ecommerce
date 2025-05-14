@@ -122,10 +122,7 @@ class DioClient {
       case DioExceptionType.receiveTimeout:
         return NetworkException(message: 'Tiempo de espera agotado');
       case DioExceptionType.badResponse:
-        return ServerException(
-          message: error.response?.statusMessage ?? 'Error del servidor',
-          statusCode: error.response?.statusCode,
-        );
+        throw error;
       case DioExceptionType.cancel:
         return ServerException(message: 'Solicitud cancelada');
       case DioExceptionType.connectionError:

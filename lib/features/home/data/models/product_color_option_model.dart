@@ -4,20 +4,15 @@ import 'package:flutter_application_ecommerce/features/home/domain/entities/prod
 /// Modelo para mapear opciones de color del producto desde JSON
 class ProductColorOptionModel extends ProductColorOption {
   /// Crea una instancia de [ProductColorOptionModel]
-  ProductColorOptionModel({
-    required String name,
-    required Color color,
-  }) : super(
-          name: name,
-          color: color,
-        );
+  ProductColorOptionModel({required super.name, required super.color});
 
   /// Crea una instancia de [ProductColorOptionModel] desde un mapa
   factory ProductColorOptionModel.fromJson(Map<String, dynamic> json) {
     // Convertir el código de color hexadecimal a un objeto Color
     Color getColorFromHex(String hexColor) {
       // Si el hexColor comienza con #, eliminar el #
-      final String colorStr = hexColor.startsWith('#') ? hexColor.substring(1) : hexColor;
+      final String colorStr =
+          hexColor.startsWith('#') ? hexColor.substring(1) : hexColor;
       // Convertir el string hexadecimal a un int
       try {
         return Color(int.parse('0xFF$colorStr'));
@@ -29,7 +24,7 @@ class ProductColorOptionModel extends ProductColorOption {
 
     // Obtener el nombre del color o un valor predeterminado
     final String name = json['name'] as String? ?? 'Default';
-    
+
     // Verificar si tenemos colorCode o color en el json
     String? colorValue;
     if (json['colorCode'] != null) {
@@ -51,12 +46,9 @@ class ProductColorOptionModel extends ProductColorOption {
   Map<String, dynamic> toJson() {
     // Convertir el color a una representación hexadecimal
     String colorToHex(Color color) {
-      return '#${color.value.toRadixString(16).substring(2)}';
+      return '#${color.toARGB32().toRadixString(16).substring(2)}';
     }
-    
-    return {
-      'name': name,
-      'colorCode': colorToHex(color),
-    };
+
+    return {'name': name, 'colorCode': colorToHex(color)};
   }
-} 
+}

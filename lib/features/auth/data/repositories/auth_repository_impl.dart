@@ -1,85 +1,93 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_application_ecommerce/core/error/exceptions.dart';
 import 'package:flutter_application_ecommerce/core/error/failures.dart';
-import '../datasources/auth_datasource.dart'; // Importar AuthDataSource
-import '../models/user_model.dart'; // Importar UserModel
-import '../../domain/entities/user_entity.dart'; // Importar UserEntity
-import '../../domain/repositories/repositories.dart'; // Importar AuthRepository contrato
+import 'package:flutter_application_ecommerce/features/auth/data/datasources/auth_datasource.dart';
+import 'package:flutter_application_ecommerce/features/auth/data/models/models.dart'; // Importa UserMode y los Params
+import 'package:flutter_application_ecommerce/features/auth/domain/entities/user_entity.dart';
+import 'package:flutter_application_ecommerce/features/auth/domain/repositories/repositories.dart';
 
 /// Implementación del repositorio de autenticación
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthDataSource
-  localDataSource; // Usamos la fuente de datos local simulada
+  final AuthDataSource dataSource;
 
-  AuthRepositoryImpl({required this.localDataSource});
+  AuthRepositoryImpl({required this.dataSource});
 
   @override
-  Future<Either<Failure, UserEntity>> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<Either<Failure, UserEntity>> signIn({required SignInParams params}) async {
     try {
-      final userModel = await localDataSource.signIn(
-        email: email,
-        password: password,
-      );
-      return Right(userModel); // Retornar el UserModel que extiende UserEntity
+      final Map<String, dynamic> responseData = await dataSource.signIn(params: params);
+      final userModel = UserModel.fromLoginResponse(responseData, params.email);
+      return Right(userModel);
     } on AuthenticationException catch (e) {
-      return Left(
-        AuthenticationFailure(message: e.message),
-      ); // Mapear excepción a Failure
+      String errorMessage = e.message;
+      if (e.errors != null && e.errors!.isNotEmpty) {
+        final firstError = e.errors!.first;
+        if (firstError['errors'] is List &&
+            (firstError['errors'] as List).isNotEmpty) {
+          errorMessage = (firstError['errors'] as List).first as String;
+        }
+      }
+      return Left(AuthenticationFailure(message: errorMessage));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
       return Left(
-        UnknownFailure(message: e.toString()),
-      ); // Otros errores inesperados
+        UnknownFailure(
+          message:
+              "Error inesperado durante el inicio de sesión: ${e.toString()}",
+        ),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, UserEntity>> register({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String password,
-    String? phone,
-  }) async {
+  Future<Either<Failure, UserEntity>> register({required RegisterParams params}) async {
     try {
-      final userModel = await localDataSource.register(
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        phone: phone,
-      );
-      return Right(userModel); // Retornar el UserModel que extiende UserEntity
+      final userModel = await dataSource.register(params: params);
+      return Right(userModel);
     } on AuthenticationException catch (e) {
-      return Left(
-        AuthenticationFailure(message: e.message),
-      ); // Mapear excepción a Failure
+      String errorMessage = e.message;
+      if (e.errors != null && e.errors!.isNotEmpty) {
+        final firstError = e.errors!.first;
+        if (firstError['errors'] is List &&
+            (firstError['errors'] as List).isNotEmpty) {
+          errorMessage = (firstError['errors'] as List).first as String;
+        }
+      }
+      return Left(AuthenticationFailure(message: errorMessage));
     } on ServerException catch (e) {
-      return Left(
-        ServerFailure(message: e.message),
-      ); // Mapear excepción de servidor a Failure
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
       return Left(
-        UnknownFailure(message: e.toString()),
-      ); // Otros errores inesperados
+        UnknownFailure(
+          message: "Error inesperado durante el registro: ${e.toString()}",
+        ),
+      );
     }
   }
 
   @override
   Future<Either<Failure, void>> signOut() async {
     try {
-      await localDataSource.signOut();
-      return const Right(null); // Operación exitosa no retorna valor
-    } on AuthenticationException catch (e) {
-      return Left(
-        AuthenticationFailure(message: e.message),
-      ); // Mapear excepción a Failure
+      await dataSource.signOut();
+      return const Right(null);
+    } on AuthenticationException catch (e) { // Se mantiene como AuthenticationFailure porque es específico de auth
+      return Left(AuthenticationFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
       return Left(
-        UnknownFailure(message: e.toString()),
-      ); // Otros errores inesperados
+        UnknownFailure(
+          message:
+              "Error inesperado durante el cierre de sesión: ${e.toString()}",
+        ),
+      );
     }
   }
 }

@@ -3,8 +3,7 @@ import 'package:flutter_application_ecommerce/features/home/domain/entities/cate
 /// Modelo para mapear categorías desde JSON
 class CategoryModel extends CategoryItemModel {
   /// Crea una instancia de [CategoryModel]
-  CategoryModel({required String imageUrl, required String name})
-    : super(imageUrl: imageUrl, name: name);
+  CategoryModel({required super.imageUrl, required super.name});
 
   /// Crea una instancia de [CategoryModel] desde un mapa
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
