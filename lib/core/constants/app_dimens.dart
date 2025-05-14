@@ -148,4 +148,11 @@ class AppDimens {
 
   // Splash Page
   static const double splashLogoHeight = 100.0;
+
+  // Loading Overlay
+  static const double loadingOverlayOpacity = 0.3;
+  static const double loadingOverlayIndicatorSize = 50.0;
+  static const double loadingOverlayIndicatorSpacing = 10.0;
+  static const double loadingOverlayBorderRadius = 12.0;
+  static const double loadingOverlayPadding = 20.0;
 }

@@ -24,7 +24,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final categories = await _categoryDataSource.getCategories();
       return Right(categories);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(CacheFailure(message: e.message ?? 'Error al cargar las categorías'));
     } catch (e) {
       return Left(UnknownFailure(message: e.toString()));
     }
@@ -36,7 +36,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final products = await _productDataSource.getTopSellingProducts();
       return Right(products);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(CacheFailure(message: e.message ?? 'Error al cargar los productos más vendidos'));
     } catch (e) {
       return Left(UnknownFailure(message: e.toString()));
     }
@@ -48,7 +48,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final products = await _productDataSource.getNewInProducts();
       return Right(products);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(CacheFailure(message: e.message ?? 'Error al cargar los productos nuevos'));
     } catch (e) {
       return Left(UnknownFailure(message: e.toString()));
     }
@@ -61,7 +61,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final products = await _productDataSource.getProductsByCategory(categoryId);
       return Right(products);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(CacheFailure(message: e.message ?? 'Error al cargar los productos por categoría'));
     } catch (e) {
       return Left(UnknownFailure(message: e.toString()));
     }

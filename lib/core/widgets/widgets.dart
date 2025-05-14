@@ -14,3 +14,4 @@ export 'option_item_widget.dart';
 export 'option_selector_widget.dart';
 export 'cart_badge_widget.dart';
 export 'debounce_button.dart';
+export 'loading_overlay.dart';

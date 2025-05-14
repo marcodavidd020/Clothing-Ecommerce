@@ -1,21 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_application_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_application_ecommerce/core/error/exceptions.dart';
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
-import 'package:flutter_application_ecommerce/features/auth/data/models/user_model.dart';
+import 'package:flutter_application_ecommerce/features/auth/data/models/models.dart';
 
 /// Define los métodos para acceder a los datos de autenticación
 abstract class AuthDataSource {
   /// Intenta iniciar sesión.
-  Future<UserModel> signIn({required String email, required String password});
+  /// Devuelve un Map<String, dynamic> que representa el JSON de respuesta para la simulación.
+  Future<Map<String, dynamic>> signIn({required SignInParams params});
 
   /// Intenta registrar un nuevo usuario.
-  Future<UserModel> register({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String password,
-    String? phone,
-  });
+  Future<UserModel> register({required RegisterParams params});
 
   /// Intenta cerrar la sesión.
   Future<void> signOut();
@@ -28,168 +24,243 @@ class AuthRemoteDataSource implements AuthDataSource {
   AuthRemoteDataSource({required this.dioClient});
 
   @override
-  Future<UserModel> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<Map<String, dynamic>> signIn({required SignInParams params}) async {
     try {
       final response = await dioClient.post(
-        '/api/auth/login',
-        data: {'email': email, 'password': password},
+        ApiConstants.loginEndpoint,
+        data: params.toJson(),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          return UserModel.fromJson(data['data']);
-        } else {
+        return response.data as Map<String, dynamic>;
+      } else {
+        if (response.data is Map<String, dynamic>) {
           throw ServerException(
-            message: data['message'] ?? 'Error al iniciar sesión',
-            statusCode: response.statusCode,
+            (response.data as Map<String, dynamic>)['message'] ??
+                'Error en el servidor (status: ${response.statusCode})',
           );
         }
-      } else {
         throw ServerException(
-          message: 'Error al iniciar sesión',
-          statusCode: response.statusCode,
+          'Error en el servidor (status: ${response.statusCode})',
         );
       }
+    } on DioException catch (e) {
+      print('[AuthRemoteDataSource] DioException: ${e.message}');
+      print(
+        '[AuthRemoteDataSource] DioException response data: ${e.response?.data}',
+      );
+      print(
+        '[AuthRemoteDataSource] DioException response status code: ${e.response?.statusCode}',
+      );
+      if (e.response?.data is Map<String, dynamic>) {
+        final errorData = e.response!.data as Map<String, dynamic>;
+        print('[AuthRemoteDataSource] Parsed errorData: $errorData');
+        if (errorData.containsKey('message')) {
+          if (errorData.containsKey('errors') &&
+              errorData.containsKey('statusCode')) {
+            throw AuthenticationException(
+              message: errorData['message'] as String,
+              statusCode: errorData['statusCode'] as int,
+              errors:
+                  (errorData['errors'] as List)
+                      .map((err) => err as Map<String, dynamic>)
+                      .toList(),
+            );
+          }
+          throw ServerException(
+            errorData['message'] as String? ??
+                'Error de red en signIn: ${e.message}',
+          );
+        }
+      }
+      throw ServerException('Error de red en signIn: ${e.message}');
     } catch (e) {
-      if (e is ServerException) rethrow;
-      throw ServerException(message: e.toString());
+      if (e is ServerException || e is AuthenticationException) rethrow;
+      throw ServerException('Error inesperado en signIn: ${e.toString()}');
     }
   }
 
   @override
-  Future<UserModel> register({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String password,
-    String? phone,
-  }) async {
+  Future<UserModel> register({required RegisterParams params}) async {
     try {
-      final data = {
-        'email': email,
-        'firstName': firstName,
-        'lastName': lastName,
-        'password': password,
-      };
-
-      // Añadir teléfono solo si se proporciona
-      if (phone != null && phone.isNotEmpty) {
-        data['phone'] = phone;
-      }
-
       final response = await dioClient.post(
         ApiConstants.registerClientEndpoint,
-        data: data,
+        data: params.toJson(),
       );
 
+      final responseData = response.data as Map<String, dynamic>?;
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final responseData = response.data;
-        if (responseData['success'] == true && responseData['data'] != null) {
+        if (responseData != null &&
+            responseData['success'] == true &&
+            responseData['data'] != null) {
           return UserModel.fromJson(responseData['data']);
         } else {
-          throw ServerException(
-            message: responseData['message'] ?? 'Error en el registro',
-            statusCode: response.statusCode,
-          );
+          if (responseData != null && responseData.containsKey('message')) {
+            if (responseData.containsKey('errors') &&
+                responseData.containsKey('statusCode')) {
+              throw AuthenticationException(
+                message: responseData['message'] as String,
+                statusCode: responseData['statusCode'] as int,
+                errors:
+                    (responseData['errors'] as List)
+                        .map((e) => e as Map<String, dynamic>)
+                        .toList(),
+              );
+            }
+            throw ServerException(
+              responseData['message'] as String? ?? 'Error en el registro',
+            );
+          }
+          throw ServerException('Error en el registro: Respuesta inesperada.');
         }
       } else {
+        if (responseData != null && responseData.containsKey('message')) {
+          if (responseData.containsKey('errors') &&
+              responseData.containsKey('statusCode')) {
+            throw AuthenticationException(
+              message: responseData['message'] as String,
+              statusCode: responseData['statusCode'] as int,
+              errors:
+                  (responseData['errors'] as List)
+                      .map((e) => e as Map<String, dynamic>)
+                      .toList(),
+            );
+          }
+          throw ServerException(
+            responseData['message'] as String? ??
+                'Error en el servidor (status: ${response.statusCode})',
+          );
+        }
         throw ServerException(
-          message: 'Error en el registro',
-          statusCode: response.statusCode,
+          'Error en el registro (status: ${response.statusCode})',
         );
       }
-    } on ServerException {
-      rethrow;
+    } on DioException catch (e) {
+      print('[AuthRemoteDataSource REGISTER] DioException: ${e.message}');
+      print(
+        '[AuthRemoteDataSource REGISTER] DioException response data: ${e.response?.data}',
+      );
+      print(
+        '[AuthRemoteDataSource REGISTER] DioException response data TYPE: ${e.response?.data.runtimeType}',
+      );
+      print(
+        '[AuthRemoteDataSource REGISTER] DioException response status code: ${e.response?.statusCode}',
+      );
+      if (e.response?.data is Map<String, dynamic>) {
+        final errorData = e.response!.data as Map<String, dynamic>;
+        print('[AuthRemoteDataSource REGISTER] Parsed errorData: $errorData');
+        if (errorData.containsKey('message')) {
+          if (errorData.containsKey('errors') &&
+              errorData.containsKey('statusCode')) {
+            throw AuthenticationException(
+              message: errorData['message'] as String,
+              statusCode: errorData['statusCode'] as int,
+              errors:
+                  (errorData['errors'] as List)
+                      .map((err) => err as Map<String, dynamic>)
+                      .toList(),
+            );
+          }
+          throw ServerException(
+            errorData['message'] as String? ??
+                'Error de red en registro: ${e.message}',
+          );
+        }
+      }
+      String errorMessage = 'Error de red en registro.';
+      if (e.message != null && e.message!.isNotEmpty) {
+        errorMessage += ' Detalles: ${e.message}';
+      } else if (e.response?.statusMessage != null &&
+          e.response!.statusMessage!.isNotEmpty) {
+        errorMessage += ' Status: ${e.response!.statusMessage}';
+      }
+      throw ServerException(errorMessage);
     } catch (e) {
-      throw ServerException(message: e.toString());
+      if (e is ServerException || e is AuthenticationException) rethrow;
+      throw ServerException('Error inesperado en register: ${e.toString()}');
     }
   }
 
   @override
   Future<void> signOut() async {
-    // Implementación futura para cerrar sesión con la API
     try {
-      // Aquí iría la llamada a la API para cerrar sesión
       await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
-      throw ServerException(message: 'Error al cerrar sesión');
+      throw ServerException('Error al cerrar sesión: ${e.toString()}');
     }
   }
 }
 
 /// Implementación simulada de la fuente de datos de autenticación (temporal para desarrollo)
 class AuthLocalDataSource implements AuthDataSource {
-  // Simula una base de datos local o API con un usuario de ejemplo
-  final UserModel _simulatedUser = UserModel(
-    id: 'user123',
-    email: 'test@example.com',
-    firstName: 'Usuario',
-    lastName: 'Simulado',
-    isActive: true,
-  );
-  final String _simulatedPassword = 'password';
-
   @override
-  Future<UserModel> signIn({
-    required String email,
-    required String password,
-  }) async {
-    // Simular retraso de red
+  Future<Map<String, dynamic>> signIn({required SignInParams params}) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    // Simular lógica de inicio de sesión
-    if (email == _simulatedUser.email && password == _simulatedPassword) {
-      return _simulatedUser; // Éxito
+    if (params.email == 'usuario@ejemplo.com' &&
+        params.password == 'contraseña123') {
+      return {
+        "success": true,
+        "message": "Inicio de sesión exitoso",
+        "data": {
+          "accessToken": "fake_access_token",
+          "refreshToken": "fake_refresh_token",
+        },
+        "timestamp": DateTime.now().toIso8601String(),
+      };
     } else {
       throw AuthenticationException(
         message: 'Credenciales inválidas',
-      ); // Error simulado
+        statusCode: 401,
+        errors: [
+          {
+            "field": "general",
+            "errors": ["El email o la contraseña son incorrectos"],
+            "value": null,
+          },
+        ],
+      );
     }
   }
 
   @override
-  Future<UserModel> register({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String password,
-    String? phone,
-  }) async {
-    // Simular retraso de red
+  Future<UserModel> register({required RegisterParams params}) async {
     await Future.delayed(const Duration(seconds: 1));
-
-    // Simular lógica de registro (ejemplo simple: cualquier email no vacío y password >= 6 es válido)
-    if (email.isNotEmpty && password.length >= 6) {
-      // Simular la creación de un nuevo usuario
+    if (params.email.isNotEmpty && params.password.length >= 6) {
       final newUser = UserModel(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        phoneNumber: phone,
+        email: params.email,
+        firstName: params.firstName,
+        lastName: params.lastName,
+        phoneNumber: params.phone,
         isActive: true,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        accessToken:
+            "fake_reg_access_token_${DateTime.now().millisecondsSinceEpoch}",
+        refreshToken:
+            "fake_reg_refresh_token_${DateTime.now().millisecondsSinceEpoch}",
       );
-      return newUser; // Éxito
+      return newUser;
     } else {
       throw AuthenticationException(
         message: 'Datos de registro inválidos',
-      ); // Error simulado
+        statusCode: 400,
+        errors: [
+          {
+            "field": "password",
+            "errors": ["La contraseña debe tener al menos 6 caracteres"],
+            "value": params.password,
+          },
+        ],
+      );
     }
   }
 
   @override
   Future<void> signOut() async {
-    // Simular retraso de red
     await Future.delayed(const Duration(seconds: 1));
-
-    // Simular lógica de cierre de sesión (ej. limpiar token)
-    print('Simulando cierre de sesión');
-    // No se retorna nada en caso de éxito
+    print('Simulando cierre de sesión desde AuthLocalDataSource');
   }
 }

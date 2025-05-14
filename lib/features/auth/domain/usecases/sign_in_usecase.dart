@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_application_ecommerce/core/error/failures.dart';
+import 'package:flutter_application_ecommerce/features/auth/data/data.dart';
 import '../entities/user_entity.dart';
 import '../repositories/repositories.dart';
 
@@ -11,9 +12,10 @@ class SignInUseCase {
 
   /// Ejecuta el caso de uso para iniciar sesión
   Future<Either<Failure, UserEntity>> execute({
-    required String email,
-    required String password,
+    required SignInParams params,
   }) async {
-    return await repository.signIn(email: email, password: password);
+    return await repository.signIn(
+      params: params,
+    );
   }
 }

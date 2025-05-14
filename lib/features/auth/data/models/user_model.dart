@@ -13,6 +13,8 @@ class UserModel extends UserEntity {
     String? avatar,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? accessToken,
+    String? refreshToken,
   }) : super(
           id: id,
           email: email,
@@ -23,9 +25,12 @@ class UserModel extends UserEntity {
           avatar: avatar,
           createdAt: createdAt,
           updatedAt: updatedAt,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
         );
 
-  /// Crea una instancia de [UserModel] desde un mapa (por ejemplo, JSON).
+  /// Crea una instancia de [UserModel] desde un mapa (por ejemplo, JSON de perfil de usuario).
+  /// Este factory es para un JSON que describe al usuario, no la respuesta de login.
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as String,
@@ -41,6 +46,21 @@ class UserModel extends UserEntity {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
+      accessToken: json['accessToken'] as String?,
+      refreshToken: json['refreshToken'] as String?,
+    );
+  }
+
+  /// Crea una instancia de [UserModel] a partir de la respuesta de la API de inicio de sesión.
+  factory UserModel.fromLoginResponse(
+      Map<String, dynamic> loginResponseJson, String emailForUser) {
+    final data = loginResponseJson['data'] as Map<String, dynamic>?;
+    return UserModel(
+      id: data?['userId']?.toString() ?? emailForUser.split('@')[0],
+      email: emailForUser,
+      accessToken: data?['accessToken'] as String?,
+      refreshToken: data?['refreshToken'] as String?,
+      isActive: true,
     );
   }
 
@@ -56,6 +76,8 @@ class UserModel extends UserEntity {
       if (avatar != null) 'avatar': avatar,
       if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
       if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
+      if (accessToken != null) 'accessToken': accessToken,
+      if (refreshToken != null) 'refreshToken': refreshToken,
     };
   }
 }

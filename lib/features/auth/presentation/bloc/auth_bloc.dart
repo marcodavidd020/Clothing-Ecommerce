@@ -1,6 +1,8 @@
+import 'package:flutter_application_ecommerce/features/auth/data/models/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart'; // Importar meta.dart
 import '../../domain/domain.dart'; // Importar casos de uso y entidades (Ruta corregida)
+import 'package:flutter_application_ecommerce/features/auth/data/models/request/request.dart'; // Importar los modelos de parámetros
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -27,10 +29,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    // Usar el caso de uso en lugar de la lógica simulada directa
+    // Usar el caso de uso con event.params
     final result = await signInUseCase.execute(
-      email: event.email,
-      password: event.password,
+      params: event.params, // Usar el objeto params directamente
     );
 
     result.fold(
@@ -45,20 +46,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
+    print('[AuthBloc] Emitting AuthLoading FOR DEBUG');
     emit(AuthLoading());
-    // Usar el caso de uso de registro
+    // DESCOMENTA LA SIGUIENTE LÍNEA PARA FORZAR LA VISUALIZACIÓN DEL LOADER:
+    // await Future.delayed(const Duration(seconds: 3)); 
+    print('[AuthBloc] Calling registerUseCase.execute');
     final result = await registerUseCase.execute(
-      firstName: event.firstName,
-      lastName: event.lastName,
-      email: event.email,
-      password: event.password,
-      phone: event.phone,
+      params: event.params,
     );
+    print('[AuthBloc] registerUseCase.execute completed');
 
     result.fold(
-      (failure) => emit(AuthError(message: failure.message)),
-      (user) =>
-          emit(Authenticated()), // Asumimos que registro exitoso autentica
+      (failure) {
+        print('[AuthBloc] Emitting AuthError: ${failure.message}');
+        emit(AuthError(message: failure.message));
+      },
+      (user) {
+        print('[AuthBloc] Emitting Authenticated');
+        emit(Authenticated());
+      }
     );
   }
 
