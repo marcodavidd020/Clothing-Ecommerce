@@ -19,3 +19,6 @@ class RegisterRequested extends AuthEvent {
 
 /// Evento para cerrar sesión
 class SignOutRequested extends AuthEvent {}
+
+/// Evento para verificar el estado de autenticación inicial
+class CheckInitialAuthStatus extends AuthEvent {}

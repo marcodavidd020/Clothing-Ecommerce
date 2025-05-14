@@ -3,13 +3,15 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
-import 'package:dio/dio.dart' as _i3;
+import 'package:dio/dio.dart' as _i2;
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart'
     as _i4;
 import 'package:flutter_application_ecommerce/core/network/network_info.dart'
-    as _i2;
+    as _i3;
+import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart'
+    as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -26,13 +28,18 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeNetworkInfo_0 extends _i1.SmartFake implements _i2.NetworkInfo {
-  _FakeNetworkInfo_0(Object parent, Invocation parentInvocation)
+class _FakeDio_0 extends _i1.SmartFake implements _i2.Dio {
+  _FakeDio_0(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeResponse_1<T> extends _i1.SmartFake implements _i3.Response<T> {
-  _FakeResponse_1(Object parent, Invocation parentInvocation)
+class _FakeNetworkInfo_1 extends _i1.SmartFake implements _i3.NetworkInfo {
+  _FakeNetworkInfo_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeResponse_2<T> extends _i1.SmartFake implements _i2.Response<T> {
+  _FakeResponse_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -45,15 +52,23 @@ class MockDioClient extends _i1.Mock implements _i4.DioClient {
   }
 
   @override
-  _i2.NetworkInfo get networkInfo =>
+  _i2.Dio get dio =>
+      (super.noSuchMethod(
+            Invocation.getter(#dio),
+            returnValue: _FakeDio_0(this, Invocation.getter(#dio)),
+          )
+          as _i2.Dio);
+
+  @override
+  _i3.NetworkInfo get networkInfo =>
       (super.noSuchMethod(
             Invocation.getter(#networkInfo),
-            returnValue: _FakeNetworkInfo_0(
+            returnValue: _FakeNetworkInfo_1(
               this,
               Invocation.getter(#networkInfo),
             ),
           )
-          as _i2.NetworkInfo);
+          as _i3.NetworkInfo);
 
   @override
   bool get debugSkipConnectionCheck =>
@@ -64,36 +79,57 @@ class MockDioClient extends _i1.Mock implements _i4.DioClient {
           as bool);
 
   @override
-  _i5.Future<_i3.Response<dynamic>> get(
+  void setAuthStorage(_i5.AuthStorage? authStorage) => super.noSuchMethod(
+    Invocation.method(#setAuthStorage, [authStorage]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i6.Future<_i2.Response<dynamic>> get(
     String? path, {
     Map<String, dynamic>? queryParameters,
-    _i3.Options? options,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+    _i2.ProgressCallback? onReceiveProgress,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
               #get,
               [path],
-              {#queryParameters: queryParameters, #options: options},
+              {
+                #queryParameters: queryParameters,
+                #options: options,
+                #cancelToken: cancelToken,
+                #onReceiveProgress: onReceiveProgress,
+              },
             ),
-            returnValue: _i5.Future<_i3.Response<dynamic>>.value(
-              _FakeResponse_1<dynamic>(
+            returnValue: _i6.Future<_i2.Response<dynamic>>.value(
+              _FakeResponse_2<dynamic>(
                 this,
                 Invocation.method(
                   #get,
                   [path],
-                  {#queryParameters: queryParameters, #options: options},
+                  {
+                    #queryParameters: queryParameters,
+                    #options: options,
+                    #cancelToken: cancelToken,
+                    #onReceiveProgress: onReceiveProgress,
+                  },
                 ),
               ),
             ),
           )
-          as _i5.Future<_i3.Response<dynamic>>);
+          as _i6.Future<_i2.Response<dynamic>>);
 
   @override
-  _i5.Future<_i3.Response<dynamic>> post(
+  _i6.Future<_i2.Response<dynamic>> post(
     String? path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
-    _i3.Options? options,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+    _i2.ProgressCallback? onSendProgress,
+    _i2.ProgressCallback? onReceiveProgress,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
@@ -103,10 +139,13 @@ class MockDioClient extends _i1.Mock implements _i4.DioClient {
                 #data: data,
                 #queryParameters: queryParameters,
                 #options: options,
+                #cancelToken: cancelToken,
+                #onSendProgress: onSendProgress,
+                #onReceiveProgress: onReceiveProgress,
               },
             ),
-            returnValue: _i5.Future<_i3.Response<dynamic>>.value(
-              _FakeResponse_1<dynamic>(
+            returnValue: _i6.Future<_i2.Response<dynamic>>.value(
+              _FakeResponse_2<dynamic>(
                 this,
                 Invocation.method(
                   #post,
@@ -115,10 +154,136 @@ class MockDioClient extends _i1.Mock implements _i4.DioClient {
                     #data: data,
                     #queryParameters: queryParameters,
                     #options: options,
+                    #cancelToken: cancelToken,
+                    #onSendProgress: onSendProgress,
+                    #onReceiveProgress: onReceiveProgress,
                   },
                 ),
               ),
             ),
           )
-          as _i5.Future<_i3.Response<dynamic>>);
+          as _i6.Future<_i2.Response<dynamic>>);
+
+  @override
+  _i6.Future<_i2.Response<dynamic>> put(
+    String? path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+    _i2.ProgressCallback? onSendProgress,
+    _i2.ProgressCallback? onReceiveProgress,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #put,
+              [path],
+              {
+                #data: data,
+                #queryParameters: queryParameters,
+                #options: options,
+                #cancelToken: cancelToken,
+                #onSendProgress: onSendProgress,
+                #onReceiveProgress: onReceiveProgress,
+              },
+            ),
+            returnValue: _i6.Future<_i2.Response<dynamic>>.value(
+              _FakeResponse_2<dynamic>(
+                this,
+                Invocation.method(
+                  #put,
+                  [path],
+                  {
+                    #data: data,
+                    #queryParameters: queryParameters,
+                    #options: options,
+                    #cancelToken: cancelToken,
+                    #onSendProgress: onSendProgress,
+                    #onReceiveProgress: onReceiveProgress,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i6.Future<_i2.Response<dynamic>>);
+
+  @override
+  _i6.Future<_i2.Response<dynamic>> patch(
+    String? path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+    _i2.ProgressCallback? onSendProgress,
+    _i2.ProgressCallback? onReceiveProgress,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #patch,
+              [path],
+              {
+                #data: data,
+                #queryParameters: queryParameters,
+                #options: options,
+                #cancelToken: cancelToken,
+                #onSendProgress: onSendProgress,
+                #onReceiveProgress: onReceiveProgress,
+              },
+            ),
+            returnValue: _i6.Future<_i2.Response<dynamic>>.value(
+              _FakeResponse_2<dynamic>(
+                this,
+                Invocation.method(
+                  #patch,
+                  [path],
+                  {
+                    #data: data,
+                    #queryParameters: queryParameters,
+                    #options: options,
+                    #cancelToken: cancelToken,
+                    #onSendProgress: onSendProgress,
+                    #onReceiveProgress: onReceiveProgress,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i6.Future<_i2.Response<dynamic>>);
+
+  @override
+  _i6.Future<_i2.Response<dynamic>> delete(
+    String? path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #delete,
+              [path],
+              {
+                #data: data,
+                #queryParameters: queryParameters,
+                #options: options,
+                #cancelToken: cancelToken,
+              },
+            ),
+            returnValue: _i6.Future<_i2.Response<dynamic>>.value(
+              _FakeResponse_2<dynamic>(
+                this,
+                Invocation.method(
+                  #delete,
+                  [path],
+                  {
+                    #data: data,
+                    #queryParameters: queryParameters,
+                    #options: options,
+                    #cancelToken: cancelToken,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i6.Future<_i2.Response<dynamic>>);
 }

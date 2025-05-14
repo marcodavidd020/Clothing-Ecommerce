@@ -25,4 +25,4 @@ class RegisterParams {
     }
     return map;
   }
-} 
+}

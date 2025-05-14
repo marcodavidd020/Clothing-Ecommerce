@@ -2,13 +2,13 @@ import 'dart:async'; // Necesario para Future.delayed
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Importar BlocProvider
-import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart'; // Importar AuthBloc
+import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart'; // Importar AuthBloc y AuthEvent
 import 'package:go_router/go_router.dart';
 
 /// Página de Splash (pantalla de carga inicial) de la aplicación.
 ///
-/// Muestra un logo animado durante un tiempo determinado y luego
-/// navega a la pantalla principal o de inicio de sesión, según el estado de autenticación.
+/// Muestra un logo animado, despacha un evento para verificar el estado de autenticación
+/// y luego navega a la pantalla principal o de inicio de sesión según el resultado.
 class SplashPage extends StatefulWidget {
   /// Crea una instancia de [SplashPage].
   const SplashPage({super.key});
@@ -28,7 +28,9 @@ class _SplashPageState extends State<SplashPage>
   void initState() {
     super.initState();
     _setupAnimations();
-    _navigateToNextScreen();
+    // Despachar el evento para verificar el estado de autenticación
+    context.read<AuthBloc>().add(CheckInitialAuthStatus());
+    // La navegación ahora se maneja en el BlocListener
   }
 
   /// Configura las animaciones para el logo.
@@ -55,28 +57,7 @@ class _SplashPageState extends State<SplashPage>
     _controller.forward();
   }
 
-  /// Programa la navegación a la siguiente pantalla después de un retraso.
-  ///
-  /// Espera un tiempo suficiente para mostrar la animación del splash
-  /// y luego verifica si el usuario está autenticado para navegar
-  /// a la pantalla principal o de inicio de sesión.
-  void _navigateToNextScreen() {
-    // Esperar 2 segundos antes de navegar a la siguiente pantalla
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        // Verificar el estado de autenticación
-        final authState = context.read<AuthBloc>().state;
-        
-        if (authState is Authenticated) {
-          // Si el usuario está autenticado, ir a la pantalla principal
-          context.goNamed(AppRoutes.mainName);
-        } else {
-          // Si el usuario no está autenticado, ir a la pantalla de inicio de sesión
-          context.goNamed(AppRoutes.signInName);
-        }
-      }
-    });
-  }
+  // _navigateToNextScreen ya no es necesario aquí, se maneja con BlocListener
 
   @override
   void dispose() {
@@ -86,21 +67,40 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(color: AppColors.primary),
-        child: Center(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _opacityAnimation.value,
-                child: Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: Image.asset(AppStrings.logo, width: 200),
-                ),
-              );
-            },
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        // Esperar un poco para que la animación del splash sea visible
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (!mounted) return; // Comprobar si el widget sigue montado
+
+          if (state is Authenticated) {
+            // Usar GoRouter para reemplazar la pila de navegación
+            context.goNamed(AppRoutes.mainName);
+          } else if (state is Unauthenticated) {
+            // Usar GoRouter para reemplazar la pila de navegación
+            context.goNamed(AppRoutes.signInName);
+          }
+          // No es necesario manejar RegistrationSuccessNeedSignIn explícitamente aquí,
+          // ya que AuthBlocHandler lo llevará a SignInPage, y si luego el usuario
+          // cierra la app y la vuelve a abrir, CheckInitialAuthStatus lo llevará a SignInPage.
+        });
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(color: AppColors.primary),
+          child: Center(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _opacityAnimation.value,
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: Image.asset(AppStrings.logo, width: 200),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
