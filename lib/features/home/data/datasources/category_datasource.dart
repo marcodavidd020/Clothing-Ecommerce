@@ -35,7 +35,7 @@ class CategoryLocalDataSource implements CategoryDataSource {
       return categoriesList;
     } catch (e) {
       throw CacheException(
-        // message: 'Error al cargar las categorías: ${e.toString()}',
+        message: 'Error al cargar las categorías: ${e.toString()}',
       );
     }
   }

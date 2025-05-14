@@ -23,6 +23,84 @@ class AuthRemoteDataSource implements AuthDataSource {
 
   AuthRemoteDataSource({required this.dioClient});
 
+  /// Maneja las excepciones de red y servidor de manera consistente
+  Never _handleError(dynamic error, String operation) {
+    if (error is DioException) {
+      _logDioError(error, operation);
+      final errorData = error.response?.data;
+
+      if (errorData is Map<String, dynamic>) {
+        if (_isAuthenticationError(errorData)) {
+          throw AuthenticationException(
+            message: errorData['message'] as String,
+            statusCode: errorData['statusCode'] as int,
+            errors:
+                (errorData['errors'] as List)
+                    .map((err) => err as Map<String, dynamic>)
+                    .toList(),
+          );
+        }
+        throw ServerException(
+          message: errorData['message'] as String? ??
+              'Error de red en $operation: ${error.message}',
+        );
+      }
+      throw ServerException(
+        message: _getNetworkErrorMessage(error, operation),
+      );
+    }
+
+    if (error is ServerException || error is AuthenticationException) {
+      throw error;
+    }
+
+    throw ServerException(
+      message: 'Error inesperado en $operation: ${error.toString()}',
+    );
+  }
+
+  /// Verifica si el error es de autenticación
+  bool _isAuthenticationError(Map<String, dynamic> errorData) {
+    return errorData.containsKey('message') &&
+        errorData.containsKey('errors') &&
+        errorData.containsKey('statusCode');
+  }
+
+  /// Obtiene un mensaje de error de red formateado
+  String _getNetworkErrorMessage(DioException error, String operation) {
+    String errorMessage = 'Error de red en $operation.';
+    if (error.message?.isNotEmpty == true) {
+      errorMessage += ' Detalles: ${error.message}';
+    } else if (error.response?.statusMessage?.isNotEmpty == true) {
+      errorMessage += ' Status: ${error.response!.statusMessage}';
+    }
+    return errorMessage;
+  }
+
+  /// Registra información detallada del error de Dio
+  void _logDioError(DioException error, String operation) {
+    print('[$operation] DioException: ${error.message}');
+    print('[$operation] Response data: ${error.response?.data}');
+    print('[$operation] Response status code: ${error.response?.statusCode}');
+    if (error.response?.data is Map<String, dynamic>) {
+      print('[$operation] Parsed errorData: ${error.response?.data}');
+    }
+  }
+
+  /// Verifica si la respuesta es exitosa
+  bool _isSuccessfulResponse(Response response) {
+    return response.statusCode == 200 || response.statusCode == 201;
+  }
+
+  /// Extrae el mensaje de error de la respuesta
+  String _extractErrorMessage(Response response) {
+    if (response.data is Map<String, dynamic>) {
+      return (response.data as Map<String, dynamic>)['message'] ??
+          'Error en el servidor (status: ${response.statusCode})';
+    }
+    return 'Error en el servidor (status: ${response.statusCode})';
+  }
+
   @override
   Future<Map<String, dynamic>> signIn({required SignInParams params}) async {
     try {
@@ -31,52 +109,15 @@ class AuthRemoteDataSource implements AuthDataSource {
         data: params.toJson(),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (_isSuccessfulResponse(response)) {
         return response.data as Map<String, dynamic>;
-      } else {
-        if (response.data is Map<String, dynamic>) {
-          throw ServerException(
-            (response.data as Map<String, dynamic>)['message'] ??
-                'Error en el servidor (status: ${response.statusCode})',
-          );
-        }
-        throw ServerException(
-          'Error en el servidor (status: ${response.statusCode})',
-        );
       }
-    } on DioException catch (e) {
-      print('[AuthRemoteDataSource] DioException: ${e.message}');
-      print(
-        '[AuthRemoteDataSource] DioException response data: ${e.response?.data}',
+
+      throw ServerException(
+        message: _extractErrorMessage(response),
       );
-      print(
-        '[AuthRemoteDataSource] DioException response status code: ${e.response?.statusCode}',
-      );
-      if (e.response?.data is Map<String, dynamic>) {
-        final errorData = e.response!.data as Map<String, dynamic>;
-        print('[AuthRemoteDataSource] Parsed errorData: $errorData');
-        if (errorData.containsKey('message')) {
-          if (errorData.containsKey('errors') &&
-              errorData.containsKey('statusCode')) {
-            throw AuthenticationException(
-              message: errorData['message'] as String,
-              statusCode: errorData['statusCode'] as int,
-              errors:
-                  (errorData['errors'] as List)
-                      .map((err) => err as Map<String, dynamic>)
-                      .toList(),
-            );
-          }
-          throw ServerException(
-            errorData['message'] as String? ??
-                'Error de red en signIn: ${e.message}',
-          );
-        }
-      }
-      throw ServerException('Error de red en signIn: ${e.message}');
     } catch (e) {
-      if (e is ServerException || e is AuthenticationException) rethrow;
-      throw ServerException('Error inesperado en signIn: ${e.toString()}');
+      _handleError(e, 'signIn');
     }
   }
 
@@ -90,95 +131,22 @@ class AuthRemoteDataSource implements AuthDataSource {
 
       final responseData = response.data as Map<String, dynamic>?;
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (_isSuccessfulResponse(response)) {
         if (responseData != null &&
             responseData['success'] == true &&
             responseData['data'] != null) {
           return UserModel.fromJson(responseData['data']);
-        } else {
-          if (responseData != null && responseData.containsKey('message')) {
-            if (responseData.containsKey('errors') &&
-                responseData.containsKey('statusCode')) {
-              throw AuthenticationException(
-                message: responseData['message'] as String,
-                statusCode: responseData['statusCode'] as int,
-                errors:
-                    (responseData['errors'] as List)
-                        .map((e) => e as Map<String, dynamic>)
-                        .toList(),
-              );
-            }
-            throw ServerException(
-              responseData['message'] as String? ?? 'Error en el registro',
-            );
-          }
-          throw ServerException('Error en el registro: Respuesta inesperada.');
-        }
-      } else {
-        if (responseData != null && responseData.containsKey('message')) {
-          if (responseData.containsKey('errors') &&
-              responseData.containsKey('statusCode')) {
-            throw AuthenticationException(
-              message: responseData['message'] as String,
-              statusCode: responseData['statusCode'] as int,
-              errors:
-                  (responseData['errors'] as List)
-                      .map((e) => e as Map<String, dynamic>)
-                      .toList(),
-            );
-          }
-          throw ServerException(
-            responseData['message'] as String? ??
-                'Error en el servidor (status: ${response.statusCode})',
-          );
         }
         throw ServerException(
-          'Error en el registro (status: ${response.statusCode})',
+          message: 'Error en el registro: Respuesta inesperada.',
         );
       }
-    } on DioException catch (e) {
-      print('[AuthRemoteDataSource REGISTER] DioException: ${e.message}');
-      print(
-        '[AuthRemoteDataSource REGISTER] DioException response data: ${e.response?.data}',
+
+      throw ServerException(
+        message: _extractErrorMessage(response),
       );
-      print(
-        '[AuthRemoteDataSource REGISTER] DioException response data TYPE: ${e.response?.data.runtimeType}',
-      );
-      print(
-        '[AuthRemoteDataSource REGISTER] DioException response status code: ${e.response?.statusCode}',
-      );
-      if (e.response?.data is Map<String, dynamic>) {
-        final errorData = e.response!.data as Map<String, dynamic>;
-        print('[AuthRemoteDataSource REGISTER] Parsed errorData: $errorData');
-        if (errorData.containsKey('message')) {
-          if (errorData.containsKey('errors') &&
-              errorData.containsKey('statusCode')) {
-            throw AuthenticationException(
-              message: errorData['message'] as String,
-              statusCode: errorData['statusCode'] as int,
-              errors:
-                  (errorData['errors'] as List)
-                      .map((err) => err as Map<String, dynamic>)
-                      .toList(),
-            );
-          }
-          throw ServerException(
-            errorData['message'] as String? ??
-                'Error de red en registro: ${e.message}',
-          );
-        }
-      }
-      String errorMessage = 'Error de red en registro.';
-      if (e.message != null && e.message!.isNotEmpty) {
-        errorMessage += ' Detalles: ${e.message}';
-      } else if (e.response?.statusMessage != null &&
-          e.response!.statusMessage!.isNotEmpty) {
-        errorMessage += ' Status: ${e.response!.statusMessage}';
-      }
-      throw ServerException(errorMessage);
     } catch (e) {
-      if (e is ServerException || e is AuthenticationException) rethrow;
-      throw ServerException('Error inesperado en register: ${e.toString()}');
+      _handleError(e, 'register');
     }
   }
 
@@ -187,7 +155,7 @@ class AuthRemoteDataSource implements AuthDataSource {
     try {
       await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
-      throw ServerException('Error al cerrar sesión: ${e.toString()}');
+      _handleError(e, 'signOut');
     }
   }
 }
@@ -209,26 +177,27 @@ class AuthLocalDataSource implements AuthDataSource {
         },
         "timestamp": DateTime.now().toIso8601String(),
       };
-    } else {
-      throw AuthenticationException(
-        message: 'Credenciales inválidas',
-        statusCode: 401,
-        errors: [
-          {
-            "field": "general",
-            "errors": ["El email o la contraseña son incorrectos"],
-            "value": null,
-          },
-        ],
-      );
     }
+
+    throw AuthenticationException(
+      message: 'Credenciales inválidas',
+      statusCode: 401,
+      errors: [
+        {
+          "field": "general",
+          "errors": ["El email o la contraseña son incorrectos"],
+          "value": null,
+        },
+      ],
+    );
   }
 
   @override
   Future<UserModel> register({required RegisterParams params}) async {
     await Future.delayed(const Duration(seconds: 1));
+
     if (params.email.isNotEmpty && params.password.length >= 6) {
-      final newUser = UserModel(
+      return UserModel(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         email: params.email,
         firstName: params.firstName,
@@ -242,20 +211,19 @@ class AuthLocalDataSource implements AuthDataSource {
         refreshToken:
             "fake_reg_refresh_token_${DateTime.now().millisecondsSinceEpoch}",
       );
-      return newUser;
-    } else {
-      throw AuthenticationException(
-        message: 'Datos de registro inválidos',
-        statusCode: 400,
-        errors: [
-          {
-            "field": "password",
-            "errors": ["La contraseña debe tener al menos 6 caracteres"],
-            "value": params.password,
-          },
-        ],
-      );
     }
+
+    throw AuthenticationException(
+      message: 'Datos de registro inválidos',
+      statusCode: 400,
+      errors: [
+        {
+          "field": "password",
+          "errors": ["La contraseña debe tener al menos 6 caracteres"],
+          "value": params.password,
+        },
+      ],
+    );
   }
 
   @override

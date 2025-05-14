@@ -55,7 +55,7 @@ class DioClient {
     }
 
     if (!shouldProceed) {
-      throw NetworkException('No hay conexión a internet');
+      throw NetworkException(message: 'No hay conexión a internet');
     }
 
     try {
@@ -69,7 +69,7 @@ class DioClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } on SocketException {
-      throw NetworkException('No hay conexión a internet');
+      throw NetworkException(message: 'No hay conexión a internet');
     } catch (e) {
       throw UnknownException(message: e.toString());
     }
@@ -94,7 +94,7 @@ class DioClient {
     }
 
     if (!shouldProceed) {
-      throw NetworkException('No hay conexión a internet');
+      throw NetworkException(message: 'No hay conexión a internet');
     }
 
     try {
@@ -109,7 +109,7 @@ class DioClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } on SocketException {
-      throw NetworkException('No hay conexión a internet');
+      throw NetworkException(message: 'No hay conexión a internet');
     } catch (e) {
       throw UnknownException(message: e.toString());
     }
@@ -120,18 +120,18 @@ class DioClient {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return NetworkException('Tiempo de espera agotado');
+        return NetworkException(message: 'Tiempo de espera agotado');
       case DioExceptionType.badResponse:
         throw error;
       case DioExceptionType.cancel:
-        return ServerException('Solicitud cancelada');
+        return ServerException(message: 'Solicitud cancelada');
       case DioExceptionType.connectionError:
-        return NetworkException('Error de conexión');
+        return NetworkException(message: 'Error de conexión');
       case DioExceptionType.badCertificate:
-        return ServerException('Certificado inválido');
+        return ServerException(message: 'Certificado inválido');
       case DioExceptionType.unknown:
         if (error.error is SocketException) {
-          return NetworkException('No hay conexión a internet');
+          return NetworkException(message: 'No hay conexión a internet');
         }
         return UnknownException(message: error.message ?? 'Error desconocido');
     }

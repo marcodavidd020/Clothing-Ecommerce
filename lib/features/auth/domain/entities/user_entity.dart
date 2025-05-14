@@ -1,5 +1,7 @@
+import 'package:equatable/equatable.dart';
+
 /// Representa la entidad de usuario en el dominio.
-class UserEntity {
+class UserEntity extends Equatable {
   /// ID único del usuario.
   final String id;
 

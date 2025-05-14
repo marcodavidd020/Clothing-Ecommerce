@@ -40,7 +40,7 @@ class ProductLocalDataSource implements ProductDataSource {
       return productsList;
     } catch (e) {
       throw CacheException(
-        // message: 'Error al cargar los productos más vendidos: ${e.toString()}',
+        message: 'Error al cargar los productos más vendidos: ${e.toString()}',
       );
     }
   }
@@ -68,7 +68,7 @@ class ProductLocalDataSource implements ProductDataSource {
       return productsList;
     } catch (e) {
       throw CacheException(
-        // message: 'Error al cargar los productos nuevos: ${e.toString()}',
+        message: 'Error al cargar los productos nuevos: ${e.toString()}',
       );
     }
   }
@@ -88,7 +88,7 @@ class ProductLocalDataSource implements ProductDataSource {
       }
     } catch (e) {
       throw CacheException(
-        // message: 'Error al cargar productos por categoría: ${e.toString()}',
+        message: 'Error al cargar productos por categoría: ${e.toString()}',
       );
     }
   }

@@ -29,11 +29,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return Left(AuthenticationFailure(message: errorMessage));
     } on ServerException catch (e) {
-      return Left(
-        ServerFailure(message: e.message ?? 'Error del servidor'),
-      );
+      return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message ?? 'Error de red'));
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
       return Left(
         UnknownFailure(
@@ -60,17 +58,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return Left(AuthenticationFailure(message: errorMessage));
     } on ServerException catch (e) {
-      return Left(
-        ServerFailure(
-          message: e.message ?? 'Error del servidor al registrar',
-        ),
-      );
+      return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {
-      return Left(
-        NetworkFailure(
-          message: e.message ?? 'Error de red al registrar',
-        ),
-      );
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
       return Left(
         UnknownFailure(
@@ -88,17 +78,9 @@ class AuthRepositoryImpl implements AuthRepository {
     } on AuthenticationException catch (e) { // Se mantiene como AuthenticationFailure porque es específico de auth
       return Left(AuthenticationFailure(message: e.message));
     } on ServerException catch (e) {
-      return Left(
-        ServerFailure(
-          message: e.message ?? 'Error del servidor al cerrar sesión',
-        ),
-      );
+      return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {
-      return Left(
-        NetworkFailure(
-          message: e.message ?? 'Error de red al cerrar sesión',
-        ),
-      );
+      return Left(NetworkFailure(message: e.message));
     } catch (e) {
       return Left(
         UnknownFailure(
