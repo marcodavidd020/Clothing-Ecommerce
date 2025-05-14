@@ -46,6 +46,7 @@ class AppStrings {
   static const String passwordHint = 'Password';
   static const String firstnameHint = 'Firstname';
   static const String lastnameHint = 'Lastname';
+  static const String phoneHint = 'Phone Number (optional)';
   // static const String searchHint = 'Search...'; // Ejemplo si se necesita para SearchBarWidget
 
   // --- Mensajes de Validación de Formularios --- ///
@@ -55,6 +56,7 @@ class AppStrings {
   static const String invalidPasswordError = 'La contraseña debe tener al menos 6 caracteres';
   static const String enterFirstnameError = 'Por favor ingresa Firstname';
   static const String enterLastnameError = 'Por favor ingresa Lastname';
+  static const String invalidPhoneError = 'Por favor ingresa un número de teléfono válido';
 
   // --- Categorías (ejemplos, podrían venir de un backend) --- ///
   static const String categoriesTitle = 'Categories';

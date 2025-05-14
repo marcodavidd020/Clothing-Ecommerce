@@ -16,6 +16,9 @@ class InjectionContainer {
 
   /// Inicializa el contenedor de inyección de dependencias
   static Widget init({required Widget child}) {
+    // Registrar dependencias básicas (network, storage, etc.)
+    RepositoryModule.register(sl);
+
     // Registrar todos los módulos en GetIt
     HomeDIContainer.register(sl);
     AuthDIContainer.register(sl); // Registrar AuthDIContainer

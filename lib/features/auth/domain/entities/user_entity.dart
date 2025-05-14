@@ -2,9 +2,25 @@
 class UserEntity {
   final String id;
   final String email;
-  // Puedes añadir más propiedades como nombre, etc.
+  final String? firstName;
+  final String? lastName;
+  final String? phoneNumber;
+  final bool isActive;
+  final String? avatar;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
-  UserEntity({required this.id, required this.email});
+  UserEntity({
+    required this.id,
+    required this.email,
+    this.firstName,
+    this.lastName,
+    this.phoneNumber,
+    this.isActive = false,
+    this.avatar,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   @override
   bool operator ==(Object other) =>

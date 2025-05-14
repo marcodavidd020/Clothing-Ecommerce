@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
+import 'package:flutter_application_ecommerce/core/network/network_info.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/auth/data/data.dart'; // Importar capa de datos
 import 'package:flutter_application_ecommerce/features/auth/domain/domain.dart'; // Importar capa de dominio
@@ -14,14 +16,14 @@ class AuthDIContainer {
     // DataSources
     if (!sl.isRegistered<AuthDataSource>()) {
       sl.registerLazySingleton<AuthDataSource>(
-        () => AuthLocalDataSource(), // Usar la implementación simulada
+        () => AuthRemoteDataSource(dioClient: sl<DioClient>()), // Usar la implementación remota
       );
     }
 
     // Repositories
     if (!sl.isRegistered<AuthRepository>()) {
       sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(localDataSource: sl()), // Inyectar DataSource
+        () => AuthRepositoryImpl(localDataSource: sl<AuthDataSource>()), // Inyectar AuthDataSource correctamente
       );
     }
 

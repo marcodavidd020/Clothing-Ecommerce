@@ -37,6 +37,7 @@ class AuthBlocHandler {
     required String lastName,
     required String email,
     required String password,
+    String? phone,
   }) {
     final authBloc = context.read<AuthBloc>();
     authBloc.add(
@@ -45,6 +46,7 @@ class AuthBlocHandler {
         lastName: lastName,
         email: email,
         password: password,
+        phone: phone,
       ),
     );
   }

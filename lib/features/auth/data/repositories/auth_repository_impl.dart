@@ -8,19 +8,30 @@ import '../../domain/repositories/repositories.dart'; // Importar AuthRepository
 
 /// Implementación del repositorio de autenticación
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthDataSource localDataSource; // Usamos la fuente de datos local simulada
+  final AuthDataSource
+  localDataSource; // Usamos la fuente de datos local simulada
 
   AuthRepositoryImpl({required this.localDataSource});
 
   @override
-  Future<Either<Failure, UserEntity>> signIn({required String email, required String password}) async {
+  Future<Either<Failure, UserEntity>> signIn({
+    required String email,
+    required String password,
+  }) async {
     try {
-      final userModel = await localDataSource.signIn(email: email, password: password);
+      final userModel = await localDataSource.signIn(
+        email: email,
+        password: password,
+      );
       return Right(userModel); // Retornar el UserModel que extiende UserEntity
     } on AuthenticationException catch (e) {
-      return Left(AuthenticationFailure(message: e.message)); // Mapear excepción a Failure
+      return Left(
+        AuthenticationFailure(message: e.message),
+      ); // Mapear excepción a Failure
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString())); // Otros errores inesperados
+      return Left(
+        UnknownFailure(message: e.toString()),
+      ); // Otros errores inesperados
     }
   }
 
@@ -30,6 +41,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String lastName,
     required String email,
     required String password,
+    String? phone,
   }) async {
     try {
       final userModel = await localDataSource.register(
@@ -37,12 +49,21 @@ class AuthRepositoryImpl implements AuthRepository {
         lastName: lastName,
         email: email,
         password: password,
+        phone: phone,
       );
       return Right(userModel); // Retornar el UserModel que extiende UserEntity
     } on AuthenticationException catch (e) {
-      return Left(AuthenticationFailure(message: e.message)); // Mapear excepción a Failure
+      return Left(
+        AuthenticationFailure(message: e.message),
+      ); // Mapear excepción a Failure
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(message: e.message),
+      ); // Mapear excepción de servidor a Failure
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString())); // Otros errores inesperados
+      return Left(
+        UnknownFailure(message: e.toString()),
+      ); // Otros errores inesperados
     }
   }
 
@@ -52,9 +73,13 @@ class AuthRepositoryImpl implements AuthRepository {
       await localDataSource.signOut();
       return const Right(null); // Operación exitosa no retorna valor
     } on AuthenticationException catch (e) {
-      return Left(AuthenticationFailure(message: e.message)); // Mapear excepción a Failure
+      return Left(
+        AuthenticationFailure(message: e.message),
+      ); // Mapear excepción a Failure
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString())); // Otros errores inesperados
+      return Left(
+        UnknownFailure(message: e.toString()),
+      ); // Otros errores inesperados
     }
   }
-} 
+}

@@ -9,7 +9,7 @@ import '../helpers/helpers.dart';
 
 /// Página para el registro de nuevos usuarios.
 ///
-/// Contiene un formulario para ingresar nombre, apellido, email y contraseña.
+/// Contiene un formulario para ingresar nombre, apellido, email, teléfono y contraseña.
 class RegisterPage extends StatefulWidget {
   /// Crea una instancia de [RegisterPage].
   const RegisterPage({super.key});
@@ -27,6 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   @override
   void dispose() {
@@ -36,6 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -49,6 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
         lastName: _lastNameController.text,
         email: _emailController.text,
         password: _passwordController.text,
+        phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
       );
     }
   }
@@ -78,6 +81,8 @@ class _RegisterPageState extends State<RegisterPage> {
           _buildNameFields(),
           AuthUIHelpers.smallVerticalSpace,
           _buildEmailField(),
+          AuthUIHelpers.smallVerticalSpace,
+          _buildPhoneField(),
           AuthUIHelpers.smallVerticalSpace,
           _buildPasswordField(),
           AuthUIHelpers.mediumVerticalSpace,
@@ -111,6 +116,16 @@ class _RegisterPageState extends State<RegisterPage> {
     return AuthUIHelpers.buildEmailField(
       controller: _emailController,
       validator: AuthFormValidators.validateEmail,
+    );
+  }
+
+  /// Construye el campo de teléfono.
+  Widget _buildPhoneField() {
+    return CustomTextField(
+      controller: _phoneController,
+      hintText: AppStrings.phoneHint,
+      validator: AuthFormValidators.validatePhone,
+      keyboardType: TextInputType.phone,
     );
   }
 
