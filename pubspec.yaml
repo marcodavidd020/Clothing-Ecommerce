@@ -45,6 +45,8 @@ dependencies:
   json_serializable: ^6.9.5
   dartz: ^0.10.1
   flutter_spinkit: ^5.2.1
+  logger: ^2.5.0
+  meta: ^1.16.0
 
 dev_dependencies:
   flutter_test:

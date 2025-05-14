@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart'; // Importar meta.dart
 import '../../domain/domain.dart'; // Importar casos de uso y entidades (Ruta corregida)
 import 'package:flutter_application_ecommerce/features/auth/data/models/request/request.dart'; // Importar los modelos de parámetros
+import 'package:flutter_application_ecommerce/core/network/logger.dart'; // Ruta correcta para AppLogger
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -34,37 +35,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       params: event.params, // Usar el objeto params directamente
     );
 
-    result.fold(
-      (failure) => emit(AuthError(message: failure.message)),
-      (user) => emit(
-        Authenticated(),
-      ), // Opcional: Pasar el usuario al estado Authenticated
-    );
+    result.fold((failure) => emit(AuthError(message: failure.message)), (user) {
+      AppLogger.logSuccess('Usuario autenticado exitosamente: ${user.email}');
+      emit(Authenticated());
+    });
   }
 
   Future<void> _onRegisterRequested(
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
-    print('[AuthBloc] Emitting AuthLoading FOR DEBUG');
+    AppLogger.logInfo('[AuthBloc] Emitting AuthLoading');
     emit(AuthLoading());
     // DESCOMENTA LA SIGUIENTE LÍNEA PARA FORZAR LA VISUALIZACIÓN DEL LOADER:
-    // await Future.delayed(const Duration(seconds: 3)); 
-    print('[AuthBloc] Calling registerUseCase.execute');
-    final result = await registerUseCase.execute(
-      params: event.params,
-    );
-    print('[AuthBloc] registerUseCase.execute completed');
+    // await Future.delayed(const Duration(seconds: 3));
+    AppLogger.logInfo('[AuthBloc] Calling registerUseCase.execute');
+    final result = await registerUseCase.execute(params: event.params);
+    AppLogger.logInfo('[AuthBloc] registerUseCase.execute completed');
 
     result.fold(
       (failure) {
-        print('[AuthBloc] Emitting AuthError: ${failure.message}');
+        AppLogger.logError('[AuthBloc] Emitting AuthError', failure.message);
         emit(AuthError(message: failure.message));
       },
       (user) {
-        print('[AuthBloc] Emitting Authenticated');
+        AppLogger.logSuccess(
+          'Usuario registrado y autenticado exitosamente: ${user.email}',
+        );
+        AppLogger.logInfo('[AuthBloc] Emitting Authenticated');
         emit(Authenticated());
-      }
+      },
     );
   }
 
@@ -76,9 +76,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // Usar el caso de uso de cierre de sesión
     final result = await signOutUseCase.execute();
 
-    result.fold(
-      (failure) => emit(AuthError(message: failure.message)),
-      (_) => emit(Unauthenticated()), // No se espera valor de retorno en éxito
-    );
+    result.fold((failure) => emit(AuthError(message: failure.message)), (_) {
+      AppLogger.logSuccess('Usuario cerró sesión exitosamente.');
+      emit(Unauthenticated());
+    });
   }
 }
