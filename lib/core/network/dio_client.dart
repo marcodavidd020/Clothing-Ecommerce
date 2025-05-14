@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_application_ecommerce/core/constants/api_constants.dart';
-import 'package:flutter_application_ecommerce/core/error/exceptions.dart';
 import 'package:flutter_application_ecommerce/core/network/network_info.dart';
 import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
 
@@ -26,10 +23,14 @@ class DioClient {
     dio.options.receiveTimeout = Duration(milliseconds: ApiConstants.receiveTimeout);
     dio.options.headers = ApiConstants.headers;
 
-    // Interceptor para añadir el token de autenticación
+    // Interceptor para añadir el token de autenticación y manejo básico de errores de Dio
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: _onRequest,
+        // Ya no necesitamos el onError aquí si los métodos de solicitud relanzan DioException
+        // y ErrorHandler las procesa en la capa de DataSource.
+        // Si se quisiera un logging global de DioException antes de que lleguen a ErrorHandler,
+        // se podría mantener un onError simple.
       ),
     );
   }
@@ -55,11 +56,11 @@ class DioClient {
 
   /// Comprueba la conexión a Internet antes de realizar una solicitud
   Future<void> _checkConnectivity() async {
-    if (!await networkInfo.isConnected) {
+    if (!debugSkipConnectionCheck && !await networkInfo.isConnected) {
       throw DioException(
         requestOptions: RequestOptions(path: ''),
         error: 'No hay conexión a Internet',
-        type: DioExceptionType.connectionError,
+        type: DioExceptionType.connectionError, // Usar un tipo específico de DioException
       );
     }
   }
@@ -73,13 +74,18 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     await _checkConnectivity();
-    return dio.get(
-      path,
-      queryParameters: queryParameters,
-      options: options,
-      cancelToken: cancelToken,
-      onReceiveProgress: onReceiveProgress,
-    );
+    try {
+      return await dio.get(
+        path,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+      );
+    } on DioException {
+      // Relanzar DioException para que ErrorHandler la procese
+      rethrow;
+    }
   }
 
   /// Realiza una solicitud POST
@@ -93,15 +99,20 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     await _checkConnectivity();
-    return dio.post(
-      path,
-      data: data,
-      queryParameters: queryParameters,
-      options: options,
-      cancelToken: cancelToken,
-      onSendProgress: onSendProgress,
-      onReceiveProgress: onReceiveProgress,
-    );
+    try {
+      return await dio.post(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+    } on DioException {
+      // Relanzar DioException para que ErrorHandler la procese
+      rethrow;
+    }
   }
 
   /// Realiza una solicitud PUT
@@ -115,15 +126,20 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     await _checkConnectivity();
-    return dio.put(
-      path,
-      data: data,
-      queryParameters: queryParameters,
-      options: options,
-      cancelToken: cancelToken,
-      onSendProgress: onSendProgress,
-      onReceiveProgress: onReceiveProgress,
-    );
+    try {
+      return await dio.put(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+    } on DioException {
+      // Relanzar DioException para que ErrorHandler la procese
+      rethrow;
+    }
   }
 
   /// Realiza una solicitud PATCH
@@ -137,15 +153,20 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     await _checkConnectivity();
-    return dio.patch(
-      path,
-      data: data,
-      queryParameters: queryParameters,
-      options: options,
-      cancelToken: cancelToken,
-      onSendProgress: onSendProgress,
-      onReceiveProgress: onReceiveProgress,
-    );
+    try {
+      return await dio.patch(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+    } on DioException {
+      // Relanzar DioException para que ErrorHandler la procese
+      rethrow;
+    }
   }
 
   /// Realiza una solicitud DELETE
@@ -157,34 +178,19 @@ class DioClient {
     CancelToken? cancelToken,
   }) async {
     await _checkConnectivity();
-    return dio.delete(
-      path,
-      data: data,
-      queryParameters: queryParameters,
-      options: options,
-      cancelToken: cancelToken,
-    );
-  }
-
-  Exception _handleDioError(DioException error) {
-    switch (error.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-        return NetworkException(message: 'Tiempo de espera agotado');
-      case DioExceptionType.badResponse:
-        throw error;
-      case DioExceptionType.cancel:
-        return ServerException(message: 'Solicitud cancelada');
-      case DioExceptionType.connectionError:
-        return NetworkException(message: 'Error de conexión');
-      case DioExceptionType.badCertificate:
-        return ServerException(message: 'Certificado inválido');
-      case DioExceptionType.unknown:
-        if (error.error is SocketException) {
-          return NetworkException(message: 'No hay conexión a internet');
-        }
-        return UnknownException(message: error.message ?? 'Error desconocido');
+    try {
+      return await dio.delete(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+      );
+    } on DioException {
+      // Relanzar DioException para que ErrorHandler la procese
+      rethrow;
     }
   }
+
+  // _handleDioError ya no es necesario aquí, ErrorHandler lo maneja en la capa de DataSource.
 }

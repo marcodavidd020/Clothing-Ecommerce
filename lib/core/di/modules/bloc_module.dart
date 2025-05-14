@@ -20,11 +20,13 @@ class BlocModule {
       // Agregar providers del módulo Auth
       ...AuthDIContainer.getBlocProviders(sl),
       BlocProvider<AuthBloc>(
-        create: (context) => AuthBloc(
-          signInUseCase: GetIt.instance.get(),
-          registerUseCase: GetIt.instance.get(),
-          signOutUseCase: GetIt.instance.get(),
-        ),
+        create:
+            (context) => AuthBloc(
+              signInUseCase: GetIt.instance.get(),
+              registerUseCase: GetIt.instance.get(),
+              signOutUseCase: GetIt.instance.get(),
+              checkAuthStatusUseCase: GetIt.instance.get(),
+            ),
       ),
       BlocProvider<CartBloc>(
         create: (context) => CartBloc()..add(const CartLoadRequested()),

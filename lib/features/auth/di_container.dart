@@ -1,15 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/auth/data/data.dart'; // Importar capa de datos
 import 'package:flutter_application_ecommerce/features/auth/domain/domain.dart'; // Importar capa de dominio
-import 'package:flutter_application_ecommerce/features/auth/data/datasources/auth_datasource.dart';
-import 'package:flutter_application_ecommerce/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:flutter_application_ecommerce/features/auth/domain/repositories/repositories.dart';
-import 'package:flutter_application_ecommerce/features/auth/domain/usecases/usecases.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
+import 'package:flutter_application_ecommerce/features/auth/domain/usecases/check_auth_status_usecase.dart'; // Importar CheckAuthStatusUseCase
 
 /// Configuración de inyección de dependencias para el módulo Auth
 class AuthDIContainer {
@@ -51,6 +47,10 @@ class AuthDIContainer {
       sl.registerLazySingleton(() => SignOutUseCase(sl()));
     }
 
+    if (!sl.isRegistered<CheckAuthStatusUseCase>()) { // Registrar CheckAuthStatusUseCase
+      sl.registerLazySingleton(() => CheckAuthStatusUseCase(sl()));
+    }
+
     // BLoC
     if (!sl.isRegistered<AuthBloc>()) {
       sl.registerFactory(
@@ -58,6 +58,7 @@ class AuthDIContainer {
           signInUseCase: sl(),
           registerUseCase: sl(),
           signOutUseCase: sl(),
+          checkAuthStatusUseCase: sl(), // Inyectar CheckAuthStatusUseCase
         ),
       );
     }
