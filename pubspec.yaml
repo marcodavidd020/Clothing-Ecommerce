@@ -48,6 +48,7 @@ dependencies:
   logger: ^2.5.0
   meta: ^1.16.0
   connectivity_plus: ^6.1.4
+  mockito: ^5.4.4
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+  build_runner: ^2.4.9
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
