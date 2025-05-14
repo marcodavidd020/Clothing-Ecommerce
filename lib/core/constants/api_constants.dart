@@ -3,11 +3,11 @@ class ApiConstants {
   static const String pokemonEndpoint = '/pokemon';
   static const String speciesEndpoint = '/pokemon-species';
   static const String evolutionChainEndpoint = '/evolution-chain';
-  
+
   // Auth endpoints
-  static const String authEndpoint = '/api/auth';
+  static const String authEndpoint = '/api/auth/login';
   static const String registerClientEndpoint = '$authEndpoint/register/client';
-  
+
   static const int connectTimeout = 15000;
   static const int receiveTimeout = 15000;
   static const Map<String, String> headers = {

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_application_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_application_ecommerce/core/error/exceptions.dart';
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
@@ -37,10 +35,7 @@ class AuthRemoteDataSource implements AuthDataSource {
     try {
       final response = await dioClient.post(
         '/api/auth/login',
-        data: {
-          'email': email,
-          'password': password,
-        },
+        data: {'email': email, 'password': password},
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -80,7 +75,7 @@ class AuthRemoteDataSource implements AuthDataSource {
         'lastName': lastName,
         'password': password,
       };
-      
+
       // Añadir teléfono solo si se proporciona
       if (phone != null && phone.isNotEmpty) {
         data['phone'] = phone;
@@ -169,7 +164,7 @@ class AuthLocalDataSource implements AuthDataSource {
 
     // Simular lógica de registro (ejemplo simple: cualquier email no vacío y password >= 6 es válido)
     if (email.isNotEmpty && password.length >= 6) {
-      // Simular la creación de un nuevo usuario 
+      // Simular la creación de un nuevo usuario
       final newUser = UserModel(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         email: email,
