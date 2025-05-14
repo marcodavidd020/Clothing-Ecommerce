@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart'; // Importar flutter_bloc
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart'; // Importar NavigationHelper
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 // import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart'; // Importar el HomeBloc
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/category_list_item_widget.dart';
@@ -84,8 +85,8 @@ class AllCategoriesPage extends StatelessWidget {
                           category: category,
                           onTap: () {
                             // Usar NavigationHelper para navegar
-                            NavigationHelper.goToCategoryProducts(context, category.name); // Usar category.name en lugar de category.id
-                            print('Categoría seleccionada para navegar: ${category.name}'); // Corregido category.id a category.name
+                            NavigationHelper.goToCategoryProducts(context, category.name);
+                            AppLogger.logInfo('Categoría seleccionada para navegar: ${category.name}');
                           },
                         );
                       },

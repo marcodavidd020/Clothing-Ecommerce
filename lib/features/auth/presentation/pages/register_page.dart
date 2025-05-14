@@ -7,6 +7,7 @@ import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
 import '../bloc/bloc.dart';
 import '../helpers/helpers.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 /// Página para el registro de nuevos usuarios.
 ///
@@ -62,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
   /// Maneja la acción de resetear contraseña (actualmente placeholder).
   void _onResetPassword() {
     // Implementación futura: navegar a pantalla de reseteo
-    print('Reset password presionado');
+    AppLogger.logInfo('Reset password presionado');
   }
 
   /// Maneja la acción de volver atrás.

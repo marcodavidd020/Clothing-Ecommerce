@@ -3,31 +3,19 @@ import 'package:flutter_application_ecommerce/features/auth/domain/entities/user
 /// Modelo para mapear datos de usuario desde y hacia fuentes de datos.
 class UserModel extends UserEntity {
   /// Crea una instancia de [UserModel].
-  UserModel({
-    required String id,
-    required String email,
-    String? firstName,
-    String? lastName,
-    String? phoneNumber,
-    bool isActive = false,
-    String? avatar,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    String? accessToken,
-    String? refreshToken,
-  }) : super(
-          id: id,
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          phoneNumber: phoneNumber,
-          isActive: isActive,
-          avatar: avatar,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        );
+  const UserModel({
+    required super.id,
+    required super.email,
+    super.firstName,
+    super.lastName,
+    super.phoneNumber,
+    super.isActive = false,
+    super.avatar,
+    super.createdAt,
+    super.updatedAt,
+    super.accessToken,
+    super.refreshToken,
+  });
 
   /// Crea una instancia de [UserModel] desde un mapa (por ejemplo, JSON de perfil de usuario).
   /// Este factory es para un JSON que describe al usuario, no la respuesta de login.

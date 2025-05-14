@@ -1,6 +1,3 @@
-/// Domain repositories for Auth feature
-/// Define repository interfaces here.
-
 import 'package:dartz/dartz.dart'; // Importar Either
 import 'package:flutter_application_ecommerce/core/error/failures.dart'; // Importar Failure
 import '../entities/user_entity.dart'; // Importar UserEntity
@@ -16,6 +13,6 @@ abstract class AuthRepository {
   Future<Either<Failure, UserEntity>> register({required RegisterParams params});
 
   /// Intenta cerrar la sesión actual.
-  /// Retorna Right<Failure, void> si tiene éxito, Left con Failure si falla.
+  /// Retorna `Right<Failure, void>` si tiene éxito, Left con Failure si falla.
   Future<Either<Failure, void>> signOut();
 }

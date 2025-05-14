@@ -3,6 +3,7 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/product_item_widget.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 class CategoryProductsPage extends StatelessWidget {
   final CategoryItemModel category;
@@ -52,11 +53,11 @@ class CategoryProductsPage extends StatelessWidget {
                       product: product,
                       onTap: (product) {
                         // TODO: Navegar a la página de detalle del producto
-                        print('Producto seleccionado: ${product.name}');
+                        AppLogger.logInfo('Producto seleccionado: ${product.name}');
                       },
                       onFavoriteToggle: (product) {
                         // TODO: Implementar lógica de favorito (probablemente con BLoC/Provider)
-                        print('Toggle favorito para: ${product.name}');
+                        AppLogger.logInfo('Toggle favorito para: ${product.name}');
                       },
                     );
                   },

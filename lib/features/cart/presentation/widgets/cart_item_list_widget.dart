@@ -49,8 +49,8 @@ class CartItemListWidget extends StatelessWidget {
               right: CartUI.dismissibleRightPadding,
             ),
             decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(
-                CartUI.dismissibleBackgroundOpacity,
+              color: AppColors.error.withAlpha(
+                (CartUI.dismissibleBackgroundOpacity * 255).round(),
               ),
               borderRadius: BorderRadius.circular(
                 AppDimens.productItemBorderRadius,

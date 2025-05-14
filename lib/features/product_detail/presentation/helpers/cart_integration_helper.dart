@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 /// Helper class for handling cart integration.
 class CartIntegrationHelper {
@@ -10,7 +11,7 @@ class CartIntegrationHelper {
       // Use mayBeOf to avoid throwing exception if not found
       return BlocProvider.of<CartBloc>(context, listen: false);
     } catch (_) {
-      print(
+      AppLogger.logInfo(
         'CartBloc not available in upper context. Will create a local one.',
       );
       return null;

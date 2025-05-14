@@ -7,6 +7,7 @@ import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dar
 import '../../data/models/request/request.dart' show SignInParams;
 import '../bloc/bloc.dart';
 import '../helpers/helpers.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 /// Página de inicio de sesión para usuarios existentes.
 ///
@@ -67,21 +68,21 @@ class _SignInPageState extends State<SignInPage> {
 
   /// Maneja la acción de resetear contraseña (actualmente placeholder)
   void _onResetPassword() {
-    print('Reset password for ${_emailController.text}');
+    AppLogger.logInfo('Reset password for ${_emailController.text}');
     // Implementación futura: NavigationHelper.goToResetPassword(context);
   }
 
   /// Maneja los eventos de botones sociales (actualmente placeholders)
   void _onContinueWithApple() {
-    print('Continue with Apple');
+    AppLogger.logInfo('Continue with Apple');
   }
 
   void _onContinueWithGoogle() {
-    print('Continue with Google');
+    AppLogger.logInfo('Continue with Google');
   }
 
   void _onContinueWithFacebook() {
-    print('Continue with Facebook');
+    AppLogger.logInfo('Continue with Facebook');
   }
 
   /// Maneja la acción de regresar al paso anterior

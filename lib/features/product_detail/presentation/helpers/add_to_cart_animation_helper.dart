@@ -86,14 +86,14 @@ class DirectShrinkAnimation extends StatefulWidget {
   final VoidCallback onComplete;
 
   const DirectShrinkAnimation({
-    Key? key,
+    super.key,
     required this.sourcePosition,
     required this.sourceSize,
     required this.targetPosition,
     required this.targetSize,
     required this.imageUrl,
     required this.onComplete,
-  }) : super(key: key);
+  });
 
   @override
   State<DirectShrinkAnimation> createState() => _DirectShrinkAnimationState();
@@ -189,7 +189,9 @@ class _DirectShrinkAnimationState extends State<DirectShrinkAnimation>
                   widget.imageUrl,
                   fit: BoxFit.contain,
                   // Forzar que la imagen se renderice sin fondo
-                  color: Colors.white.withOpacity(0.99),
+                  color: Colors.white.withAlpha(
+                    (0.99 * 255).round(),
+                  ),
                   colorBlendMode: BlendMode.dstIn,
                 ),
               ),
