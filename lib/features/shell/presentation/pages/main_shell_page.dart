@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/pages/home_page.dart';
+import 'package:flutter_application_ecommerce/features/profile/profile.dart';
 
 /// Widget principal que actúa como un "caparazón" (shell) para la navegación
 /// principal de la aplicación mediante una [BottomNavigationBarWidget].
@@ -24,7 +25,7 @@ class _MainShellPageState extends State<MainShellPage> {
     const HomePage(),
     const Center(child: Text('Notifications Page')), // Placeholder para la página de Notificaciones
     const Center(child: Text('Receipts Page')),      // Placeholder para la página de Recibos/Pedidos
-    const Center(child: Text('Profile Page')),        // Placeholder para la página de Perfil
+    const ProfilePage(),        // Reemplazar Placeholder con ProfilePage
   ];
 
   /// Cambia la página actual cuando se selecciona un ítem en la barra de navegación.

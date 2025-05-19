@@ -18,10 +18,20 @@ class AuthBlocHandler {
     if (state is Authenticated) {
       NavigationHelper.goToMainShell(context);
     } else if (state is RegistrationSuccessNeedSignIn) {
-      AuthUIHelpers.showSuccessMessage(context, "¡Registro exitoso! Por favor, inicia sesión.");
+      AuthUIHelpers.showSuccessMessage(
+        context,
+        "¡Registro exitoso! Por favor, inicia sesión.",
+      );
       NavigationHelper.goToSignIn(context);
     } else if (state is AuthError) {
       AuthUIHelpers.showErrorMessage(context, state.message);
+    } else if (state is Unauthenticated) {
+      // Cerro Sesion
+      AuthUIHelpers.showSuccessMessage(
+        context,
+        "¡Cerrando sesión! Hasta Pronto",
+      );
+      NavigationHelper.goToSignIn(context);
     }
   }
 

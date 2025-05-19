@@ -131,9 +131,6 @@ class AuthRemoteDataSource implements AuthDataSource {
         await authStorage!.clearAuth();
       }
 
-      // En una implementación real, llamaríamos a un endpoint de logout
-      await Future.delayed(const Duration(milliseconds: 500));
-
       AppLogger.logSuccess('Sesión cerrada correctamente');
     } catch (e) {
       AppLogger.logError('Error en signOut', e);
