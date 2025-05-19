@@ -40,6 +40,8 @@ class AppStrings {
   static const String profileIcon = 'assets/icons/profile.svg';
   /// Ruta al icono de corazón.
   static const String heartIcon = 'assets/icons/heart.svg';
+  /// Ruta al icono de flecha derecha.
+  static const String arrowRightIcon = 'assets/icons/arrowright.svg';
 
   // --- Textos Placeholder/Hints para Campos de Formulario --- ///
   static const String emailHint = 'Email Address';

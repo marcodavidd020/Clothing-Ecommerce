@@ -17,9 +17,18 @@ class ProfileStrings {
   static const String termsConditions = 'Terms & Conditions';
   static const String faq = 'FAQ';
   static const String contactSupport = 'Contact Support';
+  static const String address = 'Address';
+  static const String wishlist = 'Wishlist';
+  static const String payment = 'Payment';
+  static const String help = 'Help';
+  static const String support = 'Support';
 
   // Botones
   static const String signOutButton = 'Sign Out';
+  static const String editButton = 'Edit';
+
+  // Placeholders o textos por defecto
+  static const String defaultUserName = 'Usuario';
 
   // Diálogos y Mensajes
   static const String signOutConfirmationTitle = 'Sign Out';
