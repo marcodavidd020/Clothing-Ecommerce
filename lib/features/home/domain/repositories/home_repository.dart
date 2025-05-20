@@ -1,12 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_application_ecommerce/core/error/failures.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/category_item_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 
 /// Repositorio para obtener los datos de la pantalla de inicio
 abstract class HomeRepository {
-  /// Obtiene las categorías para mostrar en la pantalla de inicio
-  Future<Either<Failure, List<CategoryItemModel>>> getCategories();
+  /// Obtiene las categorías desde la API (formato plano)
+  Future<Either<Failure, List<CategoryApiModel>>> getApiCategories();
+
+  /// Obtiene las categorías desde la API (formato árbol)
+  Future<Either<Failure, List<CategoryApiModel>>> getApiCategoryTree();
 
   /// Obtiene los productos más vendidos
   Future<Either<Failure, List<ProductItemModel>>> getTopSellingProducts();

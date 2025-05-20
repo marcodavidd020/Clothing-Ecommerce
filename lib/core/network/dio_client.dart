@@ -19,8 +19,12 @@ class DioClient {
     this.debugSkipConnectionCheck = false,
   }) : _authStorage = authStorage {
     dio.options.baseUrl = ApiConstants.baseUrl;
-    dio.options.connectTimeout = Duration(milliseconds: ApiConstants.connectTimeout);
-    dio.options.receiveTimeout = Duration(milliseconds: ApiConstants.receiveTimeout);
+    dio.options.connectTimeout = Duration(
+      milliseconds: ApiConstants.connectTimeout,
+    );
+    dio.options.receiveTimeout = Duration(
+      milliseconds: ApiConstants.receiveTimeout,
+    );
     dio.options.headers = ApiConstants.headers;
 
     // Interceptor para añadir el token de autenticación y manejo básico de errores de Dio
@@ -60,7 +64,9 @@ class DioClient {
       throw DioException(
         requestOptions: RequestOptions(path: ''),
         error: 'No hay conexión a Internet',
-        type: DioExceptionType.connectionError, // Usar un tipo específico de DioException
+        type:
+            DioExceptionType
+                .connectionError, // Usar un tipo específico de DioException
       );
     }
   }

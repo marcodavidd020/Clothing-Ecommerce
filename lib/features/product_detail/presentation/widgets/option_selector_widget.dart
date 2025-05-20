@@ -23,7 +23,6 @@ class OptionSelectorWidget extends StatelessWidget {
           horizontal: AppDimens.contentPaddingHorizontal,
           vertical: AppDimens.contentPaddingVertical,
         ),
-        margin: const EdgeInsets.only(bottom: AppDimens.vSpace12),
         decoration: BoxDecoration(
           color: AppColors.inputFill,
           borderRadius: BorderRadius.circular(AppDimens.buttonRadius / 4),

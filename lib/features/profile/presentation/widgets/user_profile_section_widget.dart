@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
-import 'package:flutter_application_ecommerce/core/di/service_locator.dart';
 import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
+import 'package:flutter_application_ecommerce/di_container.dart';
 import 'package:flutter_application_ecommerce/features/auth/data/models/user_model.dart';
 import 'package:flutter_application_ecommerce/features/profile/presentation/widgets/user_avatar_widget.dart';
 import 'package:flutter_application_ecommerce/features/profile/presentation/widgets/user_info_card_widget.dart';
@@ -21,7 +21,8 @@ class UserProfileSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<UserModel?>(
-      future: ServiceLocator.sl<AuthStorage>().getUserData(),
+      // future: ServiceLocator.sl<AuthStorage>().getUserData(),
+      future: DIContainer.sl<AuthStorage>().getUserData(),
       builder: (context, snapshot) {
         final user = snapshot.data;
 

@@ -138,11 +138,46 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
     return SearchBarWidget(onTap: widget.onSearchTapped);
   }
 
+  /// Construye la sección de categorías basándose en la categoría raíz seleccionada
   Widget _buildCategoriesSection() {
+    final selectedRootCategory = widget.state.selectedRootCategory;
+
+    if (selectedRootCategory == null) {
+      return const SizedBox.shrink();
+    }
+
+    // Convertir las categorías hijas del modelo API a CategoryItemModel
+    final List<CategoryItemModel> childCategories =
+        selectedRootCategory.children
+            .map(
+              (child) => CategoryItemModel(
+                imageUrl: child.image ?? 'https://via.placeholder.com/150',
+                name: child.name,
+              ),
+            )
+            .toList();
+
+    // Si no hay categorías hijas, mostrar un mensaje
+    if (childCategories.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: AppDimens.vSpace16),
+        child: Center(
+          child: Text(
+            'No hay subcategorías disponibles',
+            style: TextStyle(
+              color: AppColors.textDark,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Usar CategoriesSectionWidget para mostrar las categorías en formato carrusel
     return CategoriesSectionWidget(
-      categories: widget.state.categories,
-      onSeeAllPressed: widget.onSeeAllCategoriesPressed,
+      categories: childCategories,
       onCategoryTap: widget.onCategoryTapped,
+      onSeeAllPressed: widget.onSeeAllCategoriesPressed,
     );
   }
 

@@ -15,6 +15,9 @@ class AppRoutes {
   /// Ruta para la página de carrito
   static const String cart = '/cart';
 
+  /// Ruta para la página de perfil
+  static const String profile = '/profile';
+
   /// Ruta para las categorias
   static const String categories = '/categories';
 
@@ -34,6 +37,7 @@ class AppRoutes {
   static const String mainName = 'main';
   static const String homeName = 'home';
   static const String cartName = 'cart';
+  static const String profileName = 'profile';
   static const String productDetailName = 'product-detail';
   static const String categoriesName = 'categories';
   static const String categoryProductsName = 'category-products';

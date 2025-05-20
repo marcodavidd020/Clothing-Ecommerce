@@ -25,6 +25,11 @@ class NavigationHelper {
     AppRouter.goToCart(context);
   }
 
+  /// Navegar a la página de perfil
+  static void goToProfile(BuildContext context) {
+    AppRouter.goToProfile(context);
+  }
+
   /// Navegar a la página de detalle de producto
   /// Si ya existe una página para este producto, la anterior será cerrada
   /// y se abrirá una nueva

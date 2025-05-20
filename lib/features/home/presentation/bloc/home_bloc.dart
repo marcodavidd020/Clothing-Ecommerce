@@ -8,32 +8,55 @@ part 'home_state.dart';
 
 /// BLoC para manejar el estado de la pantalla de inicio
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final GetCategoriesUseCase _getCategoriesUseCase;
   final GetTopSellingProductsUseCase _getTopSellingProductsUseCase;
   final GetNewInProductsUseCase _getNewInProductsUseCase;
   final GetProductsByCategoryUseCase _getProductsByCategoryUseCase;
+  final GetApiCategoriesTreeUseCase _getApiCategoriesTreeUseCase;
 
   HomeBloc({
-    required GetCategoriesUseCase getCategoriesUseCase,
     required GetTopSellingProductsUseCase getTopSellingProductsUseCase,
     required GetNewInProductsUseCase getNewInProductsUseCase,
     required GetProductsByCategoryUseCase getProductsByCategoryUseCase,
-  }) : _getCategoriesUseCase = getCategoriesUseCase,
-       _getTopSellingProductsUseCase = getTopSellingProductsUseCase,
+    required GetApiCategoriesTreeUseCase getApiCategoriesTreeUseCase,
+  }) : _getTopSellingProductsUseCase = getTopSellingProductsUseCase,
        _getNewInProductsUseCase = getNewInProductsUseCase,
        _getProductsByCategoryUseCase = getProductsByCategoryUseCase,
+       _getApiCategoriesTreeUseCase = getApiCategoriesTreeUseCase,
        super(HomeInitial()) {
     // Eventos para cargar datos al iniciar
     on<LoadHomeDataEvent>(_onLoadHomeData);
 
     // Eventos para cargar datos específicos
     on<LoadCategoriesEvent>(_onLoadCategories);
+    on<LoadApiCategoriesTreeEvent>(_onLoadApiCategoriesTree);
     on<LoadTopSellingProductsEvent>(_onLoadTopSellingProducts);
     on<LoadNewInProductsEvent>(_onLoadNewInProducts);
     on<LoadProductsByCategoryEvent>(_onLoadProductsByCategory);
 
     // Eventos de favoritos
     on<ToggleFavoriteEvent>(_onToggleFavorite);
+
+    // Eventos de selección de categoría raíz
+    on<SelectRootCategoryEvent>(_onSelectRootCategory);
+  }
+
+  // Nuevo manejador para seleccionar una categoría raíz
+  void _onSelectRootCategory(
+    SelectRootCategoryEvent event,
+    Emitter<HomeState> emit,
+  ) {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      emit(
+        HomeLoaded(
+          categories: currentState.categories,
+          apiCategories: currentState.apiCategories,
+          topSellingProducts: currentState.topSellingProducts,
+          newInProducts: currentState.newInProducts,
+          selectedRootCategory: event.category,
+        ),
+      );
+    }
   }
 
   // Manejador para cargar todos los datos de la pantalla de inicio
@@ -43,38 +66,49 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(HomeLoading());
 
-    // Obtener datos directamente sin usar Future.wait
-    final categoriesResult = await _getCategoriesUseCase.execute();
+    // Intentamos cargar categorías desde la API primero
+    final apiTreeResult = await _getApiCategoriesTreeUseCase.execute();
     final topSellingResult = await _getTopSellingProductsUseCase.execute();
     final newInResult = await _getNewInProductsUseCase.execute();
 
-    // Verificamos si hay errores
-    if (categoriesResult.isLeft() ||
-        topSellingResult.isLeft() ||
-        newInResult.isLeft()) {
+    // Usamos categorías de API si están disponibles, de lo contrario usamos las locales
+    final List<CategoryItemModel> categories = [];
+
+    // Si tenemos categorías del API, convertirlas a CategoryItemModel
+    apiTreeResult.fold(
+      (failure) {
+        // Si falla API, usamos categorías locales
+      },
+      (apiCategories) {
+        // Convertimos categorías de API a formato compatible
+        for (var category in apiCategories) {
+          categories.add(category.toCategoryItemModel());
+          // También podríamos agregar categorías hijas si queremos mostrarlas
+          for (var child in category.children) {
+            categories.add(child.toCategoryItemModel());
+          }
+        }
+      },
+    );
+
+    // Verificamos si hay errores en productos
+    if (topSellingResult.isLeft() || newInResult.isLeft()) {
       // Obtenemos el primer error que encontremos
       late Failure failure;
 
-      categoriesResult.fold((l) => failure = l, (r) => null);
-
-      if (categoriesResult.isRight()) {
+      if (topSellingResult.isLeft()) {
         topSellingResult.fold((l) => failure = l, (r) => null);
-      }
-
-      if (categoriesResult.isRight() && topSellingResult.isRight()) {
+      } else {
         newInResult.fold((l) => failure = l, (r) => null);
       }
 
-      emit(HomeError(message: failure.message));
+      emit(HomeError(message: failure.message, categories: categories));
       return;
     }
 
-    // Extraemos los datos si no hay errores
-    late final List<CategoryItemModel> categories;
+    // Extraemos los datos de productos
     late final List<ProductItemModel> topSellingProducts;
     late final List<ProductItemModel> newInProducts;
-
-    categoriesResult.fold((l) => categories = [], (r) => categories = r);
 
     topSellingResult.fold(
       (l) => topSellingProducts = [],
@@ -87,10 +121,95 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(
       HomeLoaded(
         categories: categories,
+        apiCategories: apiTreeResult.fold((l) => [], (r) => r),
         topSellingProducts: topSellingProducts,
         newInProducts: newInProducts,
+        selectedRootCategory: apiTreeResult.fold(
+          (l) => null,
+          (r) => r.isNotEmpty ? r[0] : null,
+        ),
       ),
     );
+  }
+
+  // Manejador para cargar las categorías de la API
+  Future<void> _onLoadApiCategoriesTree(
+    LoadApiCategoriesTreeEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+
+      emit(
+        HomeLoadingPartial(
+          categories: currentState.categories,
+          apiCategories: [],
+          topSellingProducts: currentState.topSellingProducts,
+          newInProducts: currentState.newInProducts,
+          isLoadingCategories: true,
+          isLoadingTopSelling: false,
+          isLoadingNewIn: false,
+          selectedRootCategory: currentState.selectedRootCategory,
+        ),
+      );
+      print('Emitido estado HomeLoadingPartial');
+    } else {
+      print('Estado actual no es HomeLoaded, sino: ${state.runtimeType}');
+    }
+
+    print('Llamando a GetApiCategoriesTreeUseCase.execute()');
+    final result = await _getApiCategoriesTreeUseCase.execute();
+    print('GetApiCategoriesTreeUseCase.execute() completado');
+
+    result.fold(
+      (failure) {
+        print('Error en carga de categorías API: ${failure.message}');
+        if (state is HomeLoadingPartial) {
+          final currentState = state as HomeLoadingPartial;
+          emit(
+            HomeError(
+              message: failure.message,
+              categories: currentState.categories,
+              apiCategories: [],
+              topSellingProducts: currentState.topSellingProducts,
+              newInProducts: currentState.newInProducts,
+            ),
+          );
+        } else {
+          emit(HomeError(message: failure.message));
+        }
+      },
+      (apiCategories) {
+        print('Categorías API cargadas exitosamente: ${apiCategories.length}');
+        if (state is HomeLoadingPartial) {
+          final currentState = state as HomeLoadingPartial;
+          emit(
+            HomeLoaded(
+              categories: currentState.categories,
+              apiCategories: apiCategories,
+              topSellingProducts: currentState.topSellingProducts,
+              newInProducts: currentState.newInProducts,
+              selectedRootCategory:
+                  apiCategories.isNotEmpty ? apiCategories[0] : null,
+            ),
+          );
+          print('Emitido estado HomeLoaded desde HomeLoadingPartial');
+        } else {
+          emit(
+            HomeLoaded(
+              categories: [],
+              apiCategories: apiCategories,
+              topSellingProducts: [],
+              newInProducts: [],
+              selectedRootCategory:
+                  apiCategories.isNotEmpty ? apiCategories[0] : null,
+            ),
+          );
+          print('Emitido estado HomeLoaded desde otro estado');
+        }
+      },
+    );
+    print('HomeBloc._onLoadApiCategoriesTree completado');
   }
 
   // Manejador para cargar solo las categorías
@@ -104,17 +223,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         HomeLoadingPartial(
           categories: [],
+          apiCategories: currentState.apiCategories,
           topSellingProducts: currentState.topSellingProducts,
           newInProducts: currentState.newInProducts,
           isLoadingCategories: true,
           isLoadingTopSelling: false,
           isLoadingNewIn: false,
+          selectedRootCategory: currentState.selectedRootCategory,
         ),
       );
     } else {
       emit(
         HomeLoadingPartial(
           categories: [],
+          apiCategories: [],
           topSellingProducts: [],
           newInProducts: [],
           isLoadingCategories: true,
@@ -125,47 +247,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     // Realizamos la llamada al caso de uso
-    final result = await _getCategoriesUseCase.execute();
-
-    result.fold(
-      (failure) {
-        // En caso de error, emitimos el estado de error pero mantenemos los datos anteriores
-        if (state is HomeLoadingPartial) {
-          final currentState = state as HomeLoadingPartial;
-          emit(
-            HomeError(
-              message: failure.message,
-              categories: currentState.categories,
-              topSellingProducts: currentState.topSellingProducts,
-              newInProducts: currentState.newInProducts,
-            ),
-          );
-        } else {
-          emit(HomeError(message: failure.message));
-        }
-      },
-      (categories) {
-        // En caso de éxito, actualizamos el estado con las nuevas categorías
-        if (state is HomeLoadingPartial) {
-          final currentState = state as HomeLoadingPartial;
-          emit(
-            HomeLoaded(
-              categories: categories,
-              topSellingProducts: currentState.topSellingProducts,
-              newInProducts: currentState.newInProducts,
-            ),
-          );
-        } else {
-          emit(
-            HomeLoaded(
-              categories: categories,
-              topSellingProducts: [],
-              newInProducts: [],
-            ),
-          );
-        }
-      },
-    );
   }
 
   // Manejador para cargar solo los productos más vendidos
@@ -179,17 +260,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         HomeLoadingPartial(
           categories: currentState.categories,
+          apiCategories: currentState.apiCategories,
           topSellingProducts: [],
           newInProducts: currentState.newInProducts,
           isLoadingCategories: false,
           isLoadingTopSelling: true,
           isLoadingNewIn: false,
+          selectedRootCategory: currentState.selectedRootCategory,
         ),
       );
     } else {
       emit(
         HomeLoadingPartial(
           categories: [],
+          apiCategories: [],
           topSellingProducts: [],
           newInProducts: [],
           isLoadingCategories: false,
@@ -209,6 +293,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             HomeError(
               message: failure.message,
               categories: currentState.categories,
+              apiCategories: currentState.apiCategories,
               topSellingProducts: currentState.topSellingProducts,
               newInProducts: currentState.newInProducts,
             ),
@@ -223,16 +308,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           emit(
             HomeLoaded(
               categories: currentState.categories,
+              apiCategories: currentState.apiCategories,
               topSellingProducts: products,
               newInProducts: currentState.newInProducts,
+              selectedRootCategory: currentState.selectedRootCategory,
             ),
           );
         } else {
           emit(
             HomeLoaded(
               categories: [],
+              apiCategories: [],
               topSellingProducts: products,
               newInProducts: [],
+              selectedRootCategory: null,
             ),
           );
         }
@@ -251,17 +340,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         HomeLoadingPartial(
           categories: currentState.categories,
+          apiCategories: currentState.apiCategories,
           topSellingProducts: currentState.topSellingProducts,
           newInProducts: [],
           isLoadingCategories: false,
           isLoadingTopSelling: false,
           isLoadingNewIn: true,
+          selectedRootCategory: currentState.selectedRootCategory,
         ),
       );
     } else {
       emit(
         HomeLoadingPartial(
           categories: [],
+          apiCategories: [],
           topSellingProducts: [],
           newInProducts: [],
           isLoadingCategories: false,
@@ -281,6 +373,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             HomeError(
               message: failure.message,
               categories: currentState.categories,
+              apiCategories: currentState.apiCategories,
               topSellingProducts: currentState.topSellingProducts,
               newInProducts: currentState.newInProducts,
             ),
@@ -295,16 +388,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           emit(
             HomeLoaded(
               categories: currentState.categories,
+              apiCategories: currentState.apiCategories,
               topSellingProducts: currentState.topSellingProducts,
               newInProducts: products,
+              selectedRootCategory: currentState.selectedRootCategory,
             ),
           );
         } else {
           emit(
             HomeLoaded(
               categories: [],
+              apiCategories: [],
               topSellingProducts: [],
               newInProducts: products,
+              selectedRootCategory: null,
             ),
           );
         }
@@ -366,8 +463,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         HomeLoaded(
           categories: currentState.categories,
+          apiCategories: currentState.apiCategories,
           topSellingProducts: updatedTopSellingProducts,
           newInProducts: updatedNewInProducts,
+          selectedRootCategory: currentState.selectedRootCategory,
         ),
       );
     }

@@ -54,7 +54,11 @@ class AppLogger {
   }
 
   /// Log de errores generales
-  static void logError(String message, [dynamic error, StackTrace? stackTrace]) {
+  static void logError(
+    String message, [
+    dynamic error,
+    StackTrace? stackTrace,
+  ]) {
     if (kDebugMode) {
       _logger.e('❌ Error: $message', error: error, stackTrace: stackTrace);
     }
@@ -71,6 +75,13 @@ class AppLogger {
   static void logSuccess(String message) {
     if (kDebugMode) {
       _logger.i('✅ Success: $message');
+    }
+  }
+
+  /// Log de advertencia
+  static void logWarning(String message) {
+    if (kDebugMode) {
+      _logger.w('⚠️ Warning: $message');
     }
   }
 }

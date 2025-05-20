@@ -9,6 +9,7 @@ import 'package:flutter_application_ecommerce/features/shell/presentation/pages/
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/pages/all_categories_page.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/presentation.dart';
+import 'package:flutter_application_ecommerce/features/profile/presentation/pages/profile_page.dart';
 /// Configuración del sistema de rutas de la aplicación con GoRouter.
 ///
 /// Siguiendo las mejores prácticas:
@@ -48,7 +49,7 @@ class AppRouter {
     path: AppRoutes.main,
     name: AppRoutes.mainName,
     builder: (context, state) => const MainShellPage(),
-    routes: [_homeRoute, _cartRoute, _categoriesRoute],
+    routes: [_homeRoute, _cartRoute, _profileRoute, _categoriesRoute],
   );
 
   /// Ruta de inicio
@@ -63,6 +64,13 @@ class AppRouter {
     path: 'cart',
     name: AppRoutes.cartName,
     builder: (context, state) => const CartPage(),
+  );
+
+  /// Ruta de perfil
+  static final GoRoute _profileRoute = GoRoute(
+    path: 'profile',
+    name: AppRoutes.profileName,
+    builder: (context, state) => const ProfilePage(),
   );
 
   /// Ruta de categorías
@@ -125,6 +133,11 @@ class AppRouter {
   /// Navega a la página de carrito
   static void goToCart(BuildContext context) {
     context.goNamed(AppRoutes.cartName);
+  }
+
+  /// Navega a la página de perfil
+  static void goToProfile(BuildContext context) {
+    context.goNamed(AppRoutes.profileName);
   }
 
   /// Empuja la página de carrito
