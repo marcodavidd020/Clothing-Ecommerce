@@ -9,7 +9,7 @@ import 'package:flutter_application_ecommerce/features/shell/presentation/pages/
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/pages/all_categories_page.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/presentation.dart';
-
+import 'package:flutter_application_ecommerce/features/profile/presentation/pages/profile_page.dart';
 /// Configuración del sistema de rutas de la aplicación con GoRouter.
 ///
 /// Siguiendo las mejores prácticas:
@@ -101,6 +101,7 @@ class AppRouter {
     path: AppRoutes.signIn,
     name: AppRoutes.signInName,
     builder: (context, state) => const SignInPage(),
+    // builder: (context, state) => const ProfilePage(),
   );
 
   /// Ruta de registro
