@@ -15,7 +15,7 @@ class CheckAuthStatusUseCase {
   Future<Either<Failure, bool>> execute() async {
     // Primero, verificamos si el almacenamiento local indica que está logueado
     final isAuthenticatedResult = await repository.isAuthenticated();
-    
+
     return isAuthenticatedResult.fold(
       (failure) => Left(failure), // Propagar el error si la comprobación falla
       (isLoggedIn) async {
@@ -26,8 +26,11 @@ class CheckAuthStatusUseCase {
           // Por simplicidad, si isLoggedIn es true, intentamos obtener el usuario.
           final userResult = await repository.getCurrentUser();
           return userResult.fold(
-            (failure) => const Right(false), // Si no se puede obtener el usuario, tratamos como no autenticado
-            (user) => Right(user.accessToken != null && user.accessToken!.isNotEmpty),
+            (failure) => const Right(
+              false,
+            ), // Si no se puede obtener el usuario, tratamos como no autenticado
+            (user) =>
+                Right(user.accessToken != null && user.accessToken!.isNotEmpty),
           );
         }
         return const Right(false); // No está logueado según el almacenamiento
@@ -38,9 +41,10 @@ class CheckAuthStatusUseCase {
   /// Alternativa: Si solo se necesita UserEntity para popular el AuthBloc
   Future<Either<Failure, UserEntity?>> executeGetUser() async {
     final isAuthenticatedResult = await repository.isAuthenticated();
-    if (isAuthenticatedResult.isLeft() || !isAuthenticatedResult.getOrElse(() => false)) {
+    if (isAuthenticatedResult.isLeft() ||
+        !isAuthenticatedResult.getOrElse(() => false)) {
       return const Right(null); // No autenticado o error al chequear
     }
     return repository.getCurrentUser();
   }
-} 
+}

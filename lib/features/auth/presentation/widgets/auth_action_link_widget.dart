@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/features/auth/core/constants/auth_strings.dart';
 
 /// Widget que muestra un enlace de acción para la autenticación.
 ///
@@ -20,8 +21,8 @@ class AuthActionLinkWidget extends StatelessWidget {
   /// Construye un enlace para crear una cuenta nueva
   factory AuthActionLinkWidget.createAccount({required VoidCallback onTap}) {
     return AuthActionLinkWidget(
-      mainText: AppStrings.dontHaveAccount,
-      linkText: AppStrings.createAccountLabel,
+      mainText: AuthStrings.dontHaveAccountText,
+      linkText: AuthStrings.createAccountButton,
       onLinkTap: onTap,
     );
   }
@@ -29,8 +30,8 @@ class AuthActionLinkWidget extends StatelessWidget {
   /// Construye un enlace para resetear la contraseña
   factory AuthActionLinkWidget.resetPassword({required VoidCallback onTap}) {
     return AuthActionLinkWidget(
-      mainText: AppStrings.forgotPasswordLabel,
-      linkText: AppStrings.resetLabel,
+      mainText: AuthStrings.forgotPasswordButton,
+      linkText: AuthStrings.resetButton,
       onLinkTap: onTap,
     );
   }

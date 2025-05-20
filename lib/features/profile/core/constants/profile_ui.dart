@@ -5,7 +5,7 @@ class ProfileUI {
   // Espaciado
   static const double sectionSpacing = 24.0;
   static const double itemSpacing = 16.0;
-  static const double contentPadding = 16.0;
+  static const double contentPadding = 24.0;
 
   // Iconos
   static const IconData editProfileIcon = Icons.person_outline;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_ecommerce/features/auth/core/constants/auth_strings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
@@ -124,7 +125,7 @@ class _SignInPageState extends State<SignInPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AuthUIHelpers.smallVerticalSpace,
-            AuthUIHelpers.buildAuthTitle(AppStrings.signInTitle),
+            AuthUIHelpers.buildAuthTitle(AuthStrings.signInTitle),
             AuthUIHelpers.mediumVerticalSpace,
             _buildCurrentFormStep(isLoading),
             AuthUIHelpers.smallVerticalSpace,

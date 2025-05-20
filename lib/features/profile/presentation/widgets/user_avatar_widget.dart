@@ -55,7 +55,7 @@ class UserAvatarWidget extends StatelessWidget {
                     child:
                         hasValidAvatar
                             ? NetworkImageWithPlaceholder(
-                              imageUrl: avatarUrl!,
+                              imageUrl: avatarUrl,
                               width: size,
                               height: size,
                               fit: BoxFit.cover,

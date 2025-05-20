@@ -2,22 +2,7 @@
 ///
 /// Centralizar los strings facilita la localización y el mantenimiento.
 class AppStrings {
-  // --- Títulos de Pantalla --- ///
-  static const String signInTitle = 'Sign in';
-  static const String registerTitle = 'Create Account';
-
-  // --- Textos de Botones y Acciones --- ///
-  static const String continueLabel = 'Continue';
-  static const String createAccountLabel = 'Create One';
-  static const String forgotPasswordLabel = 'Forgot Password ? ';
-  static const String resetLabel = 'Reset';
-  static const String dontHaveAccount = 'Dont have an Account ? ';
   static const String seeAllLabel = 'See All';
-
-  // --- Textos para Botones Sociales --- ///
-  static const String continueWithApple = 'Continue With Apple';
-  static const String continueWithGoogle = 'Continue With Google';
-  static const String continueWithFacebook = 'Continue With Facebook';
 
   // --- Rutas de Iconos (considerar mover a una clase AppAssets si crece) --- ///
   /// Ruta al icono de retroceso.
@@ -102,4 +87,7 @@ class AppStrings {
 
   // Generic Error
   static const String somethingWentWrong = 'Something went wrong. Please try again.';
+
+  // Error Loading Data
+  static const String errorLoadingData = 'Error loading data';
 }

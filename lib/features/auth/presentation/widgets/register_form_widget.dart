@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
+import 'package:flutter_application_ecommerce/features/auth/core/constants/auth_strings.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/helpers/helpers.dart';
 
 /// Widget que muestra el formulario completo de registro.
@@ -101,7 +102,7 @@ class RegisterFormWidget extends StatelessWidget {
   /// Construye el botón de envío.
   Widget _buildSubmitButton() {
     return AuthUIHelpers.buildPrimaryButton(
-      label: AppStrings.continueLabel,
+      label: AuthStrings.continueButton,
       onPressed: onSubmit,
       isLoading: isLoading,
     );
