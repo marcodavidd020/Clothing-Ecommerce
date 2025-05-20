@@ -3,6 +3,7 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/cart/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/cart/core/core.dart';
+import 'package:flutter_application_ecommerce/features/cart/presentation/widgets/quantity_selector_widget.dart';
 
 /// Widget que representa un ítem en el carrito de compras.
 class CartItemWidget extends StatelessWidget {
@@ -121,74 +122,18 @@ class CartItemWidget extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    _buildQuantitySelector(),
+                    CartQuantitySelectorWidget(
+                      quantity: item.quantity,
+                      onQuantityChanged: onQuantityChanged,
+                      minValue: 1,
+                      maxValue: 99,
+                    ),
                   ],
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  /// Construye el selector de cantidad con botones + y -.
-  Widget _buildQuantitySelector() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(
-          CartUI.cartItemQuantitySelectorBorderRadius,
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      child: Row(
-        children: [
-          _buildQuantityButton(
-            icon: Icons.remove,
-            onPressed: () => onQuantityChanged(item.quantity - 1),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              item.quantity.toString(),
-              style: AppTextStyles.body.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-          ),
-          _buildQuantityButton(
-            icon: Icons.add,
-            onPressed: () => onQuantityChanged(item.quantity + 1),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Construye un botón para la selección de cantidad.
-  Widget _buildQuantityButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(CartUI.cartItemButtonRadius),
-        child: Container(
-          padding: EdgeInsets.all(CartUI.cartItemButtonSize),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            size: CartUI.cartItemButtonIconSize,
-            color: AppColors.primary,
-          ),
-        ),
       ),
     );
   }

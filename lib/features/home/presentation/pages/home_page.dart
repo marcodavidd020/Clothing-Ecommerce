@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
-import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
 
 /// Página principal (Home) de la aplicación.
@@ -20,10 +20,8 @@ class HomePage extends StatefulWidget {
 }
 
 /// Estado para [HomePage] que maneja la lógica de la UI.
-/// Las animaciones de entrada ahora son gestionadas por [AnimatedStaggeredList].
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
-  bool _showFade = true;
 
   /// Variable para prevenir navegaciones duplicadas
   bool _isNavigatingToDetail = false;
@@ -34,35 +32,17 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
     // Disparar evento para cargar datos iniciales
     context.read<HomeBloc>().add(LoadHomeDataEvent());
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollListener() {
-    const double scrollThreshold = 10.0;
-    bool isAtBottom =
-        _scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - scrollThreshold;
-
-    if (isAtBottom && _showFade) {
-      setState(() {
-        _showFade = false;
-      });
-    } else if (!isAtBottom && !_showFade) {
-      setState(() {
-        _showFade = true;
-      });
-    }
-  }
-
+  /// Cambia el género seleccionado y dispara evento para actualizar contenido
   void _selectGender(String gender) {
     setState(() {
       _selectedGender = gender;
@@ -70,22 +50,37 @@ class _HomePageState extends State<HomePage> {
     // TODO: Implementar lógica para filtrar por género usando el BLoC
   }
 
+  /// Navegación a la pantalla de carrito
   void _onBagPressed() {
     NavigationHelper.goToCart(context);
   }
 
+  /// Navegación a la pantalla de perfil
   void _onProfilePressed() {
     // TODO: Implementar navegación a perfil
   }
 
+  /// Navegación a la pantalla de búsqueda
   void _onSearchTapped() {
     // TODO: Implementar navegación a búsqueda
   }
 
+  /// Navegación a la pantalla de todas las categorías
   void _onSeeAllCategoriesPressed() {
     NavigationHelper.goToCategories(context);
   }
 
+  /// Navegación a la pantalla de todos los productos más vendidos
+  void _onSeeAllTopSellingPressed() {
+    // TODO: Implementar navegación a todos los productos más vendidos
+  }
+
+  /// Navegación a la pantalla de todos los productos nuevos
+  void _onSeeAllNewInPressed() {
+    // TODO: Implementar navegación a todos los productos nuevos
+  }
+
+  /// Carga productos filtrados por categoría
   void _onCategoryTapped(CategoryItemModel category) {
     // Usamos el nombre de la categoría como identificador
     context.read<HomeBloc>().add(
@@ -102,36 +97,27 @@ class _HomePageState extends State<HomePage> {
     _isNavigatingToDetail = false;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+  /// Cambia el estado de favorito de un producto
+  void _onToggleFavorite(ProductItemModel product) {
+    context.read<HomeBloc>().add(
+      ToggleFavoriteEvent(
+        productId: product.id,
+        isFavorite: !product.isFavorite,
+      ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return CustomAppBar(
-      showBack: false,
-      onBagPressed: _onBagPressed,
-      profileImageUrl: AppStrings.userPlaceholderIcon,
-      onProfilePressed: _onProfilePressed,
-      title: GenderSelectorButton(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: HomeAppBarWidget(
         selectedGender: _selectedGender,
-        onPressed: () {
-          _selectGender(_selectedGender == "Men" ? "Women" : "Men");
-        },
+        onGenderChanged: _selectGender,
+        onBagPressed: _onBagPressed,
+        onProfilePressed: _onProfilePressed,
+        profileImageUrl: AppStrings.userPlaceholderIcon,
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(
-            right: AppDimens.appBarActionRightPadding,
-          ),
-          child: CartBadgeWidget(
-            onPressed: _onBagPressed,
-          ),
-        ),
-      ],
+      body: _buildBody(),
     );
   }
 
@@ -147,101 +133,21 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (state is HomeLoaded) {
-          return _buildLoadedContent(state);
+          return HomeContentWidget(
+            state: state,
+            scrollController: _scrollController,
+            onSearchTapped: _onSearchTapped,
+            onSeeAllCategoriesPressed: _onSeeAllCategoriesPressed,
+            onSeeAllTopSellingPressed: _onSeeAllTopSellingPressed,
+            onSeeAllNewInPressed: _onSeeAllNewInPressed,
+            onCategoryTapped: _onCategoryTapped,
+            onProductTapped: _navigateToProductDetail,
+            onToggleFavorite: _onToggleFavorite,
+          );
         }
 
         return const Center(child: Text('Estado no manejado'));
       },
-    );
-  }
-
-  Widget _buildLoadedContent(HomeLoaded state) {
-    return SafeArea(
-      child: ShaderMask(
-        shaderCallback: _buildShaderCallback,
-        blendMode: BlendMode.dstIn,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.screenPadding,
-              vertical: AppDimens.vSpace16,
-            ),
-            child: AnimatedStaggeredList(
-              children: [
-                _buildSearchBar(),
-                const SizedBox(height: AppDimens.vSpace16),
-                _buildCategoriesSection(state),
-                const SizedBox(height: AppDimens.vSpace16),
-                _buildTopSellingSection(state),
-                const SizedBox(height: AppDimens.vSpace16),
-                _buildNewInSection(state),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Shader _buildShaderCallback(Rect bounds) {
-    return LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: _showFade
-          ? [Colors.white, Colors.white.withAlpha(0)]
-          : [Colors.white, Colors.white],
-      stops: _showFade
-          ? const [
-              AppDimens.homeContentFadeStart,
-              AppDimens.homeContentFadeEnd,
-            ]
-          : null,
-    ).createShader(bounds);
-  }
-
-  Widget _buildSearchBar() {
-    return SearchBarWidget(onTap: _onSearchTapped);
-  }
-
-  Widget _buildCategoriesSection(HomeLoaded state) {
-    return CategoriesSectionWidget(
-      categories: state.categories,
-      onSeeAllPressed: _onSeeAllCategoriesPressed,
-      onCategoryTap: _onCategoryTapped,
-    );
-  }
-
-  Widget _buildTopSellingSection(HomeLoaded state) {
-    return ProductHorizontalListSection(
-      products: state.topSellingProducts,
-      onSeeAllPressed: () {
-        // TODO: Implementar navegación a todos los productos más vendidos
-      },
-      onProductTap: _navigateToProductDetail,
-      onFavoriteToggle: _onToggleFavorite,
-    );
-  }
-
-  Widget _buildNewInSection(HomeLoaded state) {
-    return ProductHorizontalListSection(
-      title: AppStrings.newInTitle,
-      titleColor: AppColors.primary,
-      products: state.newInProducts,
-      onSeeAllPressed: () {
-        // TODO: Implementar navegación a todos los productos nuevos
-      },
-      onProductTap: _navigateToProductDetail,
-      onFavoriteToggle: _onToggleFavorite,
-    );
-  }
-
-  void _onToggleFavorite(ProductItemModel product) {
-    context.read<HomeBloc>().add(
-      ToggleFavoriteEvent(
-        productId: product.id,
-        isFavorite: !product.isFavorite,
-      ),
     );
   }
 }

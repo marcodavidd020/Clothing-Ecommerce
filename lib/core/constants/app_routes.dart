@@ -37,7 +37,7 @@ class AppRoutes {
   static const String productDetailName = 'product-detail';
   static const String categoriesName = 'categories';
   static const String categoryProductsName = 'category-products';
-  
+
   /// Nombres de rutas de autenticación
   static const String signInName = 'signin';
   static const String registerName = 'register';

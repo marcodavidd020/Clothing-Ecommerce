@@ -4,27 +4,10 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart'; // Importar NavigationHelper
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
-// import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart'; // Importar el HomeBloc
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/category_list_item_widget.dart';
-// import 'category_products_page.dart'; // Ya no se importa directamente aquí
 
 class AllCategoriesPage extends StatelessWidget {
-  // Eliminar el parámetro categories
-  // final List<CategoryItemModel> categories;
-
-  // Eliminar datos de ejemplo
-  // final List<ProductItemModel> _sampleProducts = List.generate(
-  //   20,
-  //   (index) => ProductItemModel(
-  //     id: 'prod${index + 1}',
-  //     name: 'Product ${index + 1}',
-  //     imageUrl: 'https://static.vecteezy.com/system/resources/thumbnails/008/530/101/small_2x/sport-t-shirt-cutout-file-png.png',
-  //     price: (20 + index * 5).toDouble(),
-  //     averageRating: (index % 5) + 0.5,
-  //     reviewCount: 10 + index * 2,
-  //   ),
-  // );
 
   const AllCategoriesPage({super.key}); // Modificar constructor
 

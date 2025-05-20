@@ -4,120 +4,141 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/core/core.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/widgets/widgets.dart';
+import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart';
 
-/// Widget that displays the main content of the product detail.
+/// Widget que muestra el contenido principal del detalle de producto.
 class ProductContentWidget extends StatelessWidget {
-  /// The loaded product state.
+  /// El estado cargado del producto.
   final ProductDetailLoaded state;
 
-  /// Callback for when the size selector is tapped.
+  /// Función de callback cuando se presiona el selector de talla.
   final Function(BuildContext, ProductDetailLoaded) onSizeTap;
 
-  /// Callback for when the color selector is tapped.
+  /// Función de callback cuando se presiona el selector de color.
   final Function(BuildContext, ProductDetailLoaded) onColorTap;
-  
-  /// Key for the product image to use in animations.
+
+  /// Key para el carrusel de imágenes.
   final Key? imageKey;
 
-  /// Creates an instance of [ProductContentWidget].
+  /// Key para la imagen actual (usado en animaciones).
+  final GlobalKey? currentImageKey;
+
+  /// Indica si la imagen es visible.
+  final bool imageVisible;
+
+  /// Constructor principal.
   const ProductContentWidget({
     super.key,
     required this.state,
     required this.onSizeTap,
     required this.onColorTap,
     this.imageKey,
+    this.currentImageKey,
+    this.imageVisible = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [_buildMainContent(context), _buildLoadingIndicator(context)],
+    );
+  }
+
+  /// Construye el contenido principal desplazable.
+  Widget _buildMainContent(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: AppDimens.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: AppDimens.vSpace16),
-          ImageCarouselWidget(
-            key: imageKey,
-            imageList: [
-              state.product.imageUrl,
-              ...state.product.additionalImageUrls,
-            ],
-          ),
+          _buildImageCarousel(),
           const SizedBox(height: AppDimens.vSpace16),
-          _buildProductInfo(),
+          _buildProductName(),
+          const SizedBox(height: AppDimens.vSpace8),
+          _buildProductPrice(),
           const SizedBox(height: AppDimens.vSpace24),
-          _buildSelectors(context),
+          _buildSizeSelector(context),
+          _buildColorSelector(context),
           _buildQuantitySelector(context),
           const SizedBox(height: AppDimens.vSpace16),
-          _buildDescription(),
+          _buildDescriptionTitle(),
+          const SizedBox(height: AppDimens.vSpace8),
+          _buildDescriptionText(),
           const SizedBox(height: AppDimens.vSpace32),
         ],
       ),
     );
   }
 
-  /// Builds the product name and price section.
-  Widget _buildProductInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          state.product.name,
-          style: AppTextStyles.heading.copyWith(
-            fontSize: ProductDetailUI.nameFontSize,
-          ),
-        ),
-        const SizedBox(height: AppDimens.vSpace8),
-        Text(
-          '\$${state.product.price.toStringAsFixed(2)}',
-          style: AppTextStyles.heading.copyWith(
-            fontSize: ProductDetailUI.priceFontSize,
-            color: AppColors.primary,
-          ),
-        ),
-      ],
+  /// Construye el carrusel de imágenes.
+  Widget _buildImageCarousel() {
+    return ImageCarouselWidget(
+      key: imageKey,
+      imageList: [state.product.imageUrl, ...state.product.additionalImageUrls],
+      currentImageKey: currentImageKey,
+      isVisible: imageVisible,
     );
   }
 
-  /// Builds the size and color selectors.
-  Widget _buildSelectors(BuildContext context) {
-    return Column(
-      children: [
-        OptionSelectorWidget(
-          label: ProductDetailStrings.sizeLabel,
-          valueDisplay: Text(
-            state.selectedSize,
+  /// Construye el nombre del producto.
+  Widget _buildProductName() {
+    return Text(
+      state.product.name,
+      style: AppTextStyles.heading.copyWith(
+        fontSize: ProductDetailUI.nameFontSize,
+      ),
+    );
+  }
+
+  /// Construye el precio del producto.
+  Widget _buildProductPrice() {
+    return Text(
+      '\$${state.product.price.toStringAsFixed(2)}',
+      style: AppTextStyles.heading.copyWith(
+        fontSize: ProductDetailUI.priceFontSize,
+        color: AppColors.primary,
+      ),
+    );
+  }
+
+  /// Construye el selector de talla.
+  Widget _buildSizeSelector(BuildContext context) {
+    return OptionSelectorWidget(
+      label: ProductDetailStrings.sizeLabel,
+      valueDisplay: Text(
+        state.selectedSize,
+        style: AppTextStyles.inputText.copyWith(fontWeight: FontWeight.bold),
+      ),
+      onTap: () => onSizeTap(context, state),
+    );
+  }
+
+  /// Construye el selector de color.
+  Widget _buildColorSelector(BuildContext context) {
+    return OptionSelectorWidget(
+      label: ProductDetailStrings.colorLabel,
+      valueDisplay: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            backgroundColor: state.selectedColor.color,
+            radius: ProductDetailUI.colorSelectorValueAvatarRadius,
+          ),
+          const SizedBox(width: AppDimens.vSpace8),
+          Text(
+            state.selectedColor.name,
             style: AppTextStyles.inputText.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          onTap: () => onSizeTap(context, state),
-        ),
-        OptionSelectorWidget(
-          label: ProductDetailStrings.colorLabel,
-          valueDisplay: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(
-                backgroundColor: state.selectedColor.color,
-                radius: ProductDetailUI.colorSelectorValueAvatarRadius,
-              ),
-              const SizedBox(width: AppDimens.vSpace8),
-              Text(
-                state.selectedColor.name,
-                style: AppTextStyles.inputText.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          onTap: () => onColorTap(context, state),
-        ),
-      ],
+        ],
+      ),
+      onTap: () => onColorTap(context, state),
     );
   }
 
-  /// Builds the quantity selector.
+  /// Construye el selector de cantidad.
   Widget _buildQuantitySelector(BuildContext context) {
     return QuantitySelectorWidget(
       quantity: state.quantity,
@@ -136,26 +157,40 @@ class ProductContentWidget extends StatelessWidget {
     );
   }
 
-  /// Builds the product description section.
-  Widget _buildDescription() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          ProductDetailStrings.descriptionLabel,
-          style: AppTextStyles.heading.copyWith(
-            fontSize: ProductDetailUI.descriptionTitleFontSize,
-          ),
-        ),
-        const SizedBox(height: AppDimens.vSpace8),
-        Text(
-          state.product.description,
-          style: AppTextStyles.inputText.copyWith(
-            color: AppColors.textGray,
-            height: ProductDetailUI.descriptionLineHeight,
-          ),
-        ),
-      ],
+  /// Construye el título de la descripción.
+  Widget _buildDescriptionTitle() {
+    return Text(
+      ProductDetailStrings.descriptionLabel,
+      style: AppTextStyles.heading.copyWith(
+        fontSize: ProductDetailUI.descriptionTitleFontSize,
+      ),
+    );
+  }
+
+  /// Construye el texto de la descripción.
+  Widget _buildDescriptionText() {
+    return Text(
+      state.product.description,
+      style: AppTextStyles.inputText.copyWith(
+        color: AppColors.textGray,
+        height: ProductDetailUI.descriptionLineHeight,
+      ),
+    );
+  }
+
+  /// Construye el indicador de carga para el carrito.
+  Widget _buildLoadingIndicator(BuildContext context) {
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, cartState) {
+        if (cartState is CartLoading) {
+          return const Positioned(
+            top: 20,
+            right: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }
