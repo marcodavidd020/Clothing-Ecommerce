@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_ecommerce/features/auth/core/constants/auth_strings.dart';
 import 'package:flutter_application_ecommerce/features/auth/data/data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
@@ -98,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AuthUIHelpers.smallVerticalSpace,
-            AuthUIHelpers.buildAuthTitle(AppStrings.registerTitle),
+            AuthUIHelpers.buildAuthTitle(AuthStrings.registerTitle),
             AuthUIHelpers.mediumVerticalSpace,
             RegisterFormWidget(
               formKey: _formKey,

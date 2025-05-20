@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/helpers/navigation_helper.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart';
+import 'package:flutter_application_ecommerce/features/auth/core/constants/auth_strings.dart';
 import '../../data/models/models.dart' show RegisterParams;
 import '../../data/models/request/request.dart' show SignInParams;
 import 'auth_ui_helpers.dart';
@@ -20,17 +21,14 @@ class AuthBlocHandler {
     } else if (state is RegistrationSuccessNeedSignIn) {
       AuthUIHelpers.showSuccessMessage(
         context,
-        "¡Registro exitoso! Por favor, inicia sesión.",
+        AuthStrings.registrationSuccess,
       );
       NavigationHelper.goToSignIn(context);
     } else if (state is AuthError) {
       AuthUIHelpers.showErrorMessage(context, state.message);
     } else if (state is Unauthenticated) {
       // Cerro Sesion
-      AuthUIHelpers.showSuccessMessage(
-        context,
-        "¡Cerrando sesión! Hasta Pronto",
-      );
+      AuthUIHelpers.showSuccessMessage(context, AuthStrings.logoutSuccess);
       NavigationHelper.goToSignIn(context);
     }
   }

@@ -35,3 +35,16 @@ class UnknownFailure extends Failure {
 class AuthenticationFailure extends Failure {
   const AuthenticationFailure({required String message}) : super(message);
 }
+
+/// Falla específica para errores de validación
+class ValidationFailure extends Failure {
+  final Map<String, List<String>>? fieldErrors;
+
+  const ValidationFailure({
+    required String message,
+    this.fieldErrors,
+  }) : super(message);
+
+  @override
+  List<Object> get props => [message, fieldErrors ?? {}];
+}

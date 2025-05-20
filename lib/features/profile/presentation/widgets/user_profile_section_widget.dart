@@ -24,7 +24,7 @@ class UserProfileSectionWidget extends StatelessWidget {
       future: ServiceLocator.sl<AuthStorage>().getUserData(),
       builder: (context, snapshot) {
         final user = snapshot.data;
-        
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator.adaptive(
@@ -32,11 +32,11 @@ class UserProfileSectionWidget extends StatelessWidget {
             ),
           );
         }
-        
+
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'Error al cargar datos',
+              AppStrings.errorLoadingData,
               style: AppTextStyles.body.copyWith(color: AppColors.error),
             ),
           );
@@ -44,17 +44,11 @@ class UserProfileSectionWidget extends StatelessWidget {
 
         return Column(
           children: [
-            UserAvatarWidget(
-              user: user,
-              onTap: onAvatarTap,
-            ),
-            UserInfoCardWidget(
-              user: user,
-              onEditPressed: onEditPressed,
-            ),
+            UserAvatarWidget(user: user, onTap: onAvatarTap),
+            UserInfoCardWidget(user: user, onEditPressed: onEditPressed),
           ],
         );
       },
     );
   }
-} 
+}

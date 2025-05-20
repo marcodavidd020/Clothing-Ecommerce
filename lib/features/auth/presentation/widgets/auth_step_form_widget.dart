@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/features/auth/core/constants/auth_strings.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/helpers/helpers.dart';
 
 /// Widget que muestra un paso del formulario de autenticación.
@@ -37,7 +37,7 @@ class AuthStepFormWidget extends StatelessWidget {
           enabled: !isLoading,
         ),
       ],
-      buttonLabel: AppStrings.continueLabel,
+      buttonLabel: AuthStrings.continueButton,
       onButtonPressed: onContinue,
       isLoading: isLoading,
     );
@@ -59,7 +59,7 @@ class AuthStepFormWidget extends StatelessWidget {
           enabled: !isLoading,
         ),
       ],
-      buttonLabel: AppStrings.continueLabel,
+      buttonLabel: AuthStrings.continueButton,
       onButtonPressed: onContinue,
       isLoading: isLoading,
     );

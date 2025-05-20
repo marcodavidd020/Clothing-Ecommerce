@@ -13,28 +13,57 @@ class InjectionContainer {
 
   /// Instancia de GetIt
   static final GetIt sl = GetIt.instance;
+  
+  /// Indica si la inicialización se ha completado
+  static bool _initialized = false;
 
   /// Inicializa el contenedor de inyección de dependencias
-  static Widget init({required Widget child}) {
-    // Registrar dependencias básicas (network, storage, etc.)
-    RepositoryModule.register(sl);
+  static Future<Widget> initAsync({required Widget child}) async {
+    if (!_initialized) {
+      // Registrar dependencias básicas (network, storage, etc.)
+      RepositoryModule.register(sl);
 
-    // Registrar todos los módulos en GetIt
-    HomeDIContainer.register(sl);
-    AuthDIContainer.register(sl); // Registrar AuthDIContainer
+      // Registrar todos los módulos en GetIt
+      HomeDIContainer.register(sl);
+      await AuthDIContainer.register(sl);
+      
+      _initialized = true;
+    }
 
     // Envolver la aplicación con los providers necesarios
     return MultiRepositoryProvider(
-      providers:
-          repositoryProviders, // Mantener si RepositoryModule se usa solo para providers
+      providers: repositoryProviders,
       child: Builder(
         builder: (context) {
           return MultiBlocProvider(
-            // Pasar la instancia de GetIt a BlocModule
-            providers: BlocModule.providers(
-              context,
-              sl,
-            ), // Modificar para pasar sl
+            providers: BlocModule.providers(context, sl),
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+  
+  /// Inicialización síncrona (para retrocompatibilidad)
+  /// Preferir usar initAsync para inicialización completa
+  static Widget init({required Widget child}) {
+    if (!_initialized) {
+      // Registrar dependencias básicas que no requieren inicialización asíncrona
+      RepositoryModule.register(sl);
+      HomeDIContainer.register(sl);
+      
+      // Advertir que no se está inicializando AuthDIContainer correctamente
+      debugPrint('ADVERTENCIA: Se está usando init() en lugar de initAsync(). '
+          'Algunas dependencias como AuthDIContainer no se inicializarán correctamente.');
+    }
+
+    // Envolver la aplicación con los providers necesarios
+    return MultiRepositoryProvider(
+      providers: repositoryProviders,
+      child: Builder(
+        builder: (context) {
+          return MultiBlocProvider(
+            providers: BlocModule.providers(context, sl),
             child: child,
           );
         },
@@ -49,5 +78,6 @@ class InjectionContainer {
   // Método para resetear el contenedor (útil para pruebas)
   static Future<void> reset() async {
     await sl.reset();
+    _initialized = false;
   }
 }
