@@ -5,7 +5,7 @@ import 'package:flutter_application_ecommerce/core/constants/app_strings.dart';
 import 'package:flutter_application_ecommerce/features/auth/data/models/user_model.dart';
 
 /// Widget que muestra el avatar del usuario.
-/// 
+///
 /// Se encarga de mostrar la imagen de perfil del usuario con un diseño circular
 /// y maneja las situaciones donde la imagen puede no estar disponible.
 class UserAvatarWidget extends StatelessWidget {
@@ -85,4 +85,4 @@ class UserAvatarWidget extends StatelessWidget {
       ),
     );
   }
-} 
+}

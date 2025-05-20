@@ -5,3 +5,4 @@ export 'confirm_dialog_widget.dart';
 export 'delete_confirmation_dialog.dart';
 export 'clear_cart_confirmation_dialog.dart';
 export 'empty_cart_widget.dart';
+export 'quantity_selector_widget.dart';

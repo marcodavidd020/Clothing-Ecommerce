@@ -6,3 +6,7 @@ export 'category_item_widget.dart';
 export 'category_list_item_widget.dart';
 export 'categories_section_widget.dart';
 export 'top_selling_section_widget.dart';
+export 'product_star_rating_widget.dart';
+export 'product_favorite_button_widget.dart';
+export 'product_image_section_widget.dart';
+export 'product_info_section_widget.dart';
