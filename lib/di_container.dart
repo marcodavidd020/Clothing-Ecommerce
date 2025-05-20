@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:flutter_application_ecommerce/features/home/di_container.dart';
+import 'package:flutter_application_ecommerce/features/auth/di_container.dart';
 
 /// Contenedor principal de inyección de dependencias
 class DIContainer {
@@ -12,11 +13,8 @@ class DIContainer {
   /// Initialize all dependencies
   static Future<void> init() async {
     // Registrar módulos
-    HomeDIContainer.register(sl);
-    
-    // Aquí se registrarán otros módulos en el futuro
-    // AuthDIContainer.register(sl);
-    // CartDIContainer.register(sl);
-    // etc.
+    // Nota: El orden es importante para respetar dependencias entre módulos
+    await HomeDIContainer.register(sl);
+    await AuthDIContainer.register(sl);
   }
-} 
+}
