@@ -12,6 +12,9 @@ abstract class CategoryApiDataSource {
 
   /// Obtiene un árbol jerárquico de categorías
   Future<List<CategoryApiModel>> getCategoryTree();
+  
+  /// Obtiene una categoría específica por su ID
+  Future<CategoryApiModel> getCategoryById(String id);
 }
 
 /// Implementación que carga las categorías desde la API remota
@@ -102,6 +105,55 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
       // Si hay un error de conectividad, usar datos mock
       AppLogger.logInfo('Usando categorías mock como fallback');
       return _getMockCategories();
+    }
+  }
+  
+  @override
+  Future<CategoryApiModel> getCategoryById(String id) async {
+    try {
+      AppLogger.logInfo(
+        'Llamando a getCategoryById endpoint: ${ApiConstants.getCategoryByIdEndpoint(id)}',
+      );
+      final response = await _dioClient.get(
+        ApiConstants.getCategoryByIdEndpoint(id),
+      );
+      AppLogger.logInfo('Respuesta recibida: statusCode=${response.statusCode}');
+
+      if (ResponseHandler.isSuccessfulResponse(response)) {
+        final categoryData = ResponseHandler.extractData(
+          response,
+          (json) => CategoryApiModel.fromJson(json),
+        );
+        if (categoryData != null) {
+          AppLogger.logSuccess(
+            'Categoría obtenida: ${categoryData.name} (${categoryData.children.length} subcategorías, ${categoryData.products.length} productos)',
+          );
+          return categoryData;
+        } else {
+          AppLogger.logError('ERROR: categoryData es null después de extractData');
+          throw ServerException(
+            message: 'No se pudo extraer datos de categoría',
+            statusCode: response.statusCode,
+          );
+        }
+      } else {
+        final errorMessage = ResponseHandler.extractErrorMessage(response);
+        AppLogger.logError(
+          'ERROR: Respuesta no exitosa, statusCode=${response.statusCode}, mensaje=$errorMessage',
+        );
+        throw ServerException(
+          message: errorMessage,
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      AppLogger.logError('Error al obtener categoría por ID', e);
+      AppLogger.logError('EXCEPTION en getCategoryById: ${e.toString()}');
+      // Para este caso, no usamos datos mock, ya que esperamos un ID específico
+      throw ServerException(
+        message: 'Error al obtener categoría: ${e.toString()}',
+        statusCode: 0,
+      );
     }
   }
 

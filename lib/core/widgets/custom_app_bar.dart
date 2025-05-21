@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../constants/constants.dart';
+import '../helpers/navigation_helper.dart';
 import 'widgets.dart';
 
 /// Un widget de [AppBar] personalizado y reutilizable para la aplicación.
@@ -13,7 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
 
   /// Callback que se ejecuta cuando se presiona el botón de retroceso.
-  /// Si es nulo y [showBack] es true, se usará `Navigator.of(context).pop()`.
+  /// Si es nulo y [showBack] es true, se usará `NavigationHelper.goBack(context)`.
   final VoidCallback? onBack;
 
   /// Widget opcional para mostrar como título, centrado en el AppBar.
@@ -72,17 +73,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: SizedBox(
               width: AppDimens.backButtonSize,
               height: AppDimens.backButtonSize,
-              child:
-                  profileImageUrl!.startsWith('http')
-                      ? NetworkImageWithPlaceholder(
-                        imageUrl: profileImageUrl!,
-                        shape: BoxShape.circle,
-                        fit: BoxFit.cover,
-                      )
-                      : CircleAvatar(
-                        radius: AppDimens.backButtonSize / 2.2,
-                        backgroundImage: AssetImage(profileImageUrl!),
-                      ),
+              child: NetworkImageWithPlaceholder.isValidImageUrl(profileImageUrl!)
+                  ? NetworkImageWithPlaceholder(
+                      imageUrl: profileImageUrl!,
+                      shape: BoxShape.circle,
+                      fit: BoxFit.cover,
+                    )
+                  : CircleAvatar(
+                      radius: AppDimens.backButtonSize / 2.2,
+                      backgroundImage: AssetImage(AppStrings.userPlaceholderIcon),
+                    ),
             ),
           ),
         ),
@@ -91,7 +91,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidget = Padding(
         padding: const EdgeInsets.only(left: AppDimens.screenPadding),
         child: GestureDetector(
-          onTap: onBack ?? () => Navigator.of(context).pop(),
+          onTap: onBack ?? () => NavigationHelper.goBack(context),
           child: Container(
             width: AppDimens.backButtonSize,
             height: AppDimens.backButtonSize,

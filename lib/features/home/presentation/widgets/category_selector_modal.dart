@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/widgets/option_selector_widget.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
+import 'package:go_router/go_router.dart';
 
 /// Widget que muestra un modal para seleccionar una categoría
 class CategorySelectorModal {
@@ -33,10 +34,10 @@ class CategorySelectorModal {
             options: options,
             selectedIndex: selectedIndex,
             onOptionSelected: (index) {
-              Navigator.pop(context);
+              context.pop();
               onCategorySelected(categories[index]);
             },
-            onClose: () => Navigator.pop(context),
+            onClose: () => context.pop(),
           ),
     );
   }

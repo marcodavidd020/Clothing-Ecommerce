@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
-import 'package:flutter_application_ecommerce/core/network/logger.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/helpers.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/widgets/widgets.dart';
 
 /// Página principal (Home) de la aplicación.
 ///
@@ -22,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 /// Estado para [HomePage] que maneja la lógica de la UI.
 class _HomePageState extends State<HomePage> {
+  /// Controller para el scroll
   final ScrollController _scrollController = ScrollController();
 
   /// Variable para seguir si ya intentamos cargar los datos
@@ -30,33 +30,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadInitialData();
+    _requestInitialData();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // También intentar cargar datos aquí por si el contexto no estaba listo en initState
-    _loadInitialData();
+    _requestInitialData();
   }
 
-  /// Carga los datos iniciales si aún no se han cargado
-  void _loadInitialData() {
-    if (!_dataRequested) {
-      AppLogger.logInfo('Solicitando carga de datos iniciales para HomeBloc');
-      final homeBloc = context.read<HomeBloc>();
-
-      // Verificar el estado actual del bloc
-      final currentState = homeBloc.state;
-      if (currentState is! HomeLoaded) {
-        HomeBlocHandler.loadHomeData(context);
-      }
-
-      // Siempre intentamos cargar las categorías del API para tener los datos más recientes
-      HomeBlocHandler.loadApiCategories(context);
-
-      _dataRequested = true;
-    }
+  /// Solicita la carga inicial de datos usando el helper
+  void _requestInitialData() {
+    HomePageHelper.requestInitialData(context, _dataRequested);
+    _dataRequested = true;
   }
 
   @override
@@ -65,27 +52,14 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  /// Abre el selector de categorías
-  void _openCategorySelector(
-    List<CategoryApiModel> categories,
-    CategoryApiModel? selectedCategory,
-  ) {
-    CategorySelectorModal.show(
-      context: context,
-      categories: categories,
-      selectedCategory: selectedCategory,
-      onCategorySelected: (category) => HomeBlocHandler.selectRootCategory(context, category),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
-      listener: HomeBlocHandler.handleHomeState,
+      listener: _handleStateChanges,
       builder: (context, state) {
-        // Si el estado es inicial o cargando y no hemos solicitado datos, intentar cargarlos
-        if ((state is HomeInitial || state is HomeLoading) && !_dataRequested) {
-          _loadInitialData();
+        // Solo cargar datos iniciales si estamos en estado inicial y no los hemos solicitado
+        if (state is HomeInitial && !_dataRequested) {
+          _requestInitialData();
         }
 
         // Extraer categorías raíz y categoría seleccionada del estado si están disponibles
@@ -96,60 +70,90 @@ class _HomePageState extends State<HomePage> {
             state is HomeLoaded ? state.selectedRootCategory : null;
 
         return Scaffold(
-          appBar: HomeAppBarWidget(
-            rootCategories: rootCategories,
-            selectedCategory: selectedCategory,
-            onCategorySelected: (category) => HomeBlocHandler.selectRootCategory(context, category),
-            onCategoryDisplay:
-                () => _openCategorySelector(rootCategories, selectedCategory),
-            onBagPressed: () => HomeNavigationHelper.goToCart(context),
-            onProfilePressed: () => HomeNavigationHelper.goToProfile(context),
-            profileImageUrl: AppStrings.userPlaceholderIcon,
+          appBar: _buildAppBar(rootCategories, selectedCategory),
+          body: HomeStateHandlerWidget(
+            scrollController: _scrollController,
+            state: state,
           ),
-          body: _buildBody(state),
         );
       },
     );
   }
 
-  Widget _buildBody(HomeState state) {
-    if (HomeBlocHandler.isLoading(state)) {
-      // Usar esqueleto de carga
-      return const HomeSkeleton();
-    }
+  /// Construye el AppBar de la página Home
+  PreferredSizeWidget _buildAppBar(
+    List<CategoryApiModel> rootCategories,
+    CategoryApiModel? selectedCategory,
+  ) {
+    return HomeAppBarWidget(
+      rootCategories: rootCategories,
+      selectedCategory: selectedCategory,
+      onCategorySelected:
+          (category) => HomeBlocHandler.selectRootCategory(context, category),
+      onCategoryDisplay:
+          () => CategorySelectorHandlerWidget.openCategorySelector(
+            context,
+            rootCategories,
+            selectedCategory,
+          ),
+      onBagPressed: () => HomeNavigationHelper.goToCart(context),
+      onProfilePressed: () => HomeNavigationHelper.goToProfile(context),
+      profileImageUrl: AppStrings.userPlaceholderIcon,
+    );
+  }
 
-    if (state is HomeError) {
-      return ErrorContentWidget(
-        message: state.message,
-        onRetry: () {
-          _dataRequested = false;
-          _loadInitialData();
-        },
+  /// Maneja los cambios de estado del BLoC
+  void _handleStateChanges(BuildContext context, HomeState state) {
+    // Manejar feedback general
+    HomeBlocHandler.handleHomeState(context, state);
+
+    // Manejar navegación específica para estados de categorías
+    _handleCategoryNavigation(context, state);
+
+    // Recargar datos después de estados de categoría completados
+    if (_shouldReloadDataAfterState(state) && _dataRequested) {
+      // Reseteamos la bandera y cargamos los datos de nuevo
+      _dataRequested = false;
+
+      // Ponemos un pequeño delay para evitar conflictos de estado
+      Future.delayed(Duration.zero, () {
+        _requestInitialData();
+      });
+    }
+  }
+
+  /// Determina si se deben recargar los datos después de un estado
+  bool _shouldReloadDataAfterState(HomeState state) {
+    return state is CategoryProductsLoaded ||
+        state is CategoryProductsError ||
+        state is CategoryByIdLoaded ||
+        state is CategoryByIdError;
+  }
+
+  /// Maneja la navegación basada en cambios de estado para categorías
+  void _handleCategoryNavigation(BuildContext context, HomeState state) {
+    // Manejar navegación cuando se completa la carga de una categoría
+    if (state is CategoryByIdLoaded) {
+      // Obtener todas las categorías para navegación y breadcrumbs
+      List<CategoryApiModel> allCategories = [];
+      final homeState = context.read<HomeBloc>().state;
+      if (homeState is HomeLoaded) {
+        allCategories = homeState.apiCategories;
+      }
+
+      HomePageHelper.handleCategoryLoaded(
+        context,
+        state.category,
+        allCategories,
       );
     }
-
-    if (state is HomeLoaded) {
-      return HomeContentWidget(
-        state: state,
-        scrollController: _scrollController,
-        onSearchTapped: () => HomeNavigationHelper.goToSearch(context),
-        onSeeAllCategoriesPressed: () => HomeNavigationHelper.goToAllCategories(context),
-        onSeeAllTopSellingPressed: () {
-          // TODO: Implementar navegación a todos los productos más vendidos
-          AppLogger.logInfo('Ver todos los productos más vendidos - no implementado');
-        },
-        onSeeAllNewInPressed: () {
-          // TODO: Implementar navegación a todos los productos nuevos
-          AppLogger.logInfo('Ver todos los productos nuevos - no implementado');
-        },
-        onCategoryTapped: (category) => HomeBlocHandler.loadProductsByCategory(context, category.name),
-        onProductTapped: (product) => HomeNavigationHelper.goToProductDetail(context, product),
-        onToggleFavorite: (product) => HomeBlocHandler.toggleFavorite(context, product.id, !product.isFavorite),
+    // Manejar navegación cuando se cargan productos para una categoría
+    else if (state is CategoryProductsLoaded) {
+      HomePageHelper.handleProductsLoaded(
+        context,
+        state.categoryId,
+        state.products,
       );
     }
-
-    // Para cualquier otro estado no manejado, mostrar el esqueleto de carga
-    AppLogger.logWarning('Estado no manejado: ${state.runtimeType}');
-    return const HomeSkeleton();
   }
 }

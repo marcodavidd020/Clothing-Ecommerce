@@ -51,6 +51,22 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
+  Future<Either<Failure, CategoryApiModel>> getCategoryById(String id) async {
+    if (_categoryApiDataSource == null) {
+      return Left(ServerFailure(message: 'API DataSource no disponible'));
+    }
+
+    try {
+      final category = await _categoryApiDataSource.getCategoryById(id);
+      return Right(category);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<ProductItemModel>>>
   getTopSellingProducts() async {
     try {

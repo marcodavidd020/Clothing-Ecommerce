@@ -11,6 +11,9 @@ abstract class HomeRepository {
   /// Obtiene las categorías desde la API (formato árbol)
   Future<Either<Failure, List<CategoryApiModel>>> getApiCategoryTree();
 
+  /// Obtiene una categoría específica por su ID
+  Future<Either<Failure, CategoryApiModel>> getCategoryById(String id);
+
   /// Obtiene los productos más vendidos
   Future<Either<Failure, List<ProductItemModel>>> getTopSellingProducts();
 

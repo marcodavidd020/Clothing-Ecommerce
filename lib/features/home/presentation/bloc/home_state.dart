@@ -139,3 +139,37 @@ class CategoryProductsError extends HomeState {
   /// Crea una instancia de [CategoryProductsError]
   CategoryProductsError({required this.categoryId, required this.message});
 }
+
+// Estados para la carga de una categoría específica por ID
+/// Estado durante la carga de una categoría por ID
+class CategoryByIdLoading extends HomeState {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// Crea una instancia de [CategoryByIdLoading]
+  CategoryByIdLoading({required this.categoryId});
+}
+
+/// Estado cuando se ha cargado una categoría específica por ID
+class CategoryByIdLoaded extends HomeState {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// La categoría cargada
+  final CategoryApiModel category;
+
+  /// Crea una instancia de [CategoryByIdLoaded]
+  CategoryByIdLoaded({required this.categoryId, required this.category});
+}
+
+/// Estado de error al cargar una categoría específica por ID
+class CategoryByIdError extends HomeState {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// Mensaje de error
+  final String message;
+
+  /// Crea una instancia de [CategoryByIdError]
+  CategoryByIdError({required this.categoryId, required this.message});
+}

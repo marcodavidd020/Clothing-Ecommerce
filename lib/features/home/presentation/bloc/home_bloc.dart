@@ -12,16 +12,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetNewInProductsUseCase _getNewInProductsUseCase;
   final GetProductsByCategoryUseCase _getProductsByCategoryUseCase;
   final GetApiCategoriesTreeUseCase _getApiCategoriesTreeUseCase;
+  final GetCategoryByIdUseCase _getCategoryByIdUseCase;
 
   HomeBloc({
     required GetTopSellingProductsUseCase getTopSellingProductsUseCase,
     required GetNewInProductsUseCase getNewInProductsUseCase,
     required GetProductsByCategoryUseCase getProductsByCategoryUseCase,
     required GetApiCategoriesTreeUseCase getApiCategoriesTreeUseCase,
+    required GetCategoryByIdUseCase getCategoryByIdUseCase,
   }) : _getTopSellingProductsUseCase = getTopSellingProductsUseCase,
        _getNewInProductsUseCase = getNewInProductsUseCase,
        _getProductsByCategoryUseCase = getProductsByCategoryUseCase,
        _getApiCategoriesTreeUseCase = getApiCategoriesTreeUseCase,
+       _getCategoryByIdUseCase = getCategoryByIdUseCase,
        super(HomeInitial()) {
     // Eventos para cargar datos al iniciar
     on<LoadHomeDataEvent>(_onLoadHomeData);
@@ -32,6 +35,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadTopSellingProductsEvent>(_onLoadTopSellingProducts);
     on<LoadNewInProductsEvent>(_onLoadNewInProducts);
     on<LoadProductsByCategoryEvent>(_onLoadProductsByCategory);
+    on<LoadCategoryByIdEvent>(_onLoadCategoryById);
 
     // Eventos de favoritos
     on<ToggleFavoriteEvent>(_onToggleFavorite);
@@ -436,6 +440,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           CategoryProductsLoaded(
             categoryId: event.categoryId,
             products: products,
+          ),
+        );
+      },
+    );
+  }
+
+  // Manejador para cargar una categoría específica por ID
+  Future<void> _onLoadCategoryById(
+    LoadCategoryByIdEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    // Emitimos un estado de carga específico para la categoría
+    emit(CategoryByIdLoading(categoryId: event.categoryId));
+
+    // Llamamos al caso de uso
+    final result = await _getCategoryByIdUseCase.execute(
+      event.categoryId,
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          CategoryByIdError(
+            categoryId: event.categoryId,
+            message: failure.message,
+          ),
+        );
+      },
+      (category) {
+        emit(
+          CategoryByIdLoaded(
+            categoryId: event.categoryId,
+            category: category,
           ),
         );
       },

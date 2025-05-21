@@ -28,6 +28,15 @@ class LoadProductsByCategoryEvent extends HomeEvent {
   LoadProductsByCategoryEvent({required this.categoryId});
 }
 
+/// Evento para cargar una categoría específica por su ID
+class LoadCategoryByIdEvent extends HomeEvent {
+  /// ID de la categoría a cargar
+  final String categoryId;
+  
+  /// Constructor del evento
+  LoadCategoryByIdEvent({required this.categoryId});
+}
+
 /// Evento para seleccionar una categoría raíz
 class SelectRootCategoryEvent extends HomeEvent {
   /// Categoría seleccionada

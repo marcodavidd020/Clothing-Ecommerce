@@ -145,6 +145,13 @@ class HomeDIContainer extends BaseDIContainer {
         () => GetApiCategoriesTreeUseCase(sl<HomeRepository>()),
       );
     }
+    
+    // Registrar el caso de uso para obtener categoría por ID
+    if (!sl.isRegistered<GetCategoryByIdUseCase>()) {
+      sl.registerLazySingleton(
+        () => GetCategoryByIdUseCase(sl<HomeRepository>()),
+      );
+    }
   }
 
   /// Registra los BLoCs
@@ -157,6 +164,7 @@ class HomeDIContainer extends BaseDIContainer {
         sl.isRegistered<GetNewInProductsUseCase>(),
         sl.isRegistered<GetProductsByCategoryUseCase>(),
         sl.isRegistered<GetApiCategoriesTreeUseCase>(),
+        sl.isRegistered<GetCategoryByIdUseCase>(),
       ],
       'Los casos de uso del módulo Home deben estar registrados antes de registrar HomeBloc',
     );
@@ -168,6 +176,7 @@ class HomeDIContainer extends BaseDIContainer {
           getNewInProductsUseCase: sl(),
           getProductsByCategoryUseCase: sl(),
           getApiCategoriesTreeUseCase: sl(),
+          getCategoryByIdUseCase: sl(),
         ),
       );
     }

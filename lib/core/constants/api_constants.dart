@@ -10,6 +10,7 @@ class ApiConstants {
     AppLogger.logInfo(' - Base URL: $baseUrl');
     AppLogger.logInfo(' - Categories URL: $categoriesEndpoint');
     AppLogger.logInfo(' - Categories Tree URL: $categoriesTreeEndpoint');
+    AppLogger.logInfo(' - Category by ID URL (ejemplo): ${getCategoryByIdEndpoint('example-id')}');
   }
 
   // Auth endpoints
@@ -20,6 +21,7 @@ class ApiConstants {
   // Category endpoints
   static const String categoriesEndpoint = '$baseUrl/categories';
   static const String categoriesTreeEndpoint = '$baseUrl/categories/tree';
+  static String getCategoryByIdEndpoint(String id) => '$categoriesEndpoint/$id';
 
   static const int connectTimeout = 15000;
   static const int receiveTimeout = 15000;
