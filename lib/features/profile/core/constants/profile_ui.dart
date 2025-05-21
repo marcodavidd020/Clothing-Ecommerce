@@ -22,4 +22,10 @@ class ProfileUI {
 
   // Tamaños
   static const double menuItemIconSize = 24.0;
+
+  // Tamaño de item de menú
+  static const double menuItemHeight = 20.0;
+
+  // Tamaño de icono de flecha
+  static const double menuItemTrailingIconSize = 30.0;
 }

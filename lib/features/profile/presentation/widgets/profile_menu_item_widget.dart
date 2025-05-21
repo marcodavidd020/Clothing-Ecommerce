@@ -56,11 +56,7 @@ class ProfileMenuItemWidget extends StatelessWidget {
         splashColor: primaryColor.withOpacity(0.1),
         highlightColor: primaryColor.withOpacity(0.05),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: ProfileUI.contentPadding,
-            vertical:
-                14, // Padding vertical más generoso para mejor toque táctil
-          ),
+          padding: const EdgeInsets.all(ProfileUI.menuItemHeight),
           child: Row(
             children: [
               // Icono principal con posible indicador de selección
@@ -102,8 +98,8 @@ class ProfileMenuItemWidget extends StatelessWidget {
               if (showTrailingIcon)
                 SvgPicture.asset(
                   AppStrings.arrowRightIcon,
-                  width: 20,
-                  height: 20,
+                  width: ProfileUI.menuItemTrailingIconSize,
+                  height: ProfileUI.menuItemTrailingIconSize,
                   colorFilter: ColorFilter.mode(
                     isActive
                         ? primaryColor
