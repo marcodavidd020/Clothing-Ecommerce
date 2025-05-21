@@ -58,7 +58,7 @@ class HomeDIContainer extends BaseDIContainer {
         () => DioClient(dio: sl<Dio>(), networkInfo: sl<NetworkInfo>()),
       );
     }
-    
+
     // Verificar que DioClient esté disponible
     BaseDIContainer.checkDependencies(sl, [
       sl.isRegistered<DioClient>(),
@@ -73,19 +73,23 @@ class HomeDIContainer extends BaseDIContainer {
         () => CategoryApiRemoteDataSource(dioClient: sl<DioClient>()),
       );
     }
-    
+
     // Registrar ProductDataSource
     if (!sl.isRegistered<ProductDataSource>()) {
       sl.registerLazySingleton<ProductDataSource>(
         () => ProductLocalDataSource(),
       );
     }
-    
+
     // Validar que las dependencias estén registradas
-    BaseDIContainer.checkDependencies(sl, [
-      sl.isRegistered<CategoryApiDataSource>(),
-      sl.isRegistered<ProductDataSource>(),
-    ], 'CategoryApiDataSource y ProductDataSource deben estar registrados antes de continuar');
+    BaseDIContainer.checkDependencies(
+      sl,
+      [
+        sl.isRegistered<CategoryApiDataSource>(),
+        sl.isRegistered<ProductDataSource>(),
+      ],
+      'CategoryApiDataSource y ProductDataSource deben estar registrados antes de continuar',
+    );
   }
 
   /// Registra los repositorios
@@ -145,7 +149,7 @@ class HomeDIContainer extends BaseDIContainer {
         () => GetApiCategoriesTreeUseCase(sl<HomeRepository>()),
       );
     }
-    
+
     // Registrar el caso de uso para obtener categoría por ID
     if (!sl.isRegistered<GetCategoryByIdUseCase>()) {
       sl.registerLazySingleton(

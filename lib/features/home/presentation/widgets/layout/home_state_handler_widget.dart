@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/helpers.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/widgets.dart';
@@ -15,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeStateHandlerWidget extends StatelessWidget {
   /// Controller para el scroll
   final ScrollController scrollController;
-  
+
   /// Estado actual del BLoC
   final HomeState state;
 
@@ -29,14 +27,16 @@ class HomeStateHandlerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Manejar cada estado específico según su tipo
-    if (state is HomeInitial || state is HomeLoading || state is HomeLoadingPartial) {
+    if (state is HomeInitial ||
+        state is HomeLoading ||
+        state is HomeLoadingPartial) {
       return const HomeSkeleton();
     }
-    
+
     if (state is HomeError) {
       return _buildErrorState(context, state as HomeError);
     }
-    
+
     if (state is HomeLoaded) {
       return _buildLoadedState(context, state as HomeLoaded);
     }
@@ -45,12 +45,12 @@ class HomeStateHandlerWidget extends StatelessWidget {
     if (_isCategoryRelatedState(state)) {
       return _buildCategoryRelatedState(context);
     }
-    
+
     // Caso por defecto cuando no hay un estado específico manejado
     AppLogger.logWarning('Estado no manejado: ${state.runtimeType}');
     return const HomeSkeleton();
   }
-  
+
   /// Verifica si el estado está relacionado con categorías
   bool _isCategoryRelatedState(HomeState state) {
     return state is CategoryProductsLoaded ||
@@ -58,7 +58,7 @@ class HomeStateHandlerWidget extends StatelessWidget {
         state is CategoryByIdLoaded ||
         state is CategoryByIdError;
   }
-  
+
   /// Construye la UI para el estado de error
   Widget _buildErrorState(BuildContext context, HomeError state) {
     return ErrorContentWidget(
@@ -69,7 +69,7 @@ class HomeStateHandlerWidget extends StatelessWidget {
       },
     );
   }
-  
+
   /// Construye la UI para el estado cargado
   Widget _buildLoadedState(BuildContext context, HomeLoaded state) {
     return HomeContentWidget(
@@ -78,33 +78,37 @@ class HomeStateHandlerWidget extends StatelessWidget {
       onSearchTapped: () => HomeNavigationHelper.goToSearch(context),
       onSeeAllCategoriesPressed: () {
         HomePageHelper.handleSeeAllCategories(
-          context, 
-          state.selectedRootCategory, 
-          state.apiCategories
+          context,
+          state.selectedRootCategory,
+          state.apiCategories,
         );
       },
       onSeeAllTopSellingPressed: () {
-        AppLogger.logInfo('Ver todos los productos más vendidos - no implementado');
+        AppLogger.logInfo(
+          'Ver todos los productos más vendidos - no implementado',
+        );
       },
       onSeeAllNewInPressed: () {
         AppLogger.logInfo('Ver todos los productos nuevos - no implementado');
       },
       onCategoryTapped: (_) {},
-      onProductTapped: (product) => HomeNavigationHelper.goToProductDetail(context, product),
-      onToggleFavorite: (product) => HomeBlocHandler.toggleFavorite(
-        context,
-        product.id,
-        !product.isFavorite,
-      ),
+      onProductTapped:
+          (product) => HomeNavigationHelper.goToProductDetail(context, product),
+      onToggleFavorite:
+          (product) => HomeBlocHandler.toggleFavorite(
+            context,
+            product.id,
+            !product.isFavorite,
+          ),
     );
   }
-  
+
   /// Construye la UI para estados relacionados con categorías
   Widget _buildCategoryRelatedState(BuildContext context) {
     // Intentar recuperar el estado HomeLoaded anterior
     final homeBloc = context.read<HomeBloc>();
     final previousState = homeBloc.state;
-    
+
     if (previousState is HomeLoaded) {
       // Tenemos datos anteriores para mostrar
       return _buildLoadedState(context, previousState);
@@ -114,4 +118,4 @@ class HomeStateHandlerWidget extends StatelessWidget {
       return const HomeSkeleton();
     }
   }
-} 
+}

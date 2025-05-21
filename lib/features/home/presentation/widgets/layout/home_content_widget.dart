@@ -101,13 +101,29 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
             ),
             child: AnimatedStaggeredList(
               children: [
-                _buildSearchBar(),
+                SearchBarWidget(onTap: widget.onSearchTapped),
                 const SizedBox(height: AppDimens.vSpace16),
-                _buildCategoriesSection(),
+                HomeCategoriesSection(
+                  selectedRootCategory: widget.state.selectedRootCategory,
+                  allCategories: widget.state.apiCategories,
+                  onSeeAllPressed: widget.onSeeAllCategoriesPressed,
+                ),
                 const SizedBox(height: AppDimens.vSpace16),
-                _buildTopSellingSection(),
+                ProductHorizontalListSection(
+                  products: widget.state.topSellingProducts,
+                  onSeeAllPressed: widget.onSeeAllTopSellingPressed,
+                  onProductTap: widget.onProductTapped,
+                  onFavoriteToggle: widget.onToggleFavorite,
+                ),
                 const SizedBox(height: AppDimens.vSpace16),
-                _buildNewInSection(),
+                ProductHorizontalListSection(
+                  title: AppStrings.newInTitle,
+                  titleColor: AppColors.primary,
+                  products: widget.state.newInProducts,
+                  onSeeAllPressed: widget.onSeeAllNewInPressed,
+                  onProductTap: widget.onProductTapped,
+                  onFavoriteToggle: widget.onToggleFavorite,
+                ),
               ],
             ),
           ),
@@ -133,55 +149,43 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
               : null,
     ).createShader(bounds);
   }
+}
 
-  Widget _buildSearchBar() {
-    return SearchBarWidget(onTap: widget.onSearchTapped);
-  }
+/// Widget para mostrar la sección de categorías en la página Home
+class HomeCategoriesSection extends StatelessWidget {
+  /// Categoría raíz seleccionada
+  final CategoryApiModel? selectedRootCategory;
+  
+  /// Lista de todas las categorías
+  final List<CategoryApiModel> allCategories;
+  
+  /// Callback cuando se presiona "Ver todas"
+  final VoidCallback onSeeAllPressed;
 
-  /// Construye la sección de categorías basándose en la categoría raíz seleccionada
-  Widget _buildCategoriesSection() {
-    final selectedRootCategory = widget.state.selectedRootCategory;
+  /// Constructor
+  const HomeCategoriesSection({
+    super.key,
+    required this.selectedRootCategory,
+    required this.allCategories,
+    required this.onSeeAllPressed,
+  });
 
+  @override
+  Widget build(BuildContext context) {
     if (selectedRootCategory == null) {
       return const SizedBox.shrink();
     }
 
     // Obtenemos las subcategorías directamente del modelo API
     final List<CategoryApiModel> childCategories =
-        selectedRootCategory.children;
+        selectedRootCategory!.children;
 
     // Si no hay categorías hijas, mostrar un mensaje
     if (childCategories.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppDimens.vSpace16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Subcategorías de ${selectedRootCategory.name}',
-                  style: AppTextStyles.sectionTitle,
-                ),
-              ],
-            ),
-            const SizedBox(height: AppDimens.vSpace16),
-            const Center(
-              child: Text(
-                'No hay subcategorías disponibles',
-                style: TextStyle(
-                  color: AppColors.textDark,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+      return _buildEmptyCategoriesSection();
     }
 
-    // Crear la UI para mostrar las categorías en formato carrusel, pero conservando los modelos API
+    // Crear la UI para mostrar las categorías en formato carrusel
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -190,19 +194,18 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
           children: [
             Expanded(
               child: Text(
-                'Subcategorías de ${selectedRootCategory.name}',
+                'Subcategorías de ${selectedRootCategory!.name}',
                 style: AppTextStyles.sectionTitle,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (childCategories.isNotEmpty)
-              TextButton(
-                onPressed: widget.onSeeAllCategoriesPressed,
-                child: Text(
-                  AppStrings.seeAllLabel,
-                  style: AppTextStyles.seeAll,
-                ),
+            TextButton(
+              onPressed: onSeeAllPressed,
+              child: Text(
+                AppStrings.seeAllLabel,
+                style: AppTextStyles.seeAll,
               ),
+            ),
           ],
         ),
         SizedBox(
@@ -211,34 +214,7 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
             scrollDirection: Axis.horizontal,
             itemCount: childCategories.length,
             itemBuilder: (context, index) {
-              final apiCategory = childCategories[index];
-              // Creamos un CategoryItemModel solo para presentación, pero guardamos el original
-              final displayCategory = CategoryItemModel(
-                imageUrl:
-                    apiCategory.imageUrl ?? 'https://via.placeholder.com/150',
-                name: apiCategory.name,
-              );
-
-              return CategoryItemWidget(
-                category: displayCategory,
-                onTap: () {
-                  // Usamos directamente el apiCategory original en lugar de intentar buscarlo de nuevo
-                  if (apiCategory.hasSubCategories) {
-                    // Usar el método que implementa GoRouter
-                    HomeNavigationHelper.navigateAfterCategoryLoaded(
-                      context,
-                      apiCategory,
-                      widget.state.apiCategories,
-                    );
-                  } else {
-                    // Si no tiene subcategorías, cargar productos y dejar que el listener de BLoC maneje la navegación
-                    HomeBlocHandler.loadProductsByCategory(
-                      context,
-                      apiCategory.id,
-                    );
-                  }
-                },
-              );
+              return _buildCategoryItem(context, childCategories[index]);
             },
             separatorBuilder:
                 (context, index) => const SizedBox(width: AppDimens.vSpace16),
@@ -248,23 +224,62 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
     );
   }
 
-  Widget _buildTopSellingSection() {
-    return ProductHorizontalListSection(
-      products: widget.state.topSellingProducts,
-      onSeeAllPressed: widget.onSeeAllTopSellingPressed,
-      onProductTap: widget.onProductTapped,
-      onFavoriteToggle: widget.onToggleFavorite,
+  Widget _buildEmptyCategoriesSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppDimens.vSpace16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Subcategorías de ${selectedRootCategory!.name}',
+                style: AppTextStyles.sectionTitle,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimens.vSpace16),
+          const Center(
+            child: Text(
+              'No hay subcategorías disponibles',
+              style: TextStyle(
+                color: AppColors.textDark,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildNewInSection() {
-    return ProductHorizontalListSection(
-      title: AppStrings.newInTitle,
-      titleColor: AppColors.primary,
-      products: widget.state.newInProducts,
-      onSeeAllPressed: widget.onSeeAllNewInPressed,
-      onProductTap: widget.onProductTapped,
-      onFavoriteToggle: widget.onToggleFavorite,
+  Widget _buildCategoryItem(BuildContext context, CategoryApiModel apiCategory) {
+    // Creamos un CategoryItemModel solo para presentación, pero guardamos el original
+    final displayCategory = CategoryItemModel(
+      imageUrl:
+          apiCategory.imageUrl ?? 'https://via.placeholder.com/150',
+      name: apiCategory.name,
+    );
+
+    return CategoryItemWidget(
+      category: displayCategory,
+      onTap: () {
+        if (apiCategory.hasSubCategories) {
+          // Usar el método que implementa GoRouter
+          HomeNavigationHelper.navigateAfterCategoryLoaded(
+            context,
+            apiCategory,
+            allCategories,
+          );
+        } else {
+          // Si no tiene subcategorías, cargar productos y dejar que el listener de BLoC maneje la navegación
+          HomeBlocHandler.loadProductsByCategory(
+            context,
+            apiCategory.id,
+          );
+        }
+      },
     );
   }
 }
