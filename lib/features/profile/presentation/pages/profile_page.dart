@@ -68,7 +68,7 @@ class ProfilePage extends StatelessWidget {
                 onMenuItemTap: (route) => _navigateTo(context, route),
               ),
 
-              const SizedBox(height: ProfileUI.sectionSpacing * 1.8),
+              // const SizedBox(height: ProfileUI.sectionSpacing * 1.8),
 
               // Botón de cerrar sesión
               SignOutButtonWidget(
