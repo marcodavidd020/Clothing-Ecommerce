@@ -14,6 +14,9 @@ class HomeLoading extends HomeState {}
 class HomeLoadingPartial extends HomeState {
   /// Categorías actuales
   final List<CategoryItemModel> categories;
+  
+  /// Categorías de la API
+  final List<CategoryApiModel> apiCategories;
 
   /// Productos más vendidos actuales
   final List<ProductItemModel> topSellingProducts;
@@ -29,15 +32,20 @@ class HomeLoadingPartial extends HomeState {
 
   /// Si se están cargando los productos nuevos
   final bool isLoadingNewIn;
+  
+  /// Categoría raíz seleccionada actualmente
+  final CategoryApiModel? selectedRootCategory;
 
   /// Crea una instancia de [HomeLoadingPartial]
   HomeLoadingPartial({
     required this.categories,
+    required this.apiCategories,
     required this.topSellingProducts,
     required this.newInProducts,
     this.isLoadingCategories = false,
     this.isLoadingTopSelling = false,
     this.isLoadingNewIn = false,
+    this.selectedRootCategory,
   });
 }
 
@@ -45,18 +53,26 @@ class HomeLoadingPartial extends HomeState {
 class HomeLoaded extends HomeState {
   /// Categorías cargadas
   final List<CategoryItemModel> categories;
+  
+  /// Categorías de la API en estructura de árbol
+  final List<CategoryApiModel> apiCategories;
 
   /// Productos más vendidos cargados
   final List<ProductItemModel> topSellingProducts;
 
   /// Productos nuevos cargados
   final List<ProductItemModel> newInProducts;
+  
+  /// Categoría raíz seleccionada actualmente
+  final CategoryApiModel? selectedRootCategory;
 
   /// Crea una instancia de [HomeLoaded]
   HomeLoaded({
     required this.categories,
+    this.apiCategories = const [],
     required this.topSellingProducts,
     required this.newInProducts,
+    this.selectedRootCategory,
   });
 }
 
@@ -67,19 +83,27 @@ class HomeError extends HomeState {
 
   /// Categorías actuales (si hay)
   final List<CategoryItemModel>? categories;
+  
+  /// Categorías de la API (si hay)
+  final List<CategoryApiModel>? apiCategories;
 
   /// Productos más vendidos actuales (si hay)
   final List<ProductItemModel>? topSellingProducts;
 
   /// Productos nuevos actuales (si hay)
   final List<ProductItemModel>? newInProducts;
+  
+  /// Categoría raíz seleccionada actualmente (si hay)
+  final CategoryApiModel? selectedRootCategory;
 
   /// Crea una instancia de [HomeError]
   HomeError({
     required this.message,
     this.categories,
+    this.apiCategories,
     this.topSellingProducts,
     this.newInProducts,
+    this.selectedRootCategory,
   });
 }
 
@@ -114,4 +138,38 @@ class CategoryProductsError extends HomeState {
 
   /// Crea una instancia de [CategoryProductsError]
   CategoryProductsError({required this.categoryId, required this.message});
+}
+
+// Estados para la carga de una categoría específica por ID
+/// Estado durante la carga de una categoría por ID
+class CategoryByIdLoading extends HomeState {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// Crea una instancia de [CategoryByIdLoading]
+  CategoryByIdLoading({required this.categoryId});
+}
+
+/// Estado cuando se ha cargado una categoría específica por ID
+class CategoryByIdLoaded extends HomeState {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// La categoría cargada
+  final CategoryApiModel category;
+
+  /// Crea una instancia de [CategoryByIdLoaded]
+  CategoryByIdLoaded({required this.categoryId, required this.category});
+}
+
+/// Estado de error al cargar una categoría específica por ID
+class CategoryByIdError extends HomeState {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// Mensaje de error
+  final String message;
+
+  /// Crea una instancia de [CategoryByIdError]
+  CategoryByIdError({required this.categoryId, required this.message});
 }

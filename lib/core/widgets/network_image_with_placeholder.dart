@@ -21,6 +21,26 @@ class NetworkImageWithPlaceholder extends StatefulWidget {
   /// Si el fondo es transparente.
   final bool transparent;
 
+  /// Lista de dominios problemáticos que siempre deben tratarse como errores
+  static const List<String> _problematicDomains = [
+    'cdn.tienda.com',
+    'localhost',
+    '127.0.0.1',
+  ];
+
+  /// Verifica si una URL es válida y no proviene de un dominio problemático
+  static bool isValidImageUrl(String url) {
+    if (url.isEmpty) return false;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
+    
+    // Verificar si la URL contiene algún dominio problemático
+    for (final domain in _problematicDomains) {
+      if (url.contains(domain)) return false;
+    }
+    
+    return true;
+  }
+
   /// Crea una instancia de [NetworkImageWithPlaceholder].
   const NetworkImageWithPlaceholder({
     super.key,
@@ -41,23 +61,38 @@ class NetworkImageWithPlaceholder extends StatefulWidget {
 class _NetworkImageWithPlaceholderState
     extends State<NetworkImageWithPlaceholder> {
   LoadState _loadState = LoadState.loading;
+  bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
-    // Si la URL está vacía, marcar como error inmediatamente.
-    if (widget.imageUrl.isEmpty) {
+    // Verificar inmediatamente si la URL es válida
+    if (!NetworkImageWithPlaceholder.isValidImageUrl(widget.imageUrl)) {
       _loadState = LoadState.error;
     }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 
   @override
   void didUpdateWidget(NetworkImageWithPlaceholder oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.imageUrl != oldWidget.imageUrl) {
-      // Si la URL de la imagen cambia, reiniciar el estado de carga.
-      _loadState =
-          widget.imageUrl.isEmpty ? LoadState.error : LoadState.loading;
+      // Si la URL cambió, validarla y actualizar el estado
+      _loadState = NetworkImageWithPlaceholder.isValidImageUrl(widget.imageUrl) 
+          ? LoadState.loading 
+          : LoadState.error;
+    }
+  }
+
+  // Actualiza el estado de forma segura verificando si el widget sigue montado
+  void _safeSetState(Function() callback) {
+    if (!_disposed && mounted) {
+      setState(callback);
     }
   }
 
@@ -96,65 +131,31 @@ class _NetworkImageWithPlaceholderState
             ),
 
           // Imagen real (solo se intenta cargar si no hay error pre-detectado)
-          if (_loadState != LoadState.error)
+          if (_loadState != LoadState.error && NetworkImageWithPlaceholder.isValidImageUrl(widget.imageUrl))
             Image.network(
               widget.imageUrl,
               fit: widget.fit,
               frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                if (wasSynchronouslyLoaded) {
-                  // Si se carga síncronamente (ej. desde caché), puede que el estado de carga necesite actualizarse aquí mismo.
-                  // Pero es más seguro hacerlo después del build con Future.delayed.
-                  if (_loadState == LoadState.loading) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _loadState = LoadState.loaded;
-                        });
-                      }
+                if (frame != null || wasSynchronouslyLoaded) {
+                  // La imagen se ha cargado exitosamente
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _safeSetState(() {
+                      _loadState = LoadState.loaded;
                     });
-                  }
+                  });
                   return child;
                 }
-                if (frame != null) {
-                  // La imagen se ha cargado y tiene al menos un frame
-                  if (_loadState == LoadState.loading) {
-                    // Usamos addPostFrameCallback para asegurar que setState se llama después del build
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _loadState = LoadState.loaded;
-                        });
-                      }
-                    });
-                  }
-                  return child;
-                }
-                // Aún cargando (frame es null y no fue síncrono)
-                return const SizedBox.shrink(); // No mostrar nada mientras carga si no es el placeholder
-              },
-              loadingBuilder: (context, child, loadingProgress) {
-                // Este builder es más simple, frameBuilder es más robusto para el estado.
-                // Si loadingProgress es null, la imagen está cargada (o hubo error que maneja errorBuilder).
-                if (loadingProgress == null) {
-                  return child; // Devuelve el child (Image) o el errorBuilder lo manejará
-                }
-                // Aún cargando, el placeholder de redactado ya está visible.
+                // Aún cargando
                 return const SizedBox.shrink();
               },
               errorBuilder: (context, error, stackTrace) {
-                // Si ocurre un error durante la carga de la red.
-                if (_loadState != LoadState.error) {
-                  // Usamos addPostFrameCallback para asegurar que setState se llama después del build
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _loadState = LoadState.error;
-                      });
-                    }
+                // Error al cargar la imagen
+                debugPrint('Error al cargar imagen: ${widget.imageUrl} - $error');
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _safeSetState(() {
+                    _loadState = LoadState.error;
                   });
-                }
-                // Ya no se muestra el placeholder de error aquí directamente,
-                // el Stack lo manejará basado en _loadState.
+                });
                 return const SizedBox.shrink();
               },
             ),

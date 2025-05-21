@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/widgets/product_star_rating_widget.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
 
 /// Widget que muestra la información del producto: nombre, calificación y precio.
 class ProductInfoSectionWidget extends StatelessWidget {

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/widgets/product_image_section_widget.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/widgets/product_info_section_widget.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
 
 /// Widget que representa un ítem de producto en las listas de la aplicación.
 ///

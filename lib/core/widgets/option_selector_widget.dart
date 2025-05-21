@@ -55,13 +55,13 @@ class OptionSelectorWidget extends StatelessWidget {
           ), // Usar el mismo radio que los items
           topRight: Radius.circular(AppDimens.optionItemBorderRadius),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(255),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withAlpha(255),
+        //     blurRadius: 10,
+        //     offset: const Offset(0, -5),
+        //   ),
+        // ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

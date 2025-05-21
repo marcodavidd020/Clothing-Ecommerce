@@ -1,3 +1,4 @@
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_application_ecommerce/core/di/base_di_container.dart';
@@ -31,6 +32,9 @@ class AuthDIContainer extends BaseDIContainer {
 
     // BLoC
     registerBlocs(sl);
+
+    // En desarrollo, simular un token para pruebas
+    await mockAuthentication(sl);
   }
 
   /// Registra las dependencias core necesarias
@@ -135,5 +139,29 @@ class AuthDIContainer extends BaseDIContainer {
   /// Proporciona todos los providers de BLoC para el módulo Auth
   static List<BlocProvider> getBlocProviders(GetIt sl) {
     return [BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>())];
+  }
+
+  /// Para desarrollo: simular autenticación con token
+  static Future<void> mockAuthentication(GetIt sl) async {
+    // Solo realizar esta simulación en desarrollo
+    const bool isDevelopment = true;
+    if (isDevelopment && sl.isRegistered<AuthStorage>()) {
+      final authStorage = sl<AuthStorage>();
+      final token = await authStorage.getAccessToken();
+
+      // Si no hay token, simular uno para desarrollo
+      if (token == null || token.isEmpty) {
+        // print('🔐 DESARROLLO: Simulando autenticación con token de prueba');
+        AppLogger.logSuccess('🔐 DESARROLLO: Simulando autenticación con token de prueba');
+        await authStorage.saveTokens(
+          accessToken:
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRlc2Fycm9sbGFkb3IgZGUgUHJ1ZWJhIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+          refreshToken: 'refresh_test_token',
+        );
+        AppLogger.logSuccess('🔐 DESARROLLO: Token simulado guardado');
+      } else {
+        AppLogger.logWarning('🔐 Ya existe un token. No se simulará autenticación.');
+      }
+    }
   }
 }

@@ -36,4 +36,20 @@ class ResponseHandler {
     }
     return null;
   }
+
+  /// Extrae una lista de datos de la respuesta
+  static List<T>? extractDataList<T>(
+    Response response,
+    T Function(Map<String, dynamic>) fromJson,
+  ) {
+    if (hasValidData(response)) {
+      final data = response.data as Map<String, dynamic>;
+      if (data['data'] is List) {
+        return (data['data'] as List)
+            .map((item) => fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+    }
+    return null;
+  }
 }

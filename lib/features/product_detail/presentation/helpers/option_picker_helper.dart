@@ -4,6 +4,7 @@ import 'package:flutter_application_ecommerce/core/widgets/widgets.dart'
 import 'package:flutter_application_ecommerce/features/product_detail/core/core.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// Helper class for showing option pickers for product details.
 class OptionPickerHelper {
@@ -98,7 +99,7 @@ class OptionPickerHelper {
                 onOptionSelected(index);
               },
               onClose: () {
-                Navigator.pop(modalContext);
+                modalContext.pop();
               },
             );
           },
