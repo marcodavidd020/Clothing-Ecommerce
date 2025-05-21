@@ -145,7 +145,7 @@ class _LoadingOverlayState extends State<LoadingOverlay>
                 borderRadius: BorderRadius.circular(widget.overlayBorderRadius),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
+                    color: Colors.black.withAlpha(38),
                     spreadRadius: 2,
                     blurRadius: 10,
                     offset: const Offset(0, 5),

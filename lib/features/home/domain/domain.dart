@@ -12,3 +12,4 @@ export 'usecases/get_top_selling_products_usecase.dart';
 export 'usecases/get_products_by_category_usecase.dart';
 export 'usecases/get_api_categories_tree_usecase.dart';
 export 'usecases/get_category_by_id_usecase.dart';
+export 'usecases/get_product_by_id_usecase.dart';

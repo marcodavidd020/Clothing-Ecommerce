@@ -53,8 +53,8 @@ class ProfileMenuItemWidget extends StatelessWidget {
       clipBehavior: Clip.antiAlias, // Para el efecto de splash
       child: InkWell(
         onTap: onTap,
-        splashColor: primaryColor.withOpacity(0.1),
-        highlightColor: primaryColor.withOpacity(0.05),
+        splashColor: primaryColor.withAlpha(26),
+        highlightColor: primaryColor.withAlpha(13),
         child: Padding(
           padding: const EdgeInsets.all(ProfileUI.menuItemHeight),
           child: Row(
@@ -66,7 +66,7 @@ class ProfileMenuItemWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color:
                       isActive
-                          ? primaryColor.withOpacity(0.1)
+                          ? primaryColor.withAlpha(26)
                           : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -103,7 +103,7 @@ class ProfileMenuItemWidget extends StatelessWidget {
                   colorFilter: ColorFilter.mode(
                     isActive
                         ? primaryColor
-                        : AppColors.textDark.withOpacity(0.7),
+                        : AppColors.textDark.withAlpha(179),
                     BlendMode.srcIn,
                   ),
                 ),

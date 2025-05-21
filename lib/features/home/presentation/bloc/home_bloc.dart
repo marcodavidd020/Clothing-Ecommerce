@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/error/failures.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
+import 'package:flutter_application_ecommerce/features/home/data/datasources/product_api_datasource.dart';
 import 'package:meta/meta.dart';
 
 part 'home_event.dart';
@@ -13,6 +14,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetProductsByCategoryUseCase _getProductsByCategoryUseCase;
   final GetApiCategoriesTreeUseCase _getApiCategoriesTreeUseCase;
   final GetCategoryByIdUseCase _getCategoryByIdUseCase;
+  final GetProductByIdUseCase _getProductByIdUseCase;
 
   HomeBloc({
     required GetTopSellingProductsUseCase getTopSellingProductsUseCase,
@@ -20,11 +22,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required GetProductsByCategoryUseCase getProductsByCategoryUseCase,
     required GetApiCategoriesTreeUseCase getApiCategoriesTreeUseCase,
     required GetCategoryByIdUseCase getCategoryByIdUseCase,
+    required GetProductByIdUseCase getProductByIdUseCase,
   }) : _getTopSellingProductsUseCase = getTopSellingProductsUseCase,
        _getNewInProductsUseCase = getNewInProductsUseCase,
        _getProductsByCategoryUseCase = getProductsByCategoryUseCase,
        _getApiCategoriesTreeUseCase = getApiCategoriesTreeUseCase,
        _getCategoryByIdUseCase = getCategoryByIdUseCase,
+       _getProductByIdUseCase = getProductByIdUseCase,
        super(HomeInitial()) {
     // Eventos para cargar datos al iniciar
     on<LoadHomeDataEvent>(_onLoadHomeData);
@@ -36,6 +40,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadNewInProductsEvent>(_onLoadNewInProducts);
     on<LoadProductsByCategoryEvent>(_onLoadProductsByCategory);
     on<LoadCategoryByIdEvent>(_onLoadCategoryById);
+    on<LoadProductByIdEvent>(_onLoadProductById);
 
     // Eventos de favoritos
     on<ToggleFavoriteEvent>(_onToggleFavorite);
@@ -156,18 +161,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           selectedRootCategory: currentState.selectedRootCategory,
         ),
       );
-      print('Emitido estado HomeLoadingPartial');
     } else {
-      print('Estado actual no es HomeLoaded, sino: ${state.runtimeType}');
+      emit(HomeError(message: 'Estado inválido para cargar categorías'));
     }
 
-    print('Llamando a GetApiCategoriesTreeUseCase.execute()');
     final result = await _getApiCategoriesTreeUseCase.execute();
-    print('GetApiCategoriesTreeUseCase.execute() completado');
 
     result.fold(
       (failure) {
-        print('Error en carga de categorías API: ${failure.message}');
         if (state is HomeLoadingPartial) {
           final currentState = state as HomeLoadingPartial;
           emit(
@@ -184,7 +185,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       },
       (apiCategories) {
-        print('Categorías API cargadas exitosamente: ${apiCategories.length}');
         if (state is HomeLoadingPartial) {
           final currentState = state as HomeLoadingPartial;
           emit(
@@ -197,7 +197,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                   apiCategories.isNotEmpty ? apiCategories[0] : null,
             ),
           );
-          print('Emitido estado HomeLoaded desde HomeLoadingPartial');
         } else {
           emit(
             HomeLoaded(
@@ -209,11 +208,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                   apiCategories.isNotEmpty ? apiCategories[0] : null,
             ),
           );
-          print('Emitido estado HomeLoaded desde otro estado');
         }
       },
     );
-    print('HomeBloc._onLoadApiCategoriesTree completado');
   }
 
   // Manejador para cargar solo las categorías
@@ -418,32 +415,45 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     LoadProductsByCategoryEvent event,
     Emitter<HomeState> emit,
   ) async {
-    // Emitimos un estado de carga parcial para la categoría específica
-    emit(CategoryProductsLoading(categoryId: event.categoryId));
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      emit(
+        LoadingProductsByCategory(
+          categoryId: event.categoryId,
+          previousState: currentState,
+        ),
+      );
 
-    // Llamamos al caso de uso
-    final result = await _getProductsByCategoryUseCase.execute(
-      event.categoryId,
-    );
+      final result = await _getProductsByCategoryUseCase.execute(
+        event.categoryId,
+      );
 
-    result.fold(
-      (failure) {
-        emit(
-          CategoryProductsError(
-            categoryId: event.categoryId,
-            message: failure.message,
-          ),
-        );
-      },
-      (products) {
-        emit(
-          CategoryProductsLoaded(
-            categoryId: event.categoryId,
-            products: products,
-          ),
-        );
-      },
-    );
+      result.fold(
+        (failure) {
+          emit(
+            HomeError(
+              message: 'Error al cargar productos: ${failure.message}',
+              categories: currentState.categories,
+              apiCategories: currentState.apiCategories,
+              topSellingProducts: currentState.topSellingProducts,
+              newInProducts: currentState.newInProducts,
+              selectedRootCategory: currentState.selectedRootCategory,
+            ),
+          );
+        },
+        (products) {
+          emit(
+            ProductsByCategoryLoaded(
+              categoryId: event.categoryId,
+              products: products,
+              previousState: currentState,
+            ),
+          );
+        },
+      );
+    } else {
+      emit(HomeError(message: 'Estado inválido para cargar productos'));
+    }
   }
 
   // Manejador para cargar una categoría específica por ID
@@ -455,9 +465,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(CategoryByIdLoading(categoryId: event.categoryId));
 
     // Llamamos al caso de uso
-    final result = await _getCategoryByIdUseCase.execute(
-      event.categoryId,
-    );
+    final result = await _getCategoryByIdUseCase.execute(event.categoryId);
 
     result.fold(
       (failure) {
@@ -469,14 +477,70 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
       },
       (category) {
-        emit(
-          CategoryByIdLoaded(
-            categoryId: event.categoryId,
-            category: category,
-          ),
-        );
+        if (state is HomeLoaded) {
+          final currentState = state as HomeLoaded;
+          emit(
+            currentState.copyWith(
+              selectedCategory: category,
+              productsByCategory: category.products,
+            ),
+          );
+        } else {
+          emit(
+            HomeLoaded(
+              categories: [],
+              apiCategories: [],
+              topSellingProducts: [],
+              newInProducts: [],
+              selectedCategory: category,
+              productsByCategory: category.products,
+            ),
+          );
+        }
       },
     );
+  }
+
+  // Manejador para cargar detalles de un producto
+  Future<void> _onLoadProductById(
+    LoadProductByIdEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      emit(
+        LoadingProductDetail(
+          productId: event.productId,
+          previousState: currentState,
+        ),
+      );
+
+      final result = await _getProductByIdUseCase.execute(event.productId);
+
+      result.fold(
+        (failure) {
+          emit(
+            HomeError(
+              message: 'Error al cargar el producto: ${failure.message}',
+              categories: currentState.categories,
+              apiCategories: currentState.apiCategories,
+              topSellingProducts: currentState.topSellingProducts,
+              newInProducts: currentState.newInProducts,
+              selectedRootCategory: currentState.selectedRootCategory,
+            ),
+          );
+        },
+        (product) {
+          emit(
+            ProductDetailLoaded(product: product, previousState: currentState),
+          );
+        },
+      );
+    } else {
+      emit(
+        HomeError(message: 'Estado inválido para cargar detalles de producto'),
+      );
+    }
   }
 
   // Manejador para alternar favoritos

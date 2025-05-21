@@ -102,11 +102,17 @@ class HomeNavigationHelper {
   /// Este método sólo carga la categoría por ID y luego navega a la vista de detalle.
   /// Si los datos de categorías no están disponibles, iniciará la carga y navegará
   /// usando NavigationHelper.
-  static void goToCategoryDetailById(BuildContext context, String categoryId, {bool updateOnly = false}) {
+  static void goToCategoryDetailById(
+    BuildContext context,
+    String categoryId, {
+    bool updateOnly = false,
+  }) {
     if (_isNavigating) return;
 
     _isNavigating = true;
-    AppLogger.logInfo('Navegando a categoría por ID: $categoryId, updateOnly: $updateOnly');
+    AppLogger.logInfo(
+      'Navegando a categoría por ID: $categoryId, updateOnly: $updateOnly',
+    );
 
     // Ejecutar en microtask para permitir que el frame actual se complete
     Future.microtask(() {
@@ -130,7 +136,8 @@ class HomeNavigationHelper {
 
         // Si ya tenemos las categorías cargadas, incluimos la lista completa
         // para mejorar la UX con breadcrumbs y navegación jerárquica
-        if (currentState is HomeLoaded && currentState.apiCategories.isNotEmpty) {
+        if (currentState is HomeLoaded &&
+            currentState.apiCategories.isNotEmpty) {
           NavigationHelper.goToCategoryDetail(
             context,
             categoryId: categoryId,
@@ -147,7 +154,7 @@ class HomeNavigationHelper {
           NavigationHelper.goToHome(context);
         }
       }
-      
+
       _isNavigating = false;
     });
   }

@@ -55,8 +55,8 @@ class ErrorContentWidget extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        splashColor: AppColors.primary.withOpacity(0.3),
-        highlightColor: AppColors.textLight.withOpacity(0.1),
+        splashColor: AppColors.primary.withAlpha(77),
+        highlightColor: AppColors.textLight.withAlpha(26),
         onTap: onRetry,
         child: Ink(
           decoration: BoxDecoration(

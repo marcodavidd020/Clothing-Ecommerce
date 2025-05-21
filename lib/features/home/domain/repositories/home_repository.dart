@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_application_ecommerce/core/error/failures.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
+import 'package:flutter_application_ecommerce/features/home/data/datasources/product_api_datasource.dart';
 
 /// Repositorio para obtener los datos de la pantalla de inicio
 abstract class HomeRepository {
@@ -24,4 +25,7 @@ abstract class HomeRepository {
   Future<Either<Failure, List<ProductItemModel>>> getProductsByCategory(
     String categoryId,
   );
+
+  /// Obtiene detalles de un producto específico por su ID
+  Future<Either<Failure, ProductDetailModel>> getProductById(String id);
 }

@@ -33,19 +33,19 @@ class HomePageHelper {
         _loadHomeData(context);
       } else {
         // Si ya tenemos datos pero faltan categorías del API, cargarlas
-        if ((currentState as HomeLoaded).apiCategories.isEmpty) {
+        if (currentState.apiCategories.isEmpty) {
           _loadApiCategories(context);
         }
       }
     });
   }
-  
+
   /// Carga los datos completos de la página Home
   static void _loadHomeData(BuildContext context) {
     final homeBloc = context.read<HomeBloc>();
     homeBloc.add(LoadHomeDataEvent());
   }
-  
+
   /// Carga específicamente las categorías API
   static void _loadApiCategories(BuildContext context) {
     final homeBloc = context.read<HomeBloc>();
@@ -155,4 +155,4 @@ class HomePageHelper {
       HomeNavigationHelper.goToAllCategories(context);
     }
   }
-} 
+}
