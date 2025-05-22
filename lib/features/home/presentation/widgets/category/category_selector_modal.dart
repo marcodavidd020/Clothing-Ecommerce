@@ -30,7 +30,7 @@ class CategorySelectorModal {
       backgroundColor: Colors.transparent,
       builder:
           (context) => OptionSelectorWidget(
-            title: 'Seleccionar Categoría',
+            title: 'Select Category',
             options: options,
             selectedIndex: selectedIndex,
             onOptionSelected: (index) {

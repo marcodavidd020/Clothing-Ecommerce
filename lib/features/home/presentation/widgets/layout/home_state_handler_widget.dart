@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/category_states.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/home_state.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/loading_states.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/product_states.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/helpers.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,16 +1,24 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutter_application_ecommerce/core/di/base_di_container.dart';
-import 'package:flutter_application_ecommerce/features/home/data/data.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
-import 'package:flutter_application_ecommerce/features/home/data/datasources/category_api_datasource.dart';
-import 'package:flutter_application_ecommerce/features/home/data/datasources/product_api_datasource.dart';
-import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
-import 'package:flutter_application_ecommerce/core/network/network_info.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+
+import '../../core/di/base_di_container.dart';
+import '../../core/storage/storage_service.dart';
+import '../../core/network/dio_client.dart';
+import '../../core/network/network_info.dart';
+
+import 'data/datasources/category_api_datasource.dart';
+import 'data/datasources/product_api_datasource.dart';
+import 'data/repositories/home_repository_impl.dart';
+import 'domain/repositories/home_repository.dart';
+import 'domain/usecases/get_api_categories_tree_usecase.dart';
+import 'domain/usecases/get_category_by_id_usecase.dart';
+import 'domain/usecases/get_product_by_id_usecase.dart';
+import 'domain/usecases/get_products_by_category_usecase.dart';
+import 'presentation/bloc/home_bloc.dart';
+import 'presentation/bloc/events/home_event.dart';
+import 'core/core.dart';
 
 /// Configuración de inyección de dependencias para el módulo Home
 class HomeDIContainer extends BaseDIContainer {
@@ -57,6 +65,13 @@ class HomeDIContainer extends BaseDIContainer {
     if (!sl.isRegistered<DioClient>()) {
       sl.registerLazySingleton<DioClient>(
         () => DioClient(dio: sl<Dio>(), networkInfo: sl<NetworkInfo>()),
+      );
+    }
+
+    // Registrar CategoryStorage
+    if (!sl.isRegistered<CategoryStorage>()) {
+      sl.registerLazySingleton<CategoryStorage>(
+        () => CategoryStorage(sl<StorageService>()),
       );
     }
 
@@ -163,6 +178,7 @@ class HomeDIContainer extends BaseDIContainer {
         sl.isRegistered<GetApiCategoriesTreeUseCase>(),
         sl.isRegistered<GetCategoryByIdUseCase>(),
         sl.isRegistered<GetProductByIdUseCase>(),
+        sl.isRegistered<CategoryStorage>(),
       ],
       'Los casos de uso del módulo Home deben estar registrados antes de registrar HomeBloc',
     );
@@ -174,6 +190,7 @@ class HomeDIContainer extends BaseDIContainer {
           getApiCategoriesTreeUseCase: sl(),
           getCategoryByIdUseCase: sl(),
           getProductByIdUseCase: sl(),
+          categoryStorage: sl(),
         ),
       );
     }

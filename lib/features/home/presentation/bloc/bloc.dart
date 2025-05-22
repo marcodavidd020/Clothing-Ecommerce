@@ -1,1 +1,9 @@
 export 'home_bloc.dart';
+export 'events/home_event.dart';
+export 'events/category_events.dart';
+export 'events/product_events.dart';
+export 'events/favorite_events.dart';
+export 'states/home_state.dart';
+export 'states/category_states.dart';
+export 'states/product_states.dart';
+export 'states/loading_states.dart';

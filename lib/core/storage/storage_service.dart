@@ -39,7 +39,10 @@ abstract class StorageService {
 
   /// Recupera una lista de strings con la clave especificada
   /// Si la clave no existe, devuelve una lista vacía o el valor por defecto proporcionado
-  Future<List<String>> getStringList(String key, {List<String> defaultValue = const []});
+  Future<List<String>> getStringList(
+    String key, {
+    List<String> defaultValue = const [],
+  });
 
   /// Comprueba si una clave existe en el almacenamiento
   Future<bool> containsKey(String key);
@@ -49,4 +52,4 @@ abstract class StorageService {
 
   /// Elimina todos los valores del almacenamiento
   Future<bool> clear();
-} 
+}

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/helpers.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/widgets.dart';
 
