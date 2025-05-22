@@ -1,15 +1,18 @@
-import 'package:flutter_application_ecommerce/core/network/logger.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutter_application_ecommerce/core/di/base_di_container.dart';
-import 'package:flutter_application_ecommerce/core/di/modules/storage_module.dart';
-import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
-import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+
+import 'package:flutter_application_ecommerce/core/di/di.dart';
 import 'package:flutter_application_ecommerce/core/storage/storage_service.dart';
+import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
+import 'package:flutter_application_ecommerce/core/network/network_info.dart';
+
 import 'package:flutter_application_ecommerce/features/auth/data/data.dart';
 import 'package:flutter_application_ecommerce/features/auth/domain/domain.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
+import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
 import 'package:flutter_application_ecommerce/features/auth/presentation/bloc/bloc.dart';
-import 'package:flutter_application_ecommerce/features/auth/domain/usecases/check_auth_status_usecase.dart'; // Importar CheckAuthStatusUseCase
 
 /// Contenedor de inyección de dependencias para el módulo Auth
 class AuthDIContainer extends BaseDIContainer {
@@ -52,10 +55,13 @@ class AuthDIContainer extends BaseDIContainer {
       'AuthStorage debe estar registrado por StorageModule antes de registrar AuthDIContainer',
     );
 
-    // Asegurar que DioClient está registrado
+    // Verificar que las dependencias de infraestructura ya están registradas
     BaseDIContainer.checkDependencies(sl, [
+      sl.isRegistered<Dio>(),
+      sl.isRegistered<InternetConnectionChecker>(),
+      sl.isRegistered<NetworkInfo>(),
       sl.isRegistered<DioClient>(),
-    ], 'DioClient debe estar registrado antes de registrar AuthDIContainer');
+    ], 'Las dependencias de infraestructura deben estar registradas antes de registrar AuthDIContainer');
   }
 
   /// Registra las fuentes de datos
@@ -139,6 +145,15 @@ class AuthDIContainer extends BaseDIContainer {
   /// Proporciona todos los providers de BLoC para el módulo Auth
   static List<BlocProvider> getBlocProviders(GetIt sl) {
     return [BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>())];
+  }
+
+  /// Proporciona todos los providers de repositorios para el módulo Auth
+  static List<RepositoryProvider> getRepositoryProviders() {
+    return [
+      RepositoryProvider<AuthRepository>(
+        create: (context) => GetIt.instance<AuthRepository>(),
+      ),
+    ];
   }
 
   /// Para desarrollo: simular autenticación con token

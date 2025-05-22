@@ -16,6 +16,7 @@ void main() {
     final dio = Dio();
     final networkInfo = NetworkInfoImpl(
       InternetConnectionChecker.createInstance(),
+      dio,
     );
     dioClient = DioClient(dio: dio, networkInfo: networkInfo);
     dataSource = AuthRemoteDataSource(dioClient: dioClient);
@@ -125,7 +126,10 @@ void main() {
       // Crear una nueva instancia sin token
       final newDioClient = DioClient(
         dio: Dio(),
-        networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+        networkInfo: NetworkInfoImpl(
+          InternetConnectionChecker.createInstance(),
+          Dio(),
+        ),
       );
       final newDataSource = AuthRemoteDataSource(dioClient: newDioClient);
 

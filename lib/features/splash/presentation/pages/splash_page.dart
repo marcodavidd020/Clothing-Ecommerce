@@ -69,16 +69,25 @@ class _SplashPageState extends State<SplashPage>
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        // Guardar la ruta de navegación según el estado
+        final String? routeName =
+            state is Authenticated
+                ? AppRoutes.mainName
+                : state is Unauthenticated
+                ? AppRoutes.signInName
+                : null;
+
+        // Capturar el GoRouter antes del gap asincrónico
+        final router = GoRouter.of(context);
+
         // Esperar un poco para que la animación del splash sea visible
         Future.delayed(const Duration(milliseconds: 500), () {
           if (!mounted) return; // Comprobar si el widget sigue montado
 
-          if (state is Authenticated) {
+          // Navegar a la ruta determinada si existe
+          if (routeName != null) {
             // Usar GoRouter para reemplazar la pila de navegación
-            context.goNamed(AppRoutes.mainName);
-          } else if (state is Unauthenticated) {
-            // Usar GoRouter para reemplazar la pila de navegación
-            context.goNamed(AppRoutes.signInName);
+            router.goNamed(routeName);
           }
           // No es necesario manejar RegistrationSuccessNeedSignIn explícitamente aquí,
           // ya que AuthBlocHandler lo llevará a SignInPage, y si luego el usuario

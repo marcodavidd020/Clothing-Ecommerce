@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/helpers.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_application_ecommerce/features/home/presentation/widgets
 ///
 /// Muestra un selector de categorías en el AppBar, una barra de búsqueda,
 /// una sección de categorías de productos y el contenido principal de la página,
-/// todos con animaciones de entrada.
+// Todos con animaciones de entrada.
 class HomePage extends StatefulWidget {
   /// Crea una instancia de [HomePage].
   const HomePage({super.key});
@@ -20,7 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 /// Estado para [HomePage] que maneja la lógica de la UI.
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Controller para el scroll
   final ScrollController _scrollController = ScrollController();
 
@@ -30,24 +31,54 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _requestInitialData();
+    // Registrar como observador para detectar cuando la app vuelve al primer plano
+    WidgetsBinding.instance.addObserver(this);
+    // Solicitar datos cuando se crea la página
+    _requestInitialDataWithDelay();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // También intentar cargar datos aquí por si el contexto no estaba listo en initState
-    _requestInitialData();
+    _requestInitialDataWithDelay();
   }
 
-  /// Solicita la carga inicial de datos usando el helper
-  void _requestInitialData() {
-    HomePageHelper.requestInitialData(context, _dataRequested);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Si la app vuelve al primer plano, forzar recarga de datos
+    if (state == AppLifecycleState.resumed) {
+      AppLogger.logInfo('App resumed - recargando datos de Home');
+      _forceReloadData();
+    }
+  }
+
+  /// Solicita la carga inicial de datos usando el helper con un pequeño retraso
+  void _requestInitialDataWithDelay() {
+    if (_dataRequested) return;
+
+    // Marcar que ya hemos solicitado datos
     _dataRequested = true;
+
+    // Usar un pequeño retraso para asegurar que el BLoC está listo
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
+      HomePageHelper.requestInitialData(context, false);
+    });
+  }
+
+  /// Fuerza la recarga de datos, ignorando si ya se han solicitado
+  void _forceReloadData() {
+    _dataRequested = false;
+    if (mounted) {
+      HomePageHelper.requestInitialData(context, false);
+      _dataRequested = true;
+    }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
   }
@@ -57,9 +88,9 @@ class _HomePageState extends State<HomePage> {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: _handleStateChanges,
       builder: (context, state) {
-        // Solo cargar datos iniciales si estamos en estado inicial y no los hemos solicitado
-        if (state is HomeInitial && !_dataRequested) {
-          _requestInitialData();
+        // Solo cargar datos iniciales si estamos en estado inicial
+        if (state is HomeInitial) {
+          _requestInitialDataWithDelay();
         }
 
         // Extraer categorías raíz y categoría seleccionada del estado si están disponibles
@@ -111,13 +142,10 @@ class _HomePageState extends State<HomePage> {
     _handleCategoryNavigation(context, state);
 
     // Recargar datos después de estados de categoría completados
-    if (_shouldReloadDataAfterState(state) && _dataRequested) {
-      // Reseteamos la bandera y cargamos los datos de nuevo
-      _dataRequested = false;
-
+    if (_shouldReloadDataAfterState(state)) {
       // Ponemos un pequeño delay para evitar conflictos de estado
       Future.delayed(Duration.zero, () {
-        _requestInitialData();
+        _forceReloadData();
       });
     }
   }
