@@ -33,7 +33,7 @@ class CategoryNavigationHelper {
         AppLogger.logInfo(
           'Navegando a subcategoría: ${category.name} desde ${currentCategory.name}',
         );
-        
+
         context.goNamed(
           AppRoutes.subcategoryName,
           pathParameters: {
@@ -45,7 +45,7 @@ class CategoryNavigationHelper {
       } else {
         // Si no es una subcategoría directa, usar la ruta normal de categoría
         AppLogger.logInfo('Navegando a categoría: ${category.name}');
-        
+
         context.goNamed(
           AppRoutes.categoryDetailName,
           pathParameters: {AppRoutes.categoryIdParam: category.id},
@@ -68,7 +68,7 @@ class CategoryNavigationHelper {
       AppLogger.logInfo(
         'Navegando a subcategoría ID: $subcategoryId (padre: $parentCategoryId)',
       );
-      
+
       context.goNamed(
         AppRoutes.subcategoryName,
         pathParameters: {
@@ -90,7 +90,7 @@ class CategoryNavigationHelper {
   }) {
     try {
       AppLogger.logInfo('Navegando a categoría ID: $categoryId');
-      
+
       context.goNamed(
         AppRoutes.categoryDetailName,
         pathParameters: {AppRoutes.categoryIdParam: categoryId},
@@ -100,4 +100,4 @@ class CategoryNavigationHelper {
       AppLogger.logError('Error navegando a categoría $categoryId: $e');
     }
   }
-} 
+}

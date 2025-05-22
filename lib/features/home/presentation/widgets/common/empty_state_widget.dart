@@ -29,7 +29,7 @@ class EmptyStateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveIconColor =
-        iconColor ?? AppColors.textLight.withOpacity(0.5);
+        iconColor ?? AppColors.textLight.withAlpha(128);
 
     return Center(
       child: Padding(

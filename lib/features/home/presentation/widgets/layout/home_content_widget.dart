@@ -3,6 +3,7 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/presentation.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 /// Widget que implementa el contenido principal de la página Home.
 ///
@@ -18,10 +19,10 @@ class HomeContentWidget extends StatefulWidget {
   final VoidCallback onSeeAllCategoriesPressed;
 
   /// Callback cuando se presiona ver todos los productos destacados
-  final VoidCallback onSeeAllTopSellingPressed;
+  // final VoidCallback onSeeAllTopSellingPressed;
 
   /// Callback cuando se presiona ver todos los productos nuevos
-  final VoidCallback onSeeAllNewInPressed;
+  // final VoidCallback onSeeAllNewInPressed;
 
   /// Callback cuando se presiona la barra de búsqueda
   final VoidCallback onSearchTapped;
@@ -41,8 +42,6 @@ class HomeContentWidget extends StatefulWidget {
     required this.state,
     required this.scrollController,
     required this.onSeeAllCategoriesPressed,
-    required this.onSeeAllTopSellingPressed,
-    required this.onSeeAllNewInPressed,
     required this.onSearchTapped,
     required this.onCategoryTapped,
     required this.onProductTapped,
@@ -109,21 +108,21 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
                   onSeeAllPressed: widget.onSeeAllCategoriesPressed,
                 ),
                 const SizedBox(height: AppDimens.vSpace16),
-                ProductHorizontalListSection(
-                  products: widget.state.topSellingProducts,
-                  onSeeAllPressed: widget.onSeeAllTopSellingPressed,
-                  onProductTap: widget.onProductTapped,
-                  onFavoriteToggle: widget.onToggleFavorite,
-                ),
+                // ProductHorizontalListSection(
+                //   products: widget.state.topSellingProducts,
+                //   onSeeAllPressed: widget.onSeeAllTopSellingPressed,
+                //   onProductTap: widget.onProductTapped,
+                //   onFavoriteToggle: widget.onToggleFavorite,
+                // ),
                 const SizedBox(height: AppDimens.vSpace16),
-                ProductHorizontalListSection(
-                  title: AppStrings.newInTitle,
-                  titleColor: AppColors.primary,
-                  products: widget.state.newInProducts,
-                  onSeeAllPressed: widget.onSeeAllNewInPressed,
-                  onProductTap: widget.onProductTapped,
-                  onFavoriteToggle: widget.onToggleFavorite,
-                ),
+                // ProductHorizontalListSection(
+                //   title: AppStrings.newInTitle,
+                //   titleColor: AppColors.primary,
+                //   products: widget.state.newInProducts,
+                //   onSeeAllPressed: widget.onSeeAllNewInPressed,
+                //   onProductTap: widget.onProductTapped,
+                //   onFavoriteToggle: widget.onToggleFavorite,
+                // ),
               ],
             ),
           ),
@@ -265,18 +264,24 @@ class HomeCategoriesSection extends StatelessWidget {
     return CategoryItemWidget(
       category: displayCategory,
       onTap: () {
-        if (apiCategory.hasSubCategories) {
-          // Usar el método que implementa GoRouter
+        // Verificamos si tiene hijos directamente mirando la lista de hijos
+        if (apiCategory.children.isNotEmpty) {
+          // Si tiene subcategorías, navegamos a la vista de categoría
+          AppLogger.logInfo('Navegando a subcategoría con hijos: ${apiCategory.name}');
           HomeNavigationHelper.navigateAfterCategoryLoaded(
             context,
             apiCategory,
             allCategories,
           );
         } else {
-          // Si no tiene subcategorías, cargar productos y dejar que el listener de BLoC maneje la navegación
-          HomeBlocHandler.loadProductsByCategory(
+          // Si no tiene subcategorías, cargamos sus productos y luego navegamos
+          AppLogger.logInfo('Cargando productos de categoría sin hijos: ${apiCategory.name}');
+          
+          // Solo navegamos directamente - el CategoryDetailPage se encargará de cargar los productos
+          HomeNavigationHelper.navigateAfterCategoryLoaded(
             context,
-            apiCategory.id,
+            apiCategory,
+            allCategories,
           );
         }
       },

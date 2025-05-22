@@ -7,6 +7,7 @@ import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/data/datasources/category_api_datasource.dart';
+import 'package:flutter_application_ecommerce/features/home/data/datasources/product_api_datasource.dart';
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_application_ecommerce/core/network/network_info.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -74,10 +75,10 @@ class HomeDIContainer extends BaseDIContainer {
       );
     }
 
-    // Registrar ProductDataSource
-    if (!sl.isRegistered<ProductDataSource>()) {
-      sl.registerLazySingleton<ProductDataSource>(
-        () => ProductLocalDataSource(),
+    // Registrar ProductApiDataSource
+    if (!sl.isRegistered<ProductApiDataSource>()) {
+      sl.registerLazySingleton<ProductApiDataSource>(
+        () => ProductApiRemoteDataSource(dioClient: sl<DioClient>()),
       );
     }
 
@@ -86,7 +87,7 @@ class HomeDIContainer extends BaseDIContainer {
       sl,
       [
         sl.isRegistered<CategoryApiDataSource>(),
-        sl.isRegistered<ProductDataSource>(),
+        sl.isRegistered<ProductApiDataSource>(),
       ],
       'CategoryApiDataSource y ProductDataSource deben estar registrados antes de continuar',
     );
@@ -98,10 +99,10 @@ class HomeDIContainer extends BaseDIContainer {
     BaseDIContainer.checkDependencies(
       sl,
       [
-        sl.isRegistered<ProductDataSource>(),
         sl.isRegistered<CategoryApiDataSource>(),
+        sl.isRegistered<ProductApiDataSource>(),
       ],
-      'Las fuentes de datos ProductDataSource y CategoryApiDataSource deben estar registradas '
+      'Las fuentes de datos ProductDataSource, CategoryApiDataSource y ProductApiDataSource deben estar registradas '
       'antes de registrar HomeRepository',
     );
 
@@ -109,8 +110,8 @@ class HomeDIContainer extends BaseDIContainer {
     if (!sl.isRegistered<HomeRepository>()) {
       sl.registerLazySingleton<HomeRepository>(
         () => HomeRepositoryImpl(
-          productDataSource: sl<ProductDataSource>(),
           categoryApiDataSource: sl<CategoryApiDataSource>(),
+          productApiDataSource: sl<ProductApiDataSource>(),
         ),
       );
     }
@@ -124,18 +125,6 @@ class HomeDIContainer extends BaseDIContainer {
       [sl.isRegistered<HomeRepository>()],
       'HomeRepository debe estar registrado antes de registrar los casos de uso',
     );
-
-    if (!sl.isRegistered<GetTopSellingProductsUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetTopSellingProductsUseCase(sl<HomeRepository>()),
-      );
-    }
-
-    if (!sl.isRegistered<GetNewInProductsUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetNewInProductsUseCase(sl<HomeRepository>()),
-      );
-    }
 
     if (!sl.isRegistered<GetProductsByCategoryUseCase>()) {
       sl.registerLazySingleton(
@@ -156,6 +145,12 @@ class HomeDIContainer extends BaseDIContainer {
         () => GetCategoryByIdUseCase(sl<HomeRepository>()),
       );
     }
+
+    if (!sl.isRegistered<GetProductByIdUseCase>()) {
+      sl.registerLazySingleton(
+        () => GetProductByIdUseCase(sl<HomeRepository>()),
+      );
+    }
   }
 
   /// Registra los BLoCs
@@ -164,11 +159,10 @@ class HomeDIContainer extends BaseDIContainer {
     BaseDIContainer.checkDependencies(
       sl,
       [
-        sl.isRegistered<GetTopSellingProductsUseCase>(),
-        sl.isRegistered<GetNewInProductsUseCase>(),
         sl.isRegistered<GetProductsByCategoryUseCase>(),
         sl.isRegistered<GetApiCategoriesTreeUseCase>(),
         sl.isRegistered<GetCategoryByIdUseCase>(),
+        sl.isRegistered<GetProductByIdUseCase>(),
       ],
       'Los casos de uso del módulo Home deben estar registrados antes de registrar HomeBloc',
     );
@@ -176,11 +170,10 @@ class HomeDIContainer extends BaseDIContainer {
     if (!sl.isRegistered<HomeBloc>()) {
       sl.registerFactory(
         () => HomeBloc(
-          getTopSellingProductsUseCase: sl(),
-          getNewInProductsUseCase: sl(),
           getProductsByCategoryUseCase: sl(),
           getApiCategoriesTreeUseCase: sl(),
           getCategoryByIdUseCase: sl(),
+          getProductByIdUseCase: sl(),
         ),
       );
     }

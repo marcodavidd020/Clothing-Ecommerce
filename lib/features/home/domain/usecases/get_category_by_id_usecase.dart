@@ -13,4 +13,4 @@ class GetCategoryByIdUseCase {
   Future<Either<Failure, CategoryApiModel>> execute(String id) async {
     return await _repository.getCategoryById(id);
   }
-} 
+}

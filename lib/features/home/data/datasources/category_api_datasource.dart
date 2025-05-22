@@ -12,7 +12,7 @@ abstract class CategoryApiDataSource {
 
   /// Obtiene un árbol jerárquico de categorías
   Future<List<CategoryApiModel>> getCategoryTree();
-  
+
   /// Obtiene una categoría específica por su ID
   Future<CategoryApiModel> getCategoryById(String id);
 }
@@ -28,7 +28,9 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
   Future<List<CategoryApiModel>> getCategories() async {
     try {
       final response = await _dioClient.get(ApiConstants.categoriesEndpoint);
-      AppLogger.logInfo('Respuesta recibida: statusCode=${response.statusCode}');
+      AppLogger.logInfo(
+        'Respuesta recibida: statusCode=${response.statusCode}',
+      );
 
       if (ResponseHandler.isSuccessfulResponse(response)) {
         final categoryList = ResponseHandler.extractDataList<CategoryApiModel>(
@@ -40,10 +42,14 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
           AppLogger.logSuccess('Categorías obtenidas: ${categoryList.length}');
           return categoryList;
         } else {
-          AppLogger.logError('ERROR: categoryList es null después de extractDataList');
+          AppLogger.logError(
+            'ERROR: categoryList es null después de extractDataList',
+          );
         }
       } else {
-        AppLogger.logError('ERROR: Respuesta no exitosa, statusCode=${response.statusCode}');
+        AppLogger.logError(
+          'ERROR: Respuesta no exitosa, statusCode=${response.statusCode}',
+        );
       }
 
       throw ServerException(
@@ -68,7 +74,9 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
       final response = await _dioClient.get(
         ApiConstants.categoriesTreeEndpoint,
       );
-      AppLogger.logInfo('Respuesta recibida: statusCode=${response.statusCode}');
+      AppLogger.logInfo(
+        'Respuesta recibida: statusCode=${response.statusCode}',
+      );
 
       if (ResponseHandler.isSuccessfulResponse(response)) {
         final categoryList = ResponseHandler.extractDataList<CategoryApiModel>(
@@ -87,7 +95,9 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
           }
           return categoryList;
         } else {
-          AppLogger.logError('ERROR: categoryList es null después de extractDataList');
+          AppLogger.logError(
+            'ERROR: categoryList es null después de extractDataList',
+          );
         }
       } else {
         AppLogger.logError(
@@ -107,7 +117,7 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
       return _getMockCategories();
     }
   }
-  
+
   @override
   Future<CategoryApiModel> getCategoryById(String id) async {
     try {
@@ -117,7 +127,9 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
       final response = await _dioClient.get(
         ApiConstants.getCategoryByIdEndpoint(id),
       );
-      AppLogger.logInfo('Respuesta recibida: statusCode=${response.statusCode}');
+      AppLogger.logInfo(
+        'Respuesta recibida: statusCode=${response.statusCode}',
+      );
 
       if (ResponseHandler.isSuccessfulResponse(response)) {
         final categoryData = ResponseHandler.extractData(
@@ -130,7 +142,9 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
           );
           return categoryData;
         } else {
-          AppLogger.logError('ERROR: categoryData es null después de extractData');
+          AppLogger.logError(
+            'ERROR: categoryData es null después de extractData',
+          );
           throw ServerException(
             message: 'No se pudo extraer datos de categoría',
             statusCode: response.statusCode,
