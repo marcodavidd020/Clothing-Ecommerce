@@ -122,48 +122,24 @@ class NavigationHelper {
     try {
       // Verificamos primero si podemos hacer pop de manera segura
       if (AppRouter.router.canPop()) {
+        AppLogger.logInfo('Usando pop() para volver a la pantalla anterior');
         context.pop();
-        _isNavigating = false;
-        return;
+      } else {
+        // Si no podemos hacer pop porque estamos en la raíz, vamos a home
+        AppLogger.logInfo('No se puede hacer pop, navegando a home');
+        context.goNamed(AppRoutes.homeName);
       }
-
-      // Si no podemos hacer pop, programamos la navegación a home con un pequeño retraso
-      // para evitar conflictos con los eventos del frame actual
-      AppLogger.logInfo('No se puede navegar hacia atrás, yendo a home');
-
-      // Usamos un pequeño retraso en lugar de microtask para evitar conflictos
-      // con los eventos en el frame actual (especialmente eventos de mouse)
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (!context.mounted) {
-          _isNavigating = false;
-          return;
-        }
-
-        // Navegación directa a Home para evitar problemas con la pila de navegación
-        try {
-          context.goNamed(AppRoutes.mainName);
-        } catch (e) {
-          AppLogger.logError('Error navegando a home desde goBack: $e');
-          // Intento final usando el navigator global
-          try {
-            navigatorKey.currentState?.pushNamedAndRemoveUntil(
-              '/${AppRoutes.main}/home',
-              (route) => false,
-            );
-          } catch (e) {
-            AppLogger.logError('Error fallback de navegación a home: $e');
-          }
-        }
-
-        _isNavigating = false;
-      });
     } catch (e) {
       AppLogger.logError('Error en goBack: $e');
-      // Retrasar reset de bandera para evitar problemas con eventos pendientes
-      Future.delayed(const Duration(milliseconds: 200), () {
-        _isNavigating = false;
-      });
+      // Si falla todo, intentamos ir a home como último recurso
+      try {
+        context.goNamed(AppRoutes.mainName);
+      } catch (e2) {
+        AppLogger.logError('Error fallback en goBack: $e2');
+      }
     }
+
+    _isNavigating = false;
   }
 
   /// Navegar a la página de productos por categoría (usando ID)

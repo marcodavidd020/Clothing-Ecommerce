@@ -6,6 +6,7 @@ import 'package:flutter_application_ecommerce/features/home/domain/entities/cate
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/home_bloc_handler.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
+import 'package:flutter_application_ecommerce/core/constants/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -85,12 +86,12 @@ class HomeNavigationHelper {
     _isNavigating = true;
     AppLogger.logInfo('Navegando a detalle de categoría: ${category.name}');
 
-    // Usar NavigationHelper para la navegación real
+    // Usar pushNamed para preservar el historial de navegación
     _safeNavigate(() {
-      NavigationHelper.goToCategoryDetail(
-        context,
-        categoryId: category.id,
-        allCategories: allCategories,
+      context.pushNamed(
+        AppRoutes.categoryDetailName,
+        pathParameters: {AppRoutes.categoryIdParam: category.id},
+        extra: {'allCategories': allCategories},
       );
     });
 
@@ -169,7 +170,7 @@ class HomeNavigationHelper {
 
     _isNavigating = true;
     AppLogger.logInfo(
-      'Navegando a categoría después de cargar: ${category.name}',
+      'Navegando a categoría después de cargar: ${category.name}, hasProducts: ${category.hasProducts}, hijos: ${category.children.length}',
     );
 
     // Ejecutar en microtask para permitir que el frame actual se complete
@@ -180,11 +181,11 @@ class HomeNavigationHelper {
       }
 
       try {
-        // Usar NavigationHelper para la navegación real
-        NavigationHelper.goToCategoryDetail(
-          context,
-          categoryId: category.id,
-          allCategories: allCategories,
+        // Usar pushNamed para preservar el historial de navegación
+        context.pushNamed(
+          AppRoutes.categoryDetailName,
+          pathParameters: {AppRoutes.categoryIdParam: category.id},
+          extra: {'allCategories': allCategories},
         );
       } catch (e) {
         AppLogger.logError('Error al navegar a categoría ${category.name}: $e');

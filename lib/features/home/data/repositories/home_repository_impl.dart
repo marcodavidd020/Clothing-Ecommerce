@@ -1,25 +1,22 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_application_ecommerce/core/error/exceptions.dart';
 import 'package:flutter_application_ecommerce/core/error/failures.dart';
-import 'package:flutter_application_ecommerce/features/home/data/datasources/product_datasource.dart';
 import 'package:flutter_application_ecommerce/features/home/data/datasources/category_api_datasource.dart';
 import 'package:flutter_application_ecommerce/features/home/data/datasources/product_api_datasource.dart';
+import 'package:flutter_application_ecommerce/features/home/data/models/product_detail_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/repositories/home_repository.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 
 /// Implementación del repositorio para la pantalla de inicio
 class HomeRepositoryImpl implements HomeRepository {
-  final ProductDataSource _productDataSource;
   final CategoryApiDataSource? _categoryApiDataSource;
   final ProductApiDataSource? _productApiDataSource;
 
   HomeRepositoryImpl({
-    required ProductDataSource productDataSource,
     required CategoryApiDataSource? categoryApiDataSource,
     ProductApiDataSource? productApiDataSource,
-  }) : _productDataSource = productDataSource,
-       _categoryApiDataSource = categoryApiDataSource,
+  }) : _categoryApiDataSource = categoryApiDataSource,
        _productApiDataSource = productApiDataSource;
 
   @override
@@ -71,31 +68,6 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, List<ProductItemModel>>>
-  getTopSellingProducts() async {
-    try {
-      final products = await _productDataSource.getTopSellingProducts();
-      return Right(products);
-    } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<ProductItemModel>>> getNewInProducts() async {
-    try {
-      final products = await _productDataSource.getNewInProducts();
-      return Right(products);
-    } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
   Future<Either<Failure, List<ProductItemModel>>> getProductsByCategory(
     String categoryId,
   ) async {
@@ -106,32 +78,18 @@ class HomeRepositoryImpl implements HomeRepository {
           categoryId,
         );
         return Right(products);
-      } on ServerException catch (_) {
-        // Si falla la API, intentamos con datos locales
-        return _getProductsByCategoryFromLocal(categoryId);
+      } on ServerException catch (e) {
+        // Si falla la API, retornar el error con el mensaje específico
+        return Left(
+          ServerFailure(message: e.message),
+        );
       } catch (e) {
-        // Si ocurre otro error, intentamos con datos locales
-        return _getProductsByCategoryFromLocal(categoryId);
+        // Si ocurre otro error, retornar el error con su mensaje
+        return Left(UnknownFailure(message: e.toString()));
       }
     }
-
-    // Si no hay API datasource, usar datos locales
-    return _getProductsByCategoryFromLocal(categoryId);
-  }
-
-  /// Método auxiliar para obtener productos por categoría desde datos locales
-  Future<Either<Failure, List<ProductItemModel>>>
-  _getProductsByCategoryFromLocal(String categoryId) async {
-    try {
-      final products = await _productDataSource.getProductsByCategory(
-        categoryId,
-      );
-      return Right(products);
-    } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
+    // Si no hay API datasource, devolver un fallo.
+    return Left(ServerFailure(message: 'API ProductDataSource no disponible'));
   }
 
   @override

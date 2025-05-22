@@ -29,4 +29,9 @@ class ProductItemModel {
     this.availableSizes = const [],
     this.availableColors = const [],
   });
+  
+  @override
+  String toString() {
+    return 'ProductItemModel{id: $id, name: $name, price: $price}';
+  }
 }

@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_application_ecommerce/core/error/exceptions.dart';
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/core/network/response_handler.dart';
-import 'package:flutter_application_ecommerce/features/home/data/models/product_model.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/product_color_option_model.dart';
+import 'package:flutter_application_ecommerce/features/home/data/models/product_detail_model.dart';
 
 /// Define los métodos para acceder a los datos de los productos desde la API
 abstract class ProductApiDataSource {
@@ -13,7 +11,7 @@ abstract class ProductApiDataSource {
   Future<ProductDetailModel> getProductById(String id);
 
   /// Obtiene productos por categoría
-  Future<List<ProductModel>> getProductsByCategory(String categoryId);
+  Future<List<ProductDetailModel>> getProductsByCategory(String categoryId);
 }
 
 /// Implementación que carga los productos desde la API remota
@@ -74,7 +72,7 @@ class ProductApiRemoteDataSource implements ProductApiDataSource {
   }
 
   @override
-  Future<List<ProductModel>> getProductsByCategory(String categoryId) async {
+  Future<List<ProductDetailModel>> getProductsByCategory(String categoryId) async {
     try {
       AppLogger.logInfo(
         'Llamando a getProductsByCategory endpoint: ${ApiConstants.getProductsByCategoryEndpoint(categoryId)}',
@@ -87,9 +85,10 @@ class ProductApiRemoteDataSource implements ProductApiDataSource {
       );
 
       if (ResponseHandler.isSuccessfulResponse(response)) {
-        final productsList = ResponseHandler.extractDataList<ProductModel>(
+        // Usamos extractDataList para obtener la lista de productos
+        final productsList = ResponseHandler.extractDataList<ProductDetailModel>(
           response,
-          (json) => ProductModel.fromJson(json),
+          (json) => ProductDetailModel.fromJson(json),
         );
 
         if (productsList != null) {
@@ -101,203 +100,31 @@ class ProductApiRemoteDataSource implements ProductApiDataSource {
           AppLogger.logError(
             'ERROR: productsList es null después de extractDataList',
           );
+          throw ServerException(
+            message: 'No se pudieron extraer productos de la respuesta',
+            statusCode: response.statusCode,
+          );
         }
       } else {
         AppLogger.logError(
           'ERROR: Respuesta no exitosa, statusCode=${response.statusCode}',
         );
+        throw ServerException(
+          message: ResponseHandler.extractErrorMessage(response),
+          statusCode: response.statusCode,
+        );
       }
-
-      throw ServerException(
-        message: ResponseHandler.extractErrorMessage(response),
-        statusCode: response.statusCode,
-      );
     } catch (e) {
       AppLogger.logError('Error al obtener productos por categoría', e);
       AppLogger.logError('EXCEPTION en getProductsByCategory: ${e.toString()}');
-      // Devolver una lista vacía en caso de error
-      return [];
+      // Relanzar la excepción en lugar de silenciarla
+      if (e is ServerException) {
+        throw e;
+      }
+      throw ServerException(
+        message: 'Error al obtener productos: ${e.toString()}',
+        statusCode: 0,
+      );
     }
-  }
-}
-
-/// Modelo para detalles completos de un producto
-class ProductDetailModel extends ProductModel {
-  final String slug;
-  final double? discountPrice;
-  final int stock;
-  final List<CategoryInfo> categories;
-  final List<ProductVariant> variants;
-  final List<ProductImage> images;
-
-  ProductDetailModel({
-    required super.id,
-    required super.name,
-    required super.imageUrl,
-    required super.description,
-    required this.slug,
-    required super.price,
-    this.discountPrice,
-    required this.stock,
-    required this.categories,
-    required this.variants,
-    required this.images,
-    super.isFavorite = false,
-    super.averageRating = 0.0,
-    super.reviewCount = 0,
-    super.availableSizes = const [],
-    super.availableColors = const [],
-    super.additionalImageUrls = const [],
-  });
-
-  factory ProductDetailModel.fromJson(Map<String, dynamic> json) {
-    // Obtener colores y tallas disponibles a partir de las variantes
-    final availableSizes = <String>{};
-    final availableColors = <String>{};
-
-    final variantsList =
-        json['variants'] != null
-            ? (json['variants'] as List)
-                .map((v) => ProductVariant.fromJson(v))
-                .toList()
-            : <ProductVariant>[];
-
-    for (var variant in variantsList) {
-      if (variant.size != null) availableSizes.add(variant.size!);
-      if (variant.color != null) availableColors.add(variant.color!);
-    }
-
-    // Convertir las imágenes adicionales
-    final imagesList =
-        json['images'] != null
-            ? (json['images'] as List)
-                .map((i) => ProductImage.fromJson(i))
-                .toList()
-            : <ProductImage>[];
-
-    final additionalUrls = imagesList.map((img) => img.url).toList();
-
-    // Convertir categorías
-    final categoriesList =
-        json['categories'] != null
-            ? (json['categories'] as List)
-                .map((c) => CategoryInfo.fromJson(c))
-                .toList()
-            : <CategoryInfo>[];
-
-    // Convertir colores a ProductColorOption
-    final colorOptions =
-        availableColors
-            .map(
-              (colorName) =>
-                  ProductColorOption(name: colorName, color: Colors.grey),
-            )
-            .toList();
-
-    return ProductDetailModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      imageUrl: json['image'] ?? '',
-      description: json['description'] ?? 'N/A',
-      slug: json['slug'] ?? '',
-      price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
-      discountPrice:
-          json['discountPrice'] != null
-              ? double.tryParse(json['discountPrice'].toString())
-              : null,
-      stock: json['stock'] ?? 0,
-      categories: categoriesList,
-      variants: variantsList,
-      images: imagesList,
-      additionalImageUrls: additionalUrls,
-      availableSizes: availableSizes.toList(),
-      availableColors: colorOptions,
-    );
-  }
-}
-
-/// Información básica de categoría
-class CategoryInfo {
-  final String id;
-  final String name;
-  final String slug;
-  final String? image;
-  final bool hasChildren;
-
-  CategoryInfo({
-    required this.id,
-    required this.name,
-    required this.slug,
-    this.image,
-    this.hasChildren = false,
-  });
-
-  factory CategoryInfo.fromJson(Map<String, dynamic> json) {
-    return CategoryInfo(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      slug: json['slug'] ?? '',
-      image: json['image'],
-      hasChildren: json['hasChildren'] ?? false,
-    );
-  }
-}
-
-/// Variante de producto
-class ProductVariant {
-  final String id;
-  final String? color;
-  final String? size;
-  final int stock;
-  final String productId;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
-  ProductVariant({
-    required this.id,
-    this.color,
-    this.size,
-    required this.stock,
-    required this.productId,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory ProductVariant.fromJson(Map<String, dynamic> json) {
-    return ProductVariant(
-      id: json['id'] ?? '',
-      color: json['color'],
-      size: json['size'],
-      stock: json['stock'] ?? 0,
-      productId: json['productId'] ?? '',
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt:
-          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
-    );
-  }
-}
-
-/// Imagen de producto
-class ProductImage {
-  final String id;
-  final String url;
-  final String? alt;
-  final String productId;
-
-  ProductImage({
-    required this.id,
-    required this.url,
-    this.alt,
-    required this.productId,
-  });
-
-  factory ProductImage.fromJson(Map<String, dynamic> json) {
-    return ProductImage(
-      id: json['id'] ?? '',
-      url: json['url'] ?? '',
-      alt: json['alt'],
-      productId: json['productId'] ?? '',
-    );
   }
 }

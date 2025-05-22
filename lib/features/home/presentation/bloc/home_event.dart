@@ -13,11 +13,6 @@ class LoadCategoriesEvent extends HomeEvent {}
 /// Evento para cargar categorías desde la API
 class LoadApiCategoriesTreeEvent extends HomeEvent {}
 
-/// Evento para cargar solo los productos más vendidos
-class LoadTopSellingProductsEvent extends HomeEvent {}
-
-/// Evento para cargar solo los productos nuevos
-class LoadNewInProductsEvent extends HomeEvent {}
 
 /// Evento para cargar los productos de una categoría específica
 class LoadProductsByCategoryEvent extends HomeEvent {

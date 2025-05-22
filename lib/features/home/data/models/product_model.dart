@@ -22,39 +22,20 @@ class ProductModel extends ProductItemModel {
   /// Crea una instancia de [ProductModel] desde un mapa
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
-      id: json['id'] as String,
-      imageUrl: json['imageUrl'] as String,
-      additionalImageUrls:
-          (json['additionalImageUrls'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      name: json['name'] as String,
-      price: (json['price'] as num).toDouble(),
-      originalPrice:
-          json['originalPrice'] != null
-              ? (json['originalPrice'] as num).toDouble()
-              : null,
-      isFavorite: json['isFavorite'] as bool? ?? false,
-      averageRating:
-          json['averageRating'] != null
-              ? (json['averageRating'] as num).toDouble()
-              : 0.0,
-      reviewCount: json['reviewCount'] as int?,
+      id: json['id'] as String? ?? '',
+      imageUrl: json['image'] as String? ?? '',
+      additionalImageUrls: const [],
+      name: json['name'] as String? ?? '',
+      price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
+      originalPrice: json['discountPrice'] != null
+          ? double.tryParse(json['discountPrice'].toString())
+          : null,
+      isFavorite: false,
+      averageRating: 0.0,
+      reviewCount: null,
       description: json['description'] as String? ?? 'N/A',
-      availableSizes:
-          (json['availableSizes'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      availableColors:
-          (json['availableColors'] as List<dynamic>?)
-              ?.map(
-                (e) =>
-                    ProductColorOptionModel.fromJson(e as Map<String, dynamic>),
-              )
-              .toList() ??
-          const [],
+      availableSizes: const [],
+      availableColors: const [],
     );
   }
 

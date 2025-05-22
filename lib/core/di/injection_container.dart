@@ -25,14 +25,14 @@ class InjectionContainer {
     if (!_initialized) {
       // Registrar servicios de almacenamiento primero
       await StorageModule.register(sl);
-      
+
       // Registrar dependencias básicas (network, repository, etc.)
       RepositoryModule.register(sl);
 
       // Registrar todos los módulos de características en GetIt
       await HomeDIContainer.register(sl);
       await AuthDIContainer.register(sl);
-      
+
       // Configurar el cliente Dio para usar el almacenamiento de autenticación
       if (sl.isRegistered<DioClient>() && sl.isRegistered<AuthStorage>()) {
         final dioClient = sl<DioClient>();

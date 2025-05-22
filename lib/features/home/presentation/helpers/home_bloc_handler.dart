@@ -22,6 +22,11 @@ class HomeBlocHandler {
       );
     } else if (state is CategoryProductsLoaded) {
       FeedbackUtil.showSuccessMessage(context, 'Productos cargados');
+    } else if (state is ProductsByCategoryLoaded) {
+      FeedbackUtil.showSuccessMessage(
+        context,
+        'Productos cargados exitosamente',
+      );
     } else if (state is CategoryByIdError) {
       FeedbackUtil.showErrorMessage(
         context,
@@ -40,6 +45,8 @@ class HomeBlocHandler {
       state is HomeLoading ||
       state is HomeLoadingPartial ||
       state is CategoryProductsLoading ||
+      state is LoadingProductsByCategory ||
+      state is LoadingProductDetail ||
       state is CategoryByIdLoading;
 
   /// Despacha evento para cargar datos iniciales
@@ -115,17 +122,5 @@ class HomeBlocHandler {
       context,
       customMessage: 'Mostrando ${category.name}',
     );
-  }
-
-  /// Despacha evento para cargar productos más vendidos
-  static void loadTopSellingProducts(BuildContext context) {
-    final homeBloc = context.read<HomeBloc>();
-    homeBloc.add(LoadTopSellingProductsEvent());
-  }
-
-  /// Despacha evento para cargar productos nuevos
-  static void loadNewInProducts(BuildContext context) {
-    final homeBloc = context.read<HomeBloc>();
-    homeBloc.add(LoadNewInProductsEvent());
   }
 }

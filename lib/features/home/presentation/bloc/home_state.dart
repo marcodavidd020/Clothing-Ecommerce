@@ -18,20 +18,8 @@ class HomeLoadingPartial extends HomeState {
   /// Categorías de la API
   final List<CategoryApiModel> apiCategories;
 
-  /// Productos más vendidos actuales
-  final List<ProductItemModel> topSellingProducts;
-
-  /// Productos nuevos actuales
-  final List<ProductItemModel> newInProducts;
-
   /// Si se están cargando las categorías
   final bool isLoadingCategories;
-
-  /// Si se están cargando los productos más vendidos
-  final bool isLoadingTopSelling;
-
-  /// Si se están cargando los productos nuevos
-  final bool isLoadingNewIn;
 
   /// Categoría raíz seleccionada actualmente
   final CategoryApiModel? selectedRootCategory;
@@ -46,11 +34,7 @@ class HomeLoadingPartial extends HomeState {
   HomeLoadingPartial({
     required this.categories,
     required this.apiCategories,
-    required this.topSellingProducts,
-    required this.newInProducts,
     this.isLoadingCategories = false,
-    this.isLoadingTopSelling = false,
-    this.isLoadingNewIn = false,
     this.selectedRootCategory,
     this.isLoadingProductDetail = false,
     this.productDetailId,
@@ -64,12 +48,6 @@ class HomeLoaded extends HomeState {
 
   /// Categorías de la API en estructura de árbol
   final List<CategoryApiModel> apiCategories;
-
-  /// Productos más vendidos cargados
-  final List<ProductItemModel> topSellingProducts;
-
-  /// Productos nuevos cargados
-  final List<ProductItemModel> newInProducts;
 
   /// Categoría raíz seleccionada actualmente
   final CategoryApiModel? selectedRootCategory;
@@ -87,8 +65,6 @@ class HomeLoaded extends HomeState {
   HomeLoaded({
     required this.categories,
     this.apiCategories = const [],
-    required this.topSellingProducts,
-    required this.newInProducts,
     this.selectedRootCategory,
     this.selectedCategory,
     this.productsByCategory = const [],
@@ -99,8 +75,6 @@ class HomeLoaded extends HomeState {
   HomeLoaded copyWith({
     List<CategoryItemModel>? categories,
     List<CategoryApiModel>? apiCategories,
-    List<ProductItemModel>? topSellingProducts,
-    List<ProductItemModel>? newInProducts,
     CategoryApiModel? selectedRootCategory,
     CategoryApiModel? selectedCategory,
     List<ProductItemModel>? productsByCategory,
@@ -109,8 +83,6 @@ class HomeLoaded extends HomeState {
     return HomeLoaded(
       categories: categories ?? this.categories,
       apiCategories: apiCategories ?? this.apiCategories,
-      topSellingProducts: topSellingProducts ?? this.topSellingProducts,
-      newInProducts: newInProducts ?? this.newInProducts,
       selectedRootCategory: selectedRootCategory ?? this.selectedRootCategory,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       productsByCategory: productsByCategory ?? this.productsByCategory,
@@ -130,12 +102,6 @@ class HomeError extends HomeState {
   /// Categorías de la API (si hay)
   final List<CategoryApiModel>? apiCategories;
 
-  /// Productos más vendidos actuales (si hay)
-  final List<ProductItemModel>? topSellingProducts;
-
-  /// Productos nuevos actuales (si hay)
-  final List<ProductItemModel>? newInProducts;
-
   /// Categoría raíz seleccionada actualmente (si hay)
   final CategoryApiModel? selectedRootCategory;
 
@@ -147,8 +113,6 @@ class HomeError extends HomeState {
     required this.message,
     this.categories,
     this.apiCategories,
-    this.topSellingProducts,
-    this.newInProducts,
     this.selectedRootCategory,
     this.productDetail,
   });

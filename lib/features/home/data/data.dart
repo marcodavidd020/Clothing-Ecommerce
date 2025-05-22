@@ -1,5 +1,6 @@
 // DataSources
-export 'datasources/product_datasource.dart';
+export 'datasources/category_api_datasource.dart';
+export 'datasources/product_api_datasource.dart';
 
 // Models
 export 'models/category_model.dart';

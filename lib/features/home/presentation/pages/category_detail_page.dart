@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/features/home/core/constants/home_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/core/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
@@ -39,25 +40,49 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   /// Indicador de carga de productos
   bool _isLoadingProducts = false;
 
-  /// Evita múltiples solicitudes de carga
-  bool _loadingRequested = false;
-
   @override
   void initState() {
     super.initState();
     _loadCategoryProducts();
   }
 
+  @override
+  void didUpdateWidget(CategoryDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Si la categoría cambió, volver a cargar productos
+    if (oldWidget.category.id != widget.category.id) {
+      setState(() {
+        _products = [];
+        _isLoadingProducts = false;
+      });
+      _loadCategoryProducts();
+    }
+  }
+
   /// Carga los productos de esta categoría si tiene productos directos
   void _loadCategoryProducts() {
-    // Solo cargar productos si la categoría debería tenerlos y no hemos solicitado la carga ya
-    if (widget.category.hasProducts && !_loadingRequested) {
+    // Solo cargar productos si la categoría debería tenerlos
+    if (widget.category.hasProducts) {
+      AppLogger.logInfo(
+        'Cargando productos para categoría: ${widget.category.id}',
+      );
       setState(() => _isLoadingProducts = true);
-      _loadingRequested = true;
 
       // Cargar productos usando el BloC
       final homeBloc = context.read<HomeBloc>();
+      final currentState = homeBloc.state;
+      AppLogger.logInfo(
+        'Estado actual del HomeBloc: ${currentState.runtimeType}',
+      );
+
       homeBloc.add(LoadProductsByCategoryEvent(categoryId: widget.category.id));
+      AppLogger.logInfo(
+        'Evento LoadProductsByCategoryEvent enviado para: ${widget.category.id}',
+      );
+    } else {
+      AppLogger.logInfo(
+        'La categoría ${widget.category.id} no tiene productos directos, no se cargarán',
+      );
     }
   }
 
@@ -75,13 +100,31 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   /// Maneja los cambios de estado del BLoC para actualizar la UI
   void _handleBlocStateChanges(BuildContext context, HomeState state) {
     // Manejar la respuesta de carga de productos
-    if (state is CategoryProductsLoaded &&
-        state.categoryId == widget.category.id) {
+    if ((state is CategoryProductsLoaded &&
+            state.categoryId == widget.category.id) ||
+        (state is ProductsByCategoryLoaded &&
+            state.categoryId == widget.category.id)) {
       setState(() {
-        _products = state.products;
+        _products =
+            state is CategoryProductsLoaded
+                ? state.products
+                : (state as ProductsByCategoryLoaded).products;
         _isLoadingProducts = false;
       });
-    } else if (state is CategoryProductsError &&
+      AppLogger.logInfo(
+        'Actualizados productos de categoría ${widget.category.id}: ${_products.length} productos',
+      );
+    }
+    // Manejar estado de carga
+    else if (state is LoadingProductsByCategory &&
+        state.categoryId == widget.category.id) {
+      setState(() => _isLoadingProducts = true);
+      AppLogger.logInfo(
+        'Iniciada carga de productos para categoría ${widget.category.id}',
+      );
+    }
+    // Manejar estado de error
+    else if (state is CategoryProductsError &&
         state.categoryId == widget.category.id) {
       setState(() => _isLoadingProducts = false);
 
@@ -89,6 +132,18 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al cargar productos: ${state.message}'),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    }
+    // Manejar error general
+    else if (state is HomeError) {
+      setState(() => _isLoadingProducts = false);
+
+      // Mostrar mensaje de error genérico
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${state.message}'),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -165,7 +220,14 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   Widget _buildProductsSection() {
     // Si está cargando productos, mostrar indicador
     if (_isLoadingProducts) {
-      return CategoryUIHelper.buildLoadingIndicator();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CategoryUIHelper.buildSectionHeader(CategoryUIHelper.productosTitle),
+          CategoryUIHelper.mediumVerticalSpacer(),
+          CategoryUIHelper.buildLoadingIndicator(),
+        ],
+      );
     }
     // Si hay productos, mostrar la cuadrícula
     else if (_products.isNotEmpty) {
@@ -179,11 +241,21 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       );
     }
     // Si no hay productos ni subcategorías, mostrar mensaje de estado vacío
-    else if (widget.category.children.isEmpty && !_isLoadingProducts) {
-      return EmptyStateWidget(message: CategoryUIHelper.noProductsMessage);
+    else if (widget.category.children.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CategoryUIHelper.buildSectionHeader(CategoryUIHelper.productosTitle),
+          CategoryUIHelper.mediumVerticalSpacer(),
+          const EmptyStateWidget(
+            message: 'No hay productos disponibles en esta categoría',
+            icon: Icons.inventory_2_outlined,
+          ),
+        ],
+      );
     }
 
-    // Caso fallback (no debería llegar aquí normalmente)
+    // Si hay subcategorías pero no productos, no mostrar esta sección
     return const SizedBox.shrink();
   }
 
@@ -206,7 +278,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           backgroundColor: AppColors.backgroundGray.withOpacity(0.5),
           trailingIcon: SvgPicture.asset(
             AppStrings.arrowRightIcon,
-            width:  HomeUI.productItemTrailingIconSize,
+            width: HomeUI.productItemTrailingIconSize,
             height: HomeUI.productItemTrailingIconSize,
           ),
         );
@@ -242,11 +314,11 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
   /// Navega a una categoría específica usando el helper de navegación
   void _navigateToCategory(CategoryApiModel category) {
-    CategoryNavigationHelper.navigateToCategory(
+    // Usar el helper de navegación para mantener consistencia en toda la app
+    HomeNavigationHelper.navigateAfterCategoryLoaded(
       context,
-      category: category,
-      currentCategory: widget.category,
-      allCategories: widget.allCategories,
+      category,
+      widget.allCategories,
     );
   }
 }

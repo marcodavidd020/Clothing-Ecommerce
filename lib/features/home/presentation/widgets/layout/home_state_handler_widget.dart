@@ -56,7 +56,10 @@ class HomeStateHandlerWidget extends StatelessWidget {
     return state is CategoryProductsLoaded ||
         state is CategoryProductsError ||
         state is CategoryByIdLoaded ||
-        state is CategoryByIdError;
+        state is CategoryByIdError ||
+        state is LoadingProductsByCategory ||
+        state is LoadingProductDetail ||
+        state is ProductDetailLoaded;
   }
 
   /// Construye la UI para el estado de error
@@ -82,14 +85,6 @@ class HomeStateHandlerWidget extends StatelessWidget {
           state.selectedRootCategory,
           state.apiCategories,
         );
-      },
-      onSeeAllTopSellingPressed: () {
-        AppLogger.logInfo(
-          'Ver todos los productos más vendidos - no implementado',
-        );
-      },
-      onSeeAllNewInPressed: () {
-        AppLogger.logInfo('Ver todos los productos nuevos - no implementado');
       },
       onCategoryTapped: (_) {},
       onProductTapped:

@@ -75,13 +75,6 @@ class HomeDIContainer extends BaseDIContainer {
       );
     }
 
-    // Registrar ProductDataSource
-    if (!sl.isRegistered<ProductDataSource>()) {
-      sl.registerLazySingleton<ProductDataSource>(
-        () => ProductLocalDataSource(),
-      );
-    }
-
     // Registrar ProductApiDataSource
     if (!sl.isRegistered<ProductApiDataSource>()) {
       sl.registerLazySingleton<ProductApiDataSource>(
@@ -94,7 +87,7 @@ class HomeDIContainer extends BaseDIContainer {
       sl,
       [
         sl.isRegistered<CategoryApiDataSource>(),
-        sl.isRegistered<ProductDataSource>(),
+        sl.isRegistered<ProductApiDataSource>(),
       ],
       'CategoryApiDataSource y ProductDataSource deben estar registrados antes de continuar',
     );
@@ -106,7 +99,6 @@ class HomeDIContainer extends BaseDIContainer {
     BaseDIContainer.checkDependencies(
       sl,
       [
-        sl.isRegistered<ProductDataSource>(),
         sl.isRegistered<CategoryApiDataSource>(),
         sl.isRegistered<ProductApiDataSource>(),
       ],
@@ -118,7 +110,6 @@ class HomeDIContainer extends BaseDIContainer {
     if (!sl.isRegistered<HomeRepository>()) {
       sl.registerLazySingleton<HomeRepository>(
         () => HomeRepositoryImpl(
-          productDataSource: sl<ProductDataSource>(),
           categoryApiDataSource: sl<CategoryApiDataSource>(),
           productApiDataSource: sl<ProductApiDataSource>(),
         ),
@@ -134,18 +125,6 @@ class HomeDIContainer extends BaseDIContainer {
       [sl.isRegistered<HomeRepository>()],
       'HomeRepository debe estar registrado antes de registrar los casos de uso',
     );
-
-    if (!sl.isRegistered<GetTopSellingProductsUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetTopSellingProductsUseCase(sl<HomeRepository>()),
-      );
-    }
-
-    if (!sl.isRegistered<GetNewInProductsUseCase>()) {
-      sl.registerLazySingleton(
-        () => GetNewInProductsUseCase(sl<HomeRepository>()),
-      );
-    }
 
     if (!sl.isRegistered<GetProductsByCategoryUseCase>()) {
       sl.registerLazySingleton(
@@ -180,8 +159,6 @@ class HomeDIContainer extends BaseDIContainer {
     BaseDIContainer.checkDependencies(
       sl,
       [
-        sl.isRegistered<GetTopSellingProductsUseCase>(),
-        sl.isRegistered<GetNewInProductsUseCase>(),
         sl.isRegistered<GetProductsByCategoryUseCase>(),
         sl.isRegistered<GetApiCategoriesTreeUseCase>(),
         sl.isRegistered<GetCategoryByIdUseCase>(),
@@ -193,8 +170,6 @@ class HomeDIContainer extends BaseDIContainer {
     if (!sl.isRegistered<HomeBloc>()) {
       sl.registerFactory(
         () => HomeBloc(
-          getTopSellingProductsUseCase: sl(),
-          getNewInProductsUseCase: sl(),
           getProductsByCategoryUseCase: sl(),
           getApiCategoriesTreeUseCase: sl(),
           getCategoryByIdUseCase: sl(),
