@@ -45,6 +45,14 @@ class HomeStateHandlerWidget extends StatelessWidget {
       return _buildLoadedState(context, state as HomeLoaded);
     }
 
+    // Manejar explícitamente el estado ProductsByCategoryLoaded
+    if (state is ProductsByCategoryLoaded) {
+      return _buildProductsByCategoryLoadedState(
+        context,
+        state as ProductsByCategoryLoaded,
+      );
+    }
+
     // Manejar específicamente los estados relacionados con categorías
     if (_isCategoryRelatedState(state)) {
       return _buildCategoryRelatedState(context);
@@ -102,18 +110,45 @@ class HomeStateHandlerWidget extends StatelessWidget {
     );
   }
 
+  /// Construye la UI para estados de carga de productos por categoría
+  Widget _buildProductsByCategoryLoadedState(
+    BuildContext context,
+    ProductsByCategoryLoaded state,
+  ) {
+    // Usar el estado anterior que ya existe en el estado ProductsByCategoryLoaded
+    AppLogger.logInfo('Recuperando desde ProductsByCategoryLoaded');
+
+    // Si estamos viendo la página de home, cargar home de nuevo para refrescar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        HomeBlocHandler.loadHomeData(context);
+      }
+    });
+
+    return _buildLoadedState(context, state.previousState);
+  }
+
   /// Construye la UI para estados relacionados con categorías
   Widget _buildCategoryRelatedState(BuildContext context) {
     // Intentar recuperar el estado HomeLoaded anterior
     final homeBloc = context.read<HomeBloc>();
     final previousState = homeBloc.state;
 
+    // Forzar carga de datos de home después de que se muestre la UI
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        HomeBlocHandler.loadHomeData(context);
+      }
+    });
+
     if (previousState is HomeLoaded) {
       // Tenemos datos anteriores para mostrar
       return _buildLoadedState(context, previousState);
+    } else if (previousState is ProductsByCategoryLoaded) {
+      // Si estamos en ProductsByCategoryLoaded, usar su estado previo
+      return _buildLoadedState(context, previousState.previousState);
     } else {
       // Si no tenemos datos anteriores, forzar recarga y mostrar esqueleto
-      HomePageHelper.requestInitialData(context, false);
       return const HomeSkeleton();
     }
   }
