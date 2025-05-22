@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart'; // Importar GetIt
-import 'modules/repository_module.dart';
+import 'modules/infrastructure_module.dart';
 import 'modules/bloc_module.dart';
 import 'modules/storage_module.dart';
 import 'package:flutter_application_ecommerce/features/home/di_container.dart'; // Importar HomeDIContainer
@@ -27,7 +27,7 @@ class InjectionContainer {
       await StorageModule.register(sl);
 
       // Registrar dependencias básicas (network, repository, etc.)
-      RepositoryModule.register(sl);
+      InfrastructureModule.register(sl);
 
       // Registrar todos los módulos de características en GetIt
       await HomeDIContainer.register(sl);
@@ -44,17 +44,7 @@ class InjectionContainer {
     }
 
     // Envolver la aplicación con los providers necesarios
-    return MultiRepositoryProvider(
-      providers: repositoryProviders,
-      child: Builder(
-        builder: (context) {
-          return MultiBlocProvider(
-            providers: BlocModule.providers(context, sl),
-            child: child,
-          );
-        },
-      ),
-    );
+    return _buildProviderTree(child);
   }
 
   /// Inicialización síncrona (para retrocompatibilidad)
@@ -62,7 +52,7 @@ class InjectionContainer {
   static Widget init({required Widget child}) {
     if (!_initialized) {
       // Registrar dependencias básicas que no requieren inicialización asíncrona
-      RepositoryModule.register(sl);
+      InfrastructureModule.register(sl);
       HomeDIContainer.register(sl);
 
       // Advertir que no se está inicializando AuthDIContainer correctamente
@@ -73,8 +63,23 @@ class InjectionContainer {
     }
 
     // Envolver la aplicación con los providers necesarios
+    return _buildProviderTree(child);
+  }
+
+  /// Construye el árbol de providers para la aplicación
+  static Widget _buildProviderTree(Widget child) {
+    // Obtener providers de los módulos de características
+    final homeProviders = HomeDIContainer.getRepositoryProviders();
+    final authProviders = AuthDIContainer.getRepositoryProviders();
+    
+    // Combinar todos los providers
+    final allRepositoryProviders = [
+      ...homeProviders,
+      ...authProviders,
+    ];
+    
     return MultiRepositoryProvider(
-      providers: repositoryProviders,
+      providers: allRepositoryProviders,
       child: Builder(
         builder: (context) {
           return MultiBlocProvider(
@@ -85,10 +90,6 @@ class InjectionContainer {
       ),
     );
   }
-
-  /// Obtiene todos los providers de repositorios para MultiRepositoryProvider
-  static List<RepositoryProvider> get repositoryProviders =>
-      RepositoryModule.providers;
 
   // Método para resetear el contenedor (útil para pruebas)
   static Future<void> reset() async {

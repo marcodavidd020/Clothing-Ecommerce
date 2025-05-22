@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:flutter_application_ecommerce/features/home/di_container.dart';
 import 'package:flutter_application_ecommerce/features/auth/di_container.dart';
 import 'package:flutter_application_ecommerce/core/constants/api_constants.dart';
-import 'package:flutter_application_ecommerce/core/di/modules/repository_module.dart';
+import 'package:flutter_application_ecommerce/core/di/modules/infrastructure_module.dart';
 import 'package:flutter_application_ecommerce/core/di/modules/storage_module.dart';
 import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
@@ -18,14 +18,15 @@ class DIContainer {
   /// Initialize all dependencies
   static Future<void> init() async {
 
-    // Mostrar URLs de API para diagnóstico
+    // 0. Mostrar URLs de API para diagnóstico
     ApiConstants.logEndpoints();
 
-    // 1. PRIMERO inicializar el módulo de almacenamiento
+    // 1. Inicializar el módulo de almacenamiento (dependencia base)
     await StorageModule.register(sl);
 
-    // 2. Cargar el módulo de repositorio base que incluye DioClient
-    RepositoryModule.register(sl);
+    // 2. Cargar el módulo de infraestructura que proporciona servicios básicos
+    //    (Dio, NetworkInfo, DioClient, InternetConnectionChecker, etc.)
+    InfrastructureModule.register(sl);
 
     // 3. Configurar DioClient con AuthStorage
     if (sl.isRegistered<DioClient>() && sl.isRegistered<AuthStorage>()) {
@@ -34,7 +35,8 @@ class DIContainer {
       dioClient.setAuthStorage(authStorage);
     }
 
-    // 4. DESPUÉS registrar módulos de funcionalidades
+    // 4. Registrar módulos de características (con sus propios repositorios, casos de uso, etc.)
+    //    Las dependencias básicas ya están disponibles gracias a los pasos anteriores
     await HomeDIContainer.register(sl);
     await AuthDIContainer.register(sl);
   }

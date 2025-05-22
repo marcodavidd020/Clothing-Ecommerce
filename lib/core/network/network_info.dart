@@ -1,6 +1,6 @@
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 abstract class NetworkInfo {
   Future<bool> get isConnected;
@@ -9,8 +9,9 @@ abstract class NetworkInfo {
 class NetworkInfoImpl implements NetworkInfo {
   final InternetConnectionChecker connectionChecker;
   final Connectivity connectivity;
+  final Dio dio;
 
-  NetworkInfoImpl(this.connectionChecker) : connectivity = Connectivity();
+  NetworkInfoImpl(this.connectionChecker, this.dio) : connectivity = Connectivity();
 
   @override
   Future<bool> get isConnected async {
@@ -23,12 +24,12 @@ class NetworkInfoImpl implements NetworkInfo {
 
       // Si hay una conexión de red, intentamos una petición real para verificar internet
       try {
-        final response = await http
-            .get(Uri.parse('https://pokeapi.co/api/v2/pokemon/1'))
+        final response = await dio
+            .get('https://pokeapi.co/api/v2/pokemon/1')
             .timeout(const Duration(seconds: 3));
 
         // Si la petición fue exitosa, definitivamente hay internet
-        if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
           return true;
         }
       } catch (_) {

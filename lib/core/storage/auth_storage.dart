@@ -42,19 +42,19 @@ class AuthStorage {
   Future<void> saveUserData(UserModel user) async {
     await _storage.setString(AuthStorageKeys.userId, user.id);
     await _storage.setString(AuthStorageKeys.userEmail, user.email);
-    
+
     if (user.firstName != null) {
       await _storage.setString(AuthStorageKeys.firstName, user.firstName!);
     }
-    
+
     if (user.lastName != null) {
       await _storage.setString(AuthStorageKeys.lastName, user.lastName!);
     }
-    
+
     if (user.avatar != null) {
       await _storage.setString(AuthStorageKeys.avatar, user.avatar!);
     }
-    
+
     await _storage.setBool(AuthStorageKeys.isLoggedIn, true);
   }
 
@@ -62,15 +62,15 @@ class AuthStorage {
   Future<UserModel?> getUserData() async {
     final id = await _storage.getString(AuthStorageKeys.userId);
     final email = await _storage.getString(AuthStorageKeys.userEmail);
-    
+
     if (id == null || email == null) return null;
-    
+
     final firstName = await _storage.getString(AuthStorageKeys.firstName);
     final lastName = await _storage.getString(AuthStorageKeys.lastName);
     final avatar = await _storage.getString(AuthStorageKeys.avatar);
     final accessToken = await getAccessToken();
     final refreshToken = await getRefreshToken();
-    
+
     return UserModel(
       id: id,
       email: email,
@@ -85,7 +85,10 @@ class AuthStorage {
 
   /// Verifica si el usuario está logueado
   Future<bool> isLoggedIn() async {
-    return await _storage.getBool(AuthStorageKeys.isLoggedIn, defaultValue: false);
+    return await _storage.getBool(
+      AuthStorageKeys.isLoggedIn,
+      defaultValue: false,
+    );
   }
 
   /// Limpia todos los datos de autenticación
@@ -99,4 +102,4 @@ class AuthStorage {
     await _storage.remove(AuthStorageKeys.avatar);
     await _storage.setBool(AuthStorageKeys.isLoggedIn, false);
   }
-} 
+}

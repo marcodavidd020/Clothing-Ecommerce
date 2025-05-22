@@ -3,21 +3,14 @@ import 'package:get_it/get_it.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-import '../../core/di/base_di_container.dart';
+import '../../core/di/di.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/network/dio_client.dart';
 import '../../core/network/network_info.dart';
 
-import 'data/datasources/category_api_datasource.dart';
-import 'data/datasources/product_api_datasource.dart';
-import 'data/repositories/home_repository_impl.dart';
-import 'domain/repositories/home_repository.dart';
-import 'domain/usecases/get_api_categories_tree_usecase.dart';
-import 'domain/usecases/get_category_by_id_usecase.dart';
-import 'domain/usecases/get_product_by_id_usecase.dart';
-import 'domain/usecases/get_products_by_category_usecase.dart';
-import 'presentation/bloc/home_bloc.dart';
-import 'presentation/bloc/events/home_event.dart';
+import 'data/data.dart';
+import 'domain/domain.dart';
+import 'presentation/bloc/bloc.dart';
 import 'core/core.dart';
 
 /// Configuración de inyección de dependencias para el módulo Home
@@ -45,28 +38,13 @@ class HomeDIContainer extends BaseDIContainer {
 
   /// Registra las dependencias core necesarias
   static Future<void> registerCoreDependencies(GetIt sl) async {
-    // Registrar las dependencias básicas si no existen
-    if (!sl.isRegistered<Dio>()) {
-      sl.registerLazySingleton<Dio>(() => Dio());
-    }
-
-    if (!sl.isRegistered<InternetConnectionChecker>()) {
-      sl.registerLazySingleton<InternetConnectionChecker>(
-        () => InternetConnectionChecker.createInstance(),
-      );
-    }
-
-    if (!sl.isRegistered<NetworkInfo>()) {
-      sl.registerLazySingleton<NetworkInfo>(
-        () => NetworkInfoImpl(sl<InternetConnectionChecker>()),
-      );
-    }
-
-    if (!sl.isRegistered<DioClient>()) {
-      sl.registerLazySingleton<DioClient>(
-        () => DioClient(dio: sl<Dio>(), networkInfo: sl<NetworkInfo>()),
-      );
-    }
+    // Verificar que las dependencias de infraestructura ya están registradas
+    BaseDIContainer.checkDependencies(sl, [
+      sl.isRegistered<Dio>(),
+      sl.isRegistered<InternetConnectionChecker>(),
+      sl.isRegistered<NetworkInfo>(),
+      sl.isRegistered<DioClient>(),
+    ], 'Las dependencias de infraestructura deben estar registradas antes de registrar HomeDIContainer');
 
     // Registrar CategoryStorage
     if (!sl.isRegistered<CategoryStorage>()) {
@@ -74,11 +52,6 @@ class HomeDIContainer extends BaseDIContainer {
         () => CategoryStorage(sl<StorageService>()),
       );
     }
-
-    // Verificar que DioClient esté disponible
-    BaseDIContainer.checkDependencies(sl, [
-      sl.isRegistered<DioClient>(),
-    ], 'DioClient debe estar registrado antes de registrar HomeDIContainer');
   }
 
   /// Registra las fuentes de datos
@@ -201,6 +174,15 @@ class HomeDIContainer extends BaseDIContainer {
     return [
       BlocProvider<HomeBloc>(
         create: (_) => sl<HomeBloc>()..add(LoadHomeDataEvent()),
+      ),
+    ];
+  }
+
+  /// Proporciona todos los providers de repositorios para el módulo Home
+  static List<RepositoryProvider> getRepositoryProviders() {
+    return [
+      RepositoryProvider<HomeRepository>(
+        create: (context) => GetIt.instance<HomeRepository>(),
       ),
     ];
   }
