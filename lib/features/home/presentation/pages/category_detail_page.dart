@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/features/home/core/constants/home_ui.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/events/product_events.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/category_states.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/home_state.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/product_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';

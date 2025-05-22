@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/category_states.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';

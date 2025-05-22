@@ -80,9 +80,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Right(products);
       } on ServerException catch (e) {
         // Si falla la API, retornar el error con el mensaje específico
-        return Left(
-          ServerFailure(message: e.message),
-        );
+        return Left(ServerFailure(message: e.message));
       } catch (e) {
         // Si ocurre otro error, retornar el error con su mensaje
         return Left(UnknownFailure(message: e.toString()));

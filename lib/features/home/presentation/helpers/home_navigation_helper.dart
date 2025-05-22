@@ -4,6 +4,7 @@ import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_item_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/home_state.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/home_bloc_handler.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/app_routes.dart';

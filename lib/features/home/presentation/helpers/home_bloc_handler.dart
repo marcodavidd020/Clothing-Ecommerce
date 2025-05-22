@@ -4,6 +4,12 @@ import 'package:flutter_application_ecommerce/core/widgets/feedback_util.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
 
+import '../bloc/bloc.dart' show CategoryByIdLoading, CategoryProductsLoading, HomeLoading, HomeLoadingPartial, HomeState, LoadApiCategoriesTreeEvent, LoadCategoryByIdEvent, LoadHomeDataEvent, LoadProductsByCategoryEvent, LoadingProductDetail, LoadingProductsByCategory, SelectRootCategoryEvent, ToggleFavoriteEvent;
+import '../bloc/states/category_states.dart' show CategoryProductsError;
+import '../bloc/states/home_state.dart' show HomeError;
+import '../bloc/states/product_states.dart' show ProductsByCategoryLoaded;
+import '../presentation.dart' show CategoryByIdError, CategoryByIdLoaded, CategoryProductsLoaded;
+
 /// Clase auxiliar para manejar interacciones comunes con HomeBloc
 class HomeBlocHandler {
   /// Constructor privado para prevenir instanciación
