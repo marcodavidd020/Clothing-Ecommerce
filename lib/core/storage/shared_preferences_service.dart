@@ -102,4 +102,4 @@ class SharedPreferencesService implements StorageService {
     _checkInitialized();
     return await _preferences!.clear();
   }
-} 
+}

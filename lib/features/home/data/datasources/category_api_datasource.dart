@@ -88,11 +88,14 @@ class CategoryApiRemoteDataSource implements CategoryApiDataSource {
           AppLogger.logSuccess(
             'Árbol de categorías obtenido: ${categoryList.length} categorías raíz',
           );
+          // Solo loguear el número total de categorías, no cada una individualmente
+          int totalCategorias = 0;
           for (var category in categoryList) {
-            AppLogger.logInfo(
-              ' - Categoría: ${category.name} (${category.children.length} subcategorías)',
-            );
+            totalCategorias += 1 + category.children.length;
           }
+          AppLogger.logInfo(
+            'Total de categorías (incluyendo subcategorías): $totalCategorias',
+          );
           return categoryList;
         } else {
           AppLogger.logError(

@@ -40,7 +40,7 @@ class CategorySelectorHandlerWidget {
     List<CategoryApiModel> allCategories, {
     bool shouldNavigate = true,
   }) {
-    // Marcar la categoría como seleccionada en el estado
+    // Marcar la categoría como seleccionada en el estado y guardarla en SharedPreferences
     HomeBlocHandler.selectRootCategory(context, category);
 
     AppLogger.logInfo(

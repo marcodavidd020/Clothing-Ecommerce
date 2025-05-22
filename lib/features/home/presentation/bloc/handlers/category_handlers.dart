@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_api_categories_tree_usecase.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_category_by_id_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/core/core.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 
 import '../events/category_events.dart';
 import '../states/home_state.dart';
@@ -16,16 +18,22 @@ mixin CategoryEventHandlers {
   /// Caso de uso para obtener una categoría por su ID
   GetCategoryByIdUseCase get getCategoryByIdUseCase;
 
+  /// Servicio de almacenamiento de categorías
+  CategoryStorage get categoryStorage;
+
   /// Manejador para seleccionar una categoría raíz
-  void onSelectRootCategory(
+  Future<void> onSelectRootCategory(
     SelectRootCategoryEvent event,
     Emitter<HomeState> emit,
-  ) {
+  ) async {
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
       AppLogger.logInfo(
         'HomeBloc: Seleccionando categoría raíz: ${event.category.name}',
       );
+
+      // Guardar la categoría seleccionada en SharedPreferences
+      await categoryStorage.saveSelectedCategory(event.category);
 
       emit(
         HomeLoaded(
@@ -84,10 +92,41 @@ mixin CategoryEventHandlers {
           emit(HomeError(message: failure.message));
         }
       },
-      (apiCategories) {
+      (apiCategories) async {
         AppLogger.logSuccess(
           'HomeBloc: Categorías API cargadas: ${apiCategories.length}',
         );
+
+        // Intentar recuperar la categoría previamente seleccionada
+        CategoryApiModel? selectedRootCategory;
+
+        // Primero tratamos de obtener la categoría guardada
+        final savedCategory = await categoryStorage.getSelectedCategory();
+
+        if (savedCategory != null && apiCategories.isNotEmpty) {
+          // Buscar la categoría completa en la lista que acabamos de cargar
+          final savedCategoryId = savedCategory.id;
+          try {
+            selectedRootCategory = apiCategories.firstWhere(
+              (category) => category.id == savedCategoryId,
+            );
+
+            AppLogger.logInfo(
+              'HomeBloc: Recuperada categoría guardada: ${selectedRootCategory.name}',
+            );
+          } catch (e) {
+            // Si no se encuentra la categoría, usar la primera
+            selectedRootCategory = apiCategories.first;
+
+            AppLogger.logWarning(
+              'HomeBloc: No se encontró la categoría guardada, usando la primera',
+            );
+          }
+        } else {
+          // Si no hay categoría guardada, usar la primera como predeterminada
+          selectedRootCategory =
+              apiCategories.isNotEmpty ? apiCategories.first : null;
+        }
 
         if (state is HomeLoadingPartial) {
           final currentState = state as HomeLoadingPartial;
@@ -95,8 +134,7 @@ mixin CategoryEventHandlers {
             HomeLoaded(
               categories: currentState.categories,
               apiCategories: apiCategories,
-              selectedRootCategory:
-                  apiCategories.isNotEmpty ? apiCategories[0] : null,
+              selectedRootCategory: selectedRootCategory,
             ),
           );
         } else {
@@ -104,8 +142,7 @@ mixin CategoryEventHandlers {
             HomeLoaded(
               categories: [],
               apiCategories: apiCategories,
-              selectedRootCategory:
-                  apiCategories.isNotEmpty ? apiCategories[0] : null,
+              selectedRootCategory: selectedRootCategory,
             ),
           );
         }

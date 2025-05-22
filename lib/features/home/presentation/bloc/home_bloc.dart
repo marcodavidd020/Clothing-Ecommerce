@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
+import 'package:flutter_application_ecommerce/features/home/core/core.dart';
 
 // Importar mixins con manejadores
 import 'handlers/home_handlers.dart';
@@ -39,12 +40,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>
   @override
   final GetProductByIdUseCase getProductByIdUseCase;
 
+  /// Servicio de almacenamiento de categorías
+  @override
+  final CategoryStorage categoryStorage;
+
   /// Constructor del HomeBloc que inicializa los casos de uso y registra los manejadores de eventos
   HomeBloc({
     required this.getProductsByCategoryUseCase,
     required this.getApiCategoriesTreeUseCase,
     required this.getCategoryByIdUseCase,
     required this.getProductByIdUseCase,
+    required this.categoryStorage,
   }) : super(HomeInitial()) {
     // Registrar manejadores de eventos
     _registerEventHandlers();
