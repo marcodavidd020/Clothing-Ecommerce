@@ -47,7 +47,8 @@ class HomeCategoriesSection extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Subcategorías de ${selectedRootCategory!.name}',
+                // 'Subcategorías de ${selectedRootCategory!.name}',
+                'Categories',
                 style: AppTextStyles.sectionTitle,
                 overflow: TextOverflow.ellipsis,
               ),

@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/category_states.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/home_state.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/product_states.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
 
 /// Helper para manejar estados del BLoC en páginas de categoría
 class CategoryBlocHandler {
   /// Maneja los cambios de estado del BLoC para la pantalla de detalle de categoría
-  /// 
+  ///
   /// Retorna true si el estado fue manejado, false en caso contrario
   static bool handleCategoryDetailState({
-    required BuildContext context, 
+    required BuildContext context,
     required HomeState state,
     required String categoryId,
     required void Function(List<ProductItemModel>) onProductsLoaded,
@@ -22,16 +18,18 @@ class CategoryBlocHandler {
     // Manejar la respuesta de carga de productos
     if ((state is CategoryProductsLoaded && state.categoryId == categoryId) ||
         (state is ProductsByCategoryLoaded && state.categoryId == categoryId)) {
-      final products = state is CategoryProductsLoaded
-          ? state.products
-          : (state as ProductsByCategoryLoaded).products;
-          
+      final products =
+          state is CategoryProductsLoaded
+              ? state.products
+              : (state as ProductsByCategoryLoaded).products;
+
       onProductsLoaded(products);
       onLoadingChanged(false);
       return true;
     }
     // Manejar estado de carga
-    else if (state is LoadingProductsByCategory && state.categoryId == categoryId) {
+    else if (state is LoadingProductsByCategory &&
+        state.categoryId == categoryId) {
       onLoadingChanged(true);
       return true;
     }
@@ -47,10 +45,10 @@ class CategoryBlocHandler {
       onError(state.message);
       return true;
     }
-    
+
     return false;
   }
-  
+
   /// Muestra un SnackBar de error
   static void showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -60,4 +58,4 @@ class CategoryBlocHandler {
       ),
     );
   }
-} 
+}
