@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../core/di/di.dart';
 import '../../core/storage/storage_service.dart';
@@ -173,7 +174,18 @@ class HomeDIContainer extends BaseDIContainer {
   static List<BlocProvider> getBlocProviders(GetIt sl) {
     return [
       BlocProvider<HomeBloc>(
-        create: (_) => sl<HomeBloc>()..add(LoadHomeDataEvent()),
+        create: (context) {
+          final bloc = sl<HomeBloc>();
+          // Aseguramos que siempre se dispare el evento al crear el bloc
+          // Usar addPostFrameCallback para evitar problemas con BuildContext
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            // Verificar que el bloc no esté cerrado antes de añadir el evento
+            if (!bloc.isClosed) {
+              bloc.add(LoadHomeDataEvent());
+            }
+          });
+          return bloc;
+        },
       ),
     ];
   }

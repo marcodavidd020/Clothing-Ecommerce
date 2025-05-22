@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/events/category_events.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/events/home_event.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/home_state.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/product_states.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/loading_states.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/home_navigation_helper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,50 +31,18 @@ class HomePageHelper {
       final homeBloc = context.read<HomeBloc>();
       final currentState = homeBloc.state;
 
-      // Manejar diferentes estados
-      if (currentState is HomeLoaded) {
-        // Si ya tenemos datos pero faltan categorías del API, cargarlas
-        if (currentState.apiCategories.isEmpty) {
-          _loadApiCategories(context);
-        }
-      } else if (currentState is ProductsByCategoryLoaded) {
-        // Si estamos en estado de productos cargados, volver al estado home
-        _loadHomeData(context);
-      } else if (currentState is LoadingProductsByCategory || 
-                currentState is LoadingProductDetail) {
-        // Si estamos en un estado de carga, esperar que termine y luego cargar home
-        AppLogger.logInfo('En estado de carga, esperando antes de actualizar Home');
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (context.mounted) {
-            _loadHomeData(context);
-          }
-        });
-      } else {
-        // En cualquier otro caso, cargar datos completos
-        _loadHomeData(context);
+      // Verificar si ya estamos en estado de carga para evitar duplicados
+      if (currentState is HomeLoading) {
+        AppLogger.logInfo(
+          'Ya estamos en estado de carga, evitando duplicación',
+        );
+        return;
       }
+
+      // Siempre cargar datos completos para garantizar consistencia
+      AppLogger.logInfo('Cargando datos completos del Home');
+      homeBloc.add(LoadHomeDataEvent());
     });
-  }
-
-  /// Carga los datos completos de la página Home
-  static void _loadHomeData(BuildContext context) {
-    final homeBloc = context.read<HomeBloc>();
-    
-    // Primero verificar si ya estamos en un estado de carga
-    final currentState = homeBloc.state;
-    if (currentState is HomeLoading) {
-      AppLogger.logInfo('Ya estamos en estado de carga, evitando duplicación');
-      return;
-    }
-    
-    AppLogger.logInfo('Cargando datos completos del Home');
-    homeBloc.add(LoadHomeDataEvent());
-  }
-
-  /// Carga específicamente las categorías API
-  static void _loadApiCategories(BuildContext context) {
-    final homeBloc = context.read<HomeBloc>();
-    homeBloc.add(LoadApiCategoriesTreeEvent());
   }
 
   /// Busca una categoría por ID en el árbol completo de categorías
