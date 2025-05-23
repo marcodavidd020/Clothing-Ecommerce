@@ -23,10 +23,9 @@ export 'layout/home_content_widget.dart';
 export 'layout/home_state_handler_widget.dart';
 // Nota: ProductHorizontalListSection está definido tanto en product_horizontal_list_section.dart
 // como en top_selling_section_widget.dart, así que solo exportamos uno para evitar conflictos
-export 'layout/top_selling_section_widget.dart';
+export 'layout/product_horizontal_list_widget.dart';
 
 // Widgets de producto
-export 'product/product_card_widget.dart';
 export 'product/product_favorite_button_widget.dart';
 export 'product/product_image_section_widget.dart';
 export 'product/product_info_section_widget.dart';

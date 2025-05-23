@@ -1,9 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/category_item_model.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_api_categories_tree_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/core/core.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 
 import '../events/home_event.dart';
 import '../states/home_state.dart';
@@ -13,6 +11,12 @@ import '../states/loading_states.dart';
 mixin HomeEventHandlers {
   /// Caso de uso para obtener el árbol de categorías
   GetApiCategoriesTreeUseCase get getApiCategoriesTreeUseCase;
+
+  /// Caso de uso para obtener los productos más vendidos
+  GetProductsByCategoryUseCase get getProductsBestSellersUseCase;
+
+  /// Caso de uso para obtener los productos más nuevos
+  GetProductsByCategoryUseCase get getProductsNewestUseCase;
 
   /// Servicio de almacenamiento de categorías
   CategoryStorage get categoryStorage;
@@ -35,6 +39,9 @@ mixin HomeEventHandlers {
 
     // Usamos categorías de API si están disponibles, de lo contrario usamos las locales
     final List<CategoryItemModel> categories = [];
+
+    List<ProductItemModel> productsBestSellers = [];
+    List<ProductItemModel> productsNewest = [];
 
     // Si tenemos categorías del API, convertirlas a CategoryItemModel
     apiTreeResult.fold(
@@ -93,12 +100,50 @@ mixin HomeEventHandlers {
       });
     }
 
+    final result = await getProductsBestSellersUseCase.executeBestSellers(
+      selectedRootCategory!.id,
+    );
+
+    result.fold(
+      (failure) {
+        AppLogger.logError(
+          'HomeBloc: Error al cargar productos más vendidos: ${failure.message}',
+        );
+      },
+      (products) {
+        productsBestSellers = products;
+        AppLogger.logSuccess(
+          'HomeBloc: Productos más vendidos cargados: ${products.length}',
+        );
+      },
+    );
+
+    final resultNewest = await getProductsNewestUseCase.executeNewest(
+      selectedRootCategory!.id,
+    );
+
+    resultNewest.fold(
+      (failure) {
+        AppLogger.logError(
+          'HomeBloc: Error al cargar productos más nuevos: ${failure.message}',
+        );
+      },
+      (products) {
+        productsNewest = products;
+        AppLogger.logSuccess(
+          'HomeBloc: Productos más nuevos cargados: ${products.length}',
+        );
+      },
+    );
+
     // Emitimos el estado de éxito con los datos cargados
     emit(
       HomeLoaded(
         categories: categories,
         apiCategories: apiTreeResult.fold((l) => [], (r) => r),
         selectedRootCategory: selectedRootCategory,
+        productsBestSellers: productsBestSellers,
+        productsNewest: productsNewest,
       ),
     );
   }

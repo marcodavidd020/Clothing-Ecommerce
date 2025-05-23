@@ -16,10 +16,10 @@ class BlocModule {
     return [
       // Obtener HomeBloc usando GetIt
       BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
-      
+
       // Agregar providers del módulo Auth
       ...AuthDIContainer.getBlocProviders(sl),
-      
+
       // Carrito
       BlocProvider<CartBloc>(
         create: (context) => CartBloc()..add(const CartLoadRequested()),

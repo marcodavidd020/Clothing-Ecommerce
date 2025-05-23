@@ -1,4 +1,3 @@
-
 class HomeUI {
   static const double topSellingSectionHeight = 320.0;
   static const double productItemWidth = 180.0;
@@ -6,6 +5,10 @@ class HomeUI {
   static const double productItemBorderRadius = 12.0;
   static const double productItemSpacing = 16.0;
   static const double productItemTrailingIconSize = 25.0;
+
+  // Constantes para el carrusel de productos
+  static const double productCardWidth = 160.0;
+  static const double productCardHeight = 250.0;
 
   // small vertical spacer
   static const double smallVerticalSpacer = 10.0;

@@ -31,6 +31,12 @@ class HomeLoaded extends HomeState {
   /// Detalle del producto actual
   final ProductDetailModel? productDetail;
 
+  /// Productos más vendidos cargados
+  final List<ProductItemModel> productsBestSellers;
+
+  /// Productos más nuevos cargados
+  final List<ProductItemModel> productsNewest;
+
   /// Crea una instancia de [HomeLoaded]
   HomeLoaded({
     required this.categories,
@@ -39,6 +45,8 @@ class HomeLoaded extends HomeState {
     this.selectedCategory,
     this.productsByCategory = const [],
     this.productDetail,
+    this.productsBestSellers = const [],
+    this.productsNewest = const [],
   });
 
   /// Crea una copia de este estado con los valores proporcionados
@@ -49,6 +57,8 @@ class HomeLoaded extends HomeState {
     CategoryApiModel? selectedCategory,
     List<ProductItemModel>? productsByCategory,
     ProductDetailModel? productDetail,
+    List<ProductItemModel>? productsBestSellers,
+    List<ProductItemModel>? productsNewest,
   }) {
     return HomeLoaded(
       categories: categories ?? this.categories,
@@ -57,6 +67,8 @@ class HomeLoaded extends HomeState {
       selectedCategory: selectedCategory ?? this.selectedCategory,
       productsByCategory: productsByCategory ?? this.productsByCategory,
       productDetail: productDetail ?? this.productDetail,
+      productsBestSellers: productsBestSellers ?? this.productsBestSellers,
+      productsNewest: productsNewest ?? this.productsNewest,
     );
   }
 }
@@ -75,6 +87,12 @@ class HomeError extends HomeState {
   /// Categoría raíz seleccionada actualmente (si hay)
   final CategoryApiModel? selectedRootCategory;
 
+  /// Productos más vendidos cargados
+  final List<ProductItemModel>? productsBestSellers;
+
+  /// Productos más nuevos cargados
+  final List<ProductItemModel>? productsNewest;
+
   /// Detalle del producto actual (si hay)
   final ProductDetailModel? productDetail;
 
@@ -85,5 +103,7 @@ class HomeError extends HomeState {
     this.apiCategories,
     this.selectedRootCategory,
     this.productDetail,
+    this.productsBestSellers,
+    this.productsNewest,
   });
 }

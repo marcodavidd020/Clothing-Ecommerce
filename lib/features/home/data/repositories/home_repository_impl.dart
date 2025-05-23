@@ -14,8 +14,8 @@ class HomeRepositoryImpl implements HomeRepository {
   final ProductApiDataSource? _productApiDataSource;
 
   HomeRepositoryImpl({
-    required CategoryApiDataSource? categoryApiDataSource,
-    ProductApiDataSource? productApiDataSource,
+    required CategoryApiDataSource categoryApiDataSource,
+    required ProductApiDataSource productApiDataSource,
   }) : _categoryApiDataSource = categoryApiDataSource,
        _productApiDataSource = productApiDataSource;
 
@@ -101,6 +101,49 @@ class HomeRepositoryImpl implements HomeRepository {
     try {
       final product = await _productApiDataSource.getProductById(id);
       return Right(product);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ProductDetailModel>>> getProductsBestSellers(
+    String categoryId,
+  ) async {
+    if (_productApiDataSource == null) {
+      return Left(
+        ServerFailure(message: 'API ProductDataSource no disponible'),
+      );
+    }
+
+    try {
+      final products = await _productApiDataSource.getProductsBestSellers(
+        categoryId,
+      );
+      return Right(products);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ProductDetailModel>>> getProductsNewest(
+    String categoryId,
+  ) async {
+    if (_productApiDataSource == null) {
+      return Left(
+        ServerFailure(message: 'API ProductDataSource no disponible'),
+      );
+    }
+    try {
+      final products = await _productApiDataSource.getProductsNewest(
+        categoryId,
+      );
+      return Right(products);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
