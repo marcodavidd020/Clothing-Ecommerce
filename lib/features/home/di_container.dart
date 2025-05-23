@@ -165,6 +165,8 @@ class HomeDIContainer extends BaseDIContainer {
           getCategoryByIdUseCase: sl(),
           getProductByIdUseCase: sl(),
           categoryStorage: sl(),
+          getProductsBestSellersUseCase: sl(),
+          getProductsNewestUseCase: sl(),
         ),
       );
     }

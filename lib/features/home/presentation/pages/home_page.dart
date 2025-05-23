@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';

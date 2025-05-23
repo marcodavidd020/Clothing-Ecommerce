@@ -82,6 +82,25 @@ class _HomeContentWidgetState extends State<HomeContentWidget> {
         ),
 
         // Espaciador para separar secciones
+        const SizedBox(height: AppDimens.vSpace24),
+
+        // Sección de productos más vendidos
+        ProductHorizontalListSection(
+          products: widget.state.productsBestSellers,
+          title: AppStrings.topSellingTitle,
+        ),
+
+        // Espaciador para separar secciones
+        const SizedBox(height: AppDimens.vSpace24),
+
+        // Sección de productos más nuevos
+        ProductHorizontalListSection(
+          products: widget.state.productsNewest,
+          title: AppStrings.newInTitle,
+          titleColor: AppColors.primary,
+        ),
+
+        // Espaciador para separar secciones
         const SizedBox(height: AppDimens.vSpace16),
       ],
     );

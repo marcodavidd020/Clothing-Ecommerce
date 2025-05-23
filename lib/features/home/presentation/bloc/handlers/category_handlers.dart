@@ -1,9 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_api_categories_tree_usecase.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/usecases/get_category_by_id_usecase.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/core/core.dart';
-import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 
 import '../events/category_events.dart';
 import '../states/home_state.dart';
@@ -18,6 +16,12 @@ mixin CategoryEventHandlers {
   /// Caso de uso para obtener una categoría por su ID
   GetCategoryByIdUseCase get getCategoryByIdUseCase;
 
+  /// Caso de uso para obtener los productos más vendidos
+  GetProductsByCategoryUseCase get getProductsBestSellersUseCase;
+
+  /// Caso de uso para obtener los productos más nuevos
+  GetProductsByCategoryUseCase get getProductsNewestUseCase;
+
   /// Servicio de almacenamiento de categorías
   CategoryStorage get categoryStorage;
 
@@ -26,6 +30,9 @@ mixin CategoryEventHandlers {
     SelectRootCategoryEvent event,
     Emitter<HomeState> emit,
   ) async {
+    List<ProductItemModel> productsBestSellers = [];
+    List<ProductItemModel> productsNewest = [];
+
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
       AppLogger.logInfo(
@@ -35,11 +42,49 @@ mixin CategoryEventHandlers {
       // Guardar la categoría seleccionada en SharedPreferences
       await categoryStorage.saveSelectedCategory(event.category);
 
+      final result = await getProductsBestSellersUseCase.executeBestSellers(
+        event.category.id,
+      );
+
+      result.fold(
+        (failure) {
+          AppLogger.logError(
+            'HomeBloc: Error al cargar productos más vendidos: ${failure.message}',
+          );
+        },
+        (products) {
+          productsBestSellers = products;
+          AppLogger.logSuccess(
+            'HomeBloc: Productos más vendidos cargados: ${products.length}',
+          );
+        },
+      );
+
+      final resultNewest = await getProductsNewestUseCase.executeNewest(
+        event.category.id,
+      );
+
+      resultNewest.fold(
+        (failure) {
+          AppLogger.logError(
+            'HomeBloc: Error al cargar productos más nuevos: ${failure.message}',
+          );
+        },
+        (products) {
+          productsNewest = products;
+          AppLogger.logSuccess(
+            'HomeBloc: Productos más nuevos cargados: ${products.length}',
+          );
+        },
+      );
+
       emit(
         HomeLoaded(
           categories: currentState.categories,
           apiCategories: currentState.apiCategories,
           selectedRootCategory: event.category,
+          productsBestSellers: productsBestSellers,
+          productsNewest: productsNewest,
         ),
       );
     } else {

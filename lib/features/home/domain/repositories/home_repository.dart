@@ -22,4 +22,14 @@ abstract class HomeRepository {
 
   /// Obtiene detalles de un producto específico por su ID
   Future<Either<Failure, ProductDetailModel>> getProductById(String id);
+
+  /// Obtiene los productos más vendidos
+  Future<Either<Failure, List<ProductDetailModel>>> getProductsBestSellers(
+    String categoryId,
+  );
+
+  /// Obtiene los productos más nuevos
+  Future<Either<Failure, List<ProductDetailModel>>> getProductsNewest(
+    String categoryId,
+  );
 }

@@ -17,3 +17,21 @@ class LoadProductByIdEvent extends HomeEvent {
   /// Crea una instancia de [LoadProductByIdEvent]
   LoadProductByIdEvent({required this.productId});
 }
+
+// Evento para cargar los productos más vendidos
+class LoadProductsBestSellersEvent extends HomeEvent {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// Crea una instancia de [LoadProductsBestSellersEvent]
+  LoadProductsBestSellersEvent({required this.categoryId});
+}
+
+/// Evento para cargar los productos más nuevos
+class LoadProductsNewestEvent extends HomeEvent {
+  /// ID de la categoría
+  final String categoryId;
+
+  /// Crea una instancia de [LoadProductsNewestEvent]
+  LoadProductsNewestEvent({required this.categoryId});
+}

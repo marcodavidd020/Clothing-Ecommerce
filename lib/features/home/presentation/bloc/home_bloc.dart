@@ -40,6 +40,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>
   @override
   final GetProductByIdUseCase getProductByIdUseCase;
 
+  @override
+  final GetProductsByCategoryUseCase getProductsBestSellersUseCase;
+
+  @override
+  final GetProductsByCategoryUseCase getProductsNewestUseCase;
+
   /// Servicio de almacenamiento de categorías
   @override
   final CategoryStorage categoryStorage;
@@ -50,6 +56,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>
     required this.getApiCategoriesTreeUseCase,
     required this.getCategoryByIdUseCase,
     required this.getProductByIdUseCase,
+    required this.getProductsBestSellersUseCase,
+    required this.getProductsNewestUseCase,
     required this.categoryStorage,
   }) : super(HomeInitial()) {
     // Registrar manejadores de eventos

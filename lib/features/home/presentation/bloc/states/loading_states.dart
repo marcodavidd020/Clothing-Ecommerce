@@ -1,5 +1,6 @@
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_api_model.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/entities/category_item_model.dart';
+import 'package:flutter_application_ecommerce/features/home/domain/entities/product_item_model.dart';
 import 'home_state.dart';
 
 /// Estado durante la carga inicial
@@ -25,6 +26,12 @@ class HomeLoadingPartial extends HomeState {
   /// ID del producto de detalle actual
   final String? productDetailId;
 
+  /// Productos más vendidos cargados
+  final List<ProductItemModel> productsBestSellers;
+
+  /// Productos más nuevos cargados
+  final List<ProductItemModel> productsNewest;
+
   /// Crea una instancia de [HomeLoadingPartial]
   HomeLoadingPartial({
     required this.categories,
@@ -33,5 +40,7 @@ class HomeLoadingPartial extends HomeState {
     this.selectedRootCategory,
     this.isLoadingProductDetail = false,
     this.productDetailId,
+    this.productsBestSellers = const [],
+    this.productsNewest = const [],
   });
 }

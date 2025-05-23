@@ -12,6 +12,12 @@ abstract class ProductApiDataSource {
 
   /// Obtiene productos por categoría
   Future<List<ProductDetailModel>> getProductsByCategory(String categoryId);
+
+  /// Obtiene productos más vendidos
+  Future<List<ProductDetailModel>> getProductsBestSellers(String categoryId);
+
+  /// Obtiene productos más nuevos
+  Future<List<ProductDetailModel>> getProductsNewest(String categoryId);
 }
 
 /// Implementación que carga los productos desde la API remota
@@ -72,7 +78,9 @@ class ProductApiRemoteDataSource implements ProductApiDataSource {
   }
 
   @override
-  Future<List<ProductDetailModel>> getProductsByCategory(String categoryId) async {
+  Future<List<ProductDetailModel>> getProductsByCategory(
+    String categoryId,
+  ) async {
     try {
       AppLogger.logInfo(
         'Llamando a getProductsByCategory endpoint: ${ApiConstants.getProductsByCategoryEndpoint(categoryId)}',
@@ -86,10 +94,11 @@ class ProductApiRemoteDataSource implements ProductApiDataSource {
 
       if (ResponseHandler.isSuccessfulResponse(response)) {
         // Usamos extractDataList para obtener la lista de productos
-        final productsList = ResponseHandler.extractDataList<ProductDetailModel>(
-          response,
-          (json) => ProductDetailModel.fromJson(json),
-        );
+        final productsList =
+            ResponseHandler.extractDataList<ProductDetailModel>(
+              response,
+              (json) => ProductDetailModel.fromJson(json),
+            );
 
         if (productsList != null) {
           AppLogger.logSuccess(
@@ -119,10 +128,115 @@ class ProductApiRemoteDataSource implements ProductApiDataSource {
       AppLogger.logError('EXCEPTION en getProductsByCategory: ${e.toString()}');
       // Relanzar la excepción en lugar de silenciarla
       if (e is ServerException) {
-        throw e;
+        // throw e;
+        throw ServerException(message: e.toString(), statusCode: 0);
       }
       throw ServerException(
         message: 'Error al obtener productos: ${e.toString()}',
+        statusCode: 0,
+      );
+    }
+  }
+
+  @override
+  Future<List<ProductDetailModel>> getProductsBestSellers(String categoryId) async {
+    try {
+      final response = await _dioClient.get(
+        ApiConstants.getPrdouctsBestSellersEndpoint(categoryId),
+      );
+
+      AppLogger.logInfo(
+        'Respuesta recibida: statusCode=${response.statusCode}',
+      );
+
+      if (ResponseHandler.isSuccessfulResponse(response)) {
+        final productsList =
+            ResponseHandler.extractDataList<ProductDetailModel>(
+              response,
+              (json) => ProductDetailModel.fromJson(json),
+            );
+
+        if (productsList != null) {
+          AppLogger.logSuccess(
+            'Productos más vendidos obtenidos: ${productsList.length} productos',
+          );
+          return productsList;
+        } else {
+          AppLogger.logError(
+            'ERROR: productsList es null después de extractDataList',
+          );
+          throw ServerException(
+            message: 'No se pudieron extraer productos de la respuesta',
+            statusCode: response.statusCode,
+          );
+        }
+      } else {
+        AppLogger.logError(
+          'ERROR: Respuesta no exitosa, statusCode=${response.statusCode}',
+        );
+        throw ServerException(
+          message: ResponseHandler.extractErrorMessage(response),
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      AppLogger.logError('Error al obtener productos más vendidos', e);
+      AppLogger.logError(
+        'EXCEPTION en getProductsBestSellers: ${e.toString()}',
+      );
+      throw ServerException(
+        message: 'Error al obtener productos más vendidos: ${e.toString()}',
+        statusCode: 0,
+      );
+    }
+  }
+
+  @override
+  Future<List<ProductDetailModel>> getProductsNewest(String categoryId) async {
+    try {
+      final response = await _dioClient.get(
+        ApiConstants.getPrdouctsNewestEndpoint(categoryId),
+      );
+
+      AppLogger.logInfo(
+        'Respuesta recibida para productos nuevos: statusCode=${response.statusCode}',
+      );
+
+      if (ResponseHandler.isSuccessfulResponse(response)) {
+        final productsList =
+            ResponseHandler.extractDataList<ProductDetailModel>(
+              response,
+              (json) => ProductDetailModel.fromJson(json),
+            );
+
+        if (productsList != null) {
+          AppLogger.logSuccess(
+            'Productos más nuevos obtenidos: ${productsList.length} productos',
+          );
+          return productsList;
+        } else {
+          AppLogger.logError(
+            'ERROR: productsList es null después de extractDataList',
+          );
+          throw ServerException(
+            message: 'No se pudieron extraer productos de la respuesta',
+            statusCode: response.statusCode,
+          );
+        }
+      } else {
+        AppLogger.logError(
+          'ERROR: Respuesta no exitosa, statusCode=${response.statusCode}',
+        );
+        throw ServerException(
+          message: ResponseHandler.extractErrorMessage(response),
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      AppLogger.logError('Error al obtener productos más nuevos', e);
+      AppLogger.logError('EXCEPTION en getProductsNewest: ${e.toString()}');
+      throw ServerException(
+        message: 'Error al obtener productos más nuevos: ${e.toString()}',
         statusCode: 0,
       );
     }

@@ -30,6 +30,8 @@ class ApiConstants {
   static const String productsEndpoint = '$baseUrl/products';
   static String getProductByIdEndpoint(String id) => '$productsEndpoint/$id';
   static String getProductsByCategoryEndpoint(String categoryId) => '$productsEndpoint/by-category/$categoryId';
+  static String getPrdouctsBestSellersEndpoint(String categoryId) => '$productsEndpoint/best-sellers/by-category/$categoryId';
+  static String getPrdouctsNewestEndpoint(String categoryId) => '$productsEndpoint/newest/by-category/$categoryId';
 
   static const int connectTimeout = 15000;
   static const int receiveTimeout = 15000;

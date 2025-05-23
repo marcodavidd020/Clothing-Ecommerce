@@ -15,4 +15,18 @@ class GetProductsByCategoryUseCase {
   ) async {
     return await _repository.getProductsByCategory(categoryId);
   }
+
+  /// Ejecuta el caso de uso para obtener los productos más vendidos
+  Future<Either<Failure, List<ProductItemModel>>> executeBestSellers(
+    String categoryId,
+  ) async {
+    return await _repository.getProductsBestSellers(categoryId);
+  }
+
+  /// Ejecuta el caso de uso para obtener los productos más nuevos
+  Future<Either<Failure, List<ProductItemModel>>> executeNewest(
+    String categoryId,
+  ) async {
+    return await _repository.getProductsNewest(categoryId);
+  }
 }
