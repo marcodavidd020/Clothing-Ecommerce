@@ -36,3 +36,4 @@ export 'product/products_grid_section_widget.dart';
 
 // Widgets de skeleton
 export 'skeleton/home_skeleton_widget.dart';
+export 'skeleton/products_grid_skeleton_widget.dart';

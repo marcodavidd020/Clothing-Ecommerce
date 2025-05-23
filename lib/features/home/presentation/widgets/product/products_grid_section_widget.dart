@@ -3,6 +3,7 @@ import 'package:flutter_application_ecommerce/features/home/domain/entities/prod
 import 'package:flutter_application_ecommerce/features/home/presentation/helpers/category_ui_helper.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/common/empty_state_widget.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/widgets/product/product_item_widget.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/widgets/skeleton/products_grid_skeleton_widget.dart';
 
 /// Widget para mostrar una sección de productos con título
 class ProductsGridSectionWidget extends StatelessWidget {
@@ -46,7 +47,8 @@ class ProductsGridSectionWidget extends StatelessWidget {
   /// Construye el contenido según el estado (cargando, con productos o vacío)
   Widget _buildContent(BuildContext context) {
     if (isLoading) {
-      return Center(child: CategoryUIHelper.buildLoadingIndicator());
+      // Usar el widget de esqueleto con shimmer durante la carga
+      return const ProductsGridSkeletonWidget();
     } else if (products.isNotEmpty) {
       return _buildProductsGrid(context);
     } else if (showEmptyState) {
