@@ -21,6 +21,7 @@ class CartModelMapper {
       size: apiItem.productVariant.size ?? 'N/A',
       color: color,
       quantity: apiItem.quantity,
+      apiItemId: apiItem.id, // Agregar el ID de la API
     );
   }
 

@@ -207,8 +207,16 @@ class _CartPageState extends State<CartPage> {
 
     if (result == true && mounted) {
       AppLogger.logInfo('Eliminando item del carrito: ${item.product.name}');
-      // Usar evento API si está disponible, sino usar evento local
-      context.read<CartBloc>().add(CartItemRemoved(itemId: item.id));
+      final cartBloc = context.read<CartBloc>();
+      
+      // Usar API si está disponible y el item tiene ID de API, sino usar método local
+      if (cartBloc.removeCartItemUseCase != null && item.apiItemId != null) {
+        AppLogger.logInfo('Usando API para eliminar item: ${item.apiItemId}');
+        cartBloc.add(CartItemRemovedFromApi(apiItemId: item.apiItemId!));
+      } else {
+        AppLogger.logInfo('Usando método local para eliminar item: ${item.id}');
+        cartBloc.add(CartItemRemoved(itemId: item.id));
+      }
       return true;
     }
 
@@ -227,9 +235,22 @@ class _CartPageState extends State<CartPage> {
       AppLogger.logInfo(
         'Actualizando cantidad de ${item.product.name} a $newQuantity',
       );
-      context.read<CartBloc>().add(
-        CartItemQuantityUpdated(itemId: item.id, newQuantity: newQuantity),
-      );
+      final cartBloc = context.read<CartBloc>();
+      
+      // Usar API si está disponible y el item tiene ID de API, sino usar método local
+      if (cartBloc.updateCartItemUseCase != null && item.apiItemId != null) {
+        AppLogger.logInfo('Usando API para actualizar cantidad: ${item.apiItemId}');
+        cartBloc.add(CartItemQuantityUpdatedInApi(
+          apiItemId: item.apiItemId!,
+          newQuantity: newQuantity,
+        ));
+      } else {
+        AppLogger.logInfo('Usando método local para actualizar cantidad: ${item.id}');
+        cartBloc.add(CartItemQuantityUpdated(
+          itemId: item.id,
+          newQuantity: newQuantity,
+        ));
+      }
     }
   }
 
@@ -251,8 +272,16 @@ class _CartPageState extends State<CartPage> {
 
     if (result == true && mounted) {
       AppLogger.logInfo('Vaciando carrito completo');
-      // Usar evento API si está disponible, sino usar evento local
-      context.read<CartBloc>().add(const CartCleared());
+      final cartBloc = context.read<CartBloc>();
+      
+      // Usar API si está disponible, sino usar método local
+      if (cartBloc.clearCartUseCase != null) {
+        AppLogger.logInfo('Usando API para vaciar carrito');
+        cartBloc.add(const CartClearedFromApi());
+      } else {
+        AppLogger.logInfo('Usando método local para vaciar carrito');
+        cartBloc.add(const CartCleared());
+      }
     }
   }
 

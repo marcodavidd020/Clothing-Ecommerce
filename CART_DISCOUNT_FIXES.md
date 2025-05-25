@@ -5,11 +5,12 @@
 Los precios del carrito no coincidían con el total de la API porque los productos tenían descuentos, pero no se estaban mostrando ni calculando correctamente.
 
 ### Datos de Ejemplo de la API
+
 ```json
 {
   "productVariant": {
     "product": {
-      "price": "637.30",        // Precio original
+      "price": "637.30", // Precio original
       "discountPrice": "198.80" // Precio con descuento
     }
   },
@@ -18,6 +19,7 @@ Los precios del carrito no coincidían con el total de la API porque los product
 ```
 
 ### Problema en el Mapeo (Antes)
+
 ```dart
 // Mapeo INCORRECTO - estaba al revés
 price: apiProduct.price,           // $637.30 (precio original)
@@ -25,6 +27,7 @@ originalPrice: apiProduct.discountPrice, // $198.80 (precio con descuento)
 ```
 
 ### Problema en el Cálculo (Antes)
+
 ```dart
 // Calculaba mal el subtotal
 final price = item.product.originalPrice ?? item.product.price;
@@ -51,6 +54,7 @@ return ProductItemModel(
 ```
 
 **Lógica**:
+
 - `price`: El precio que debe pagar el usuario (precio con descuento si existe, original si no)
 - `originalPrice`: El precio original solo cuando hay un descuento aplicado
 
@@ -74,6 +78,7 @@ return sum + (item.product.price * item.quantity);
 **Archivo**: `cart_item_widget.dart`
 
 #### Producto SIN Descuento
+
 ```
 ┌─────────────────────────────┐
 │ Producto Normal             │
@@ -84,6 +89,7 @@ return sum + (item.product.price * item.quantity);
 ```
 
 #### Producto CON Descuento
+
 ```
 ┌─────────────────────────────┐
 │ Luxurious Rubber Gloves     │
@@ -94,10 +100,11 @@ return sum + (item.product.price * item.quantity);
 ```
 
 #### Implementación
+
 ```dart
 Widget _buildPriceSection() {
   final bool hasDiscount = item.product.originalPrice != null;
-  
+
   if (hasDiscount) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,13 +146,14 @@ Widget _buildPriceSection() {
 ## Comparación de Cálculos
 
 ### Datos de Ejemplo
+
 ```json
 {
   "items": [
     {
       "productVariant": {
         "product": {
-          "price": "637.30",     // Precio original
+          "price": "637.30", // Precio original
           "discountPrice": "198.80" // Precio con descuento
         }
       },
@@ -161,11 +169,12 @@ Widget _buildPriceSection() {
       "quantity": 3
     }
   ],
-  "total": 1789.20
+  "total": 1789.2
 }
 ```
 
 ### ANTES (Incorrecto)
+
 ```
 Subtotal: $637.30 × 6 + $637.30 × 3 = $5,735.70
 Total API: $1,789.20
@@ -173,6 +182,7 @@ Total API: $1,789.20
 ```
 
 ### DESPUÉS (Correcto)
+
 ```
 Subtotal: $198.80 × 6 + $198.80 × 3 = $1,789.20
 Total API: $1,789.20
@@ -182,6 +192,7 @@ Total API: $1,789.20
 ## Estructura Visual Final
 
 ### Resumen del Carrito
+
 ```
 ┌─────────────────────────────────┐
 │ Subtotal    $1,789.20          │
@@ -191,6 +202,7 @@ Total API: $1,789.20
 ```
 
 ### Items del Carrito
+
 ```
 ┌─────────────────────────────────┐
 │ 🖼️ Luxurious Rubber Gloves     │
@@ -210,21 +222,25 @@ Total API: $1,789.20
 ## Beneficios de la Corrección
 
 ### ✅ Cálculos Precisos
+
 - Subtotal coincide exactamente con el total de la API
 - No más discrepancias en los precios
 - Matemáticas coherentes entre frontend y backend
 
 ### ✅ UX Mejorada
+
 - El usuario ve claramente el descuento aplicado
 - Precio original tachado indica el ahorro
 - Información visual clara sobre promociones
 
 ### ✅ Compatibilidad
+
 - Funciona con productos con y sin descuento
 - Se adapta automáticamente al contenido de la API
 - Preparado para futuras promociones
 
 ### ✅ Consistencia
+
 - Los totales coinciden con el backend
 - No hay sorpresas en el checkout
 - Datos sincronizados en toda la aplicación
@@ -238,6 +254,7 @@ Total API: $1,789.20
 ## Casos de Uso Soportados
 
 ### Producto Sin Descuento
+
 ```json
 {
   "product": {
@@ -246,9 +263,11 @@ Total API: $1,789.20
   }
 }
 ```
+
 **Resultado**: Muestra `$299.99` sin precio tachado.
 
 ### Producto Con Descuento
+
 ```json
 {
   "product": {
@@ -257,9 +276,11 @@ Total API: $1,789.20
   }
 }
 ```
+
 **Resultado**: Muestra `$299.99` tachado y `$199.99` destacado.
 
 ### Producto Solo Con Precio Con Descuento
+
 ```json
 {
   "product": {
@@ -268,6 +289,7 @@ Total API: $1,789.20
   }
 }
 ```
+
 **Resultado**: Muestra solo `$199.99` (no hay diferencia = no hay descuento visual).
 
-Esta implementación garantiza que el carrito muestre información precisa y visualmente atractiva sobre los descuentos, mientras mantiene la coherencia matemática con el backend. 
+Esta implementación garantiza que el carrito muestre información precisa y visualmente atractiva sobre los descuentos, mientras mantiene la coherencia matemática con el backend.

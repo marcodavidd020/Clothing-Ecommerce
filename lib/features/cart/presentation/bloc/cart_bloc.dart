@@ -94,6 +94,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           size: event.size,
           color: event.color,
           quantity: event.quantity,
+          apiItemId: null, // Items locales no tienen API ID
         );
 
         // Verificar si el producto ya existe en el carrito (mismo producto, talla y color)

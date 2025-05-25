@@ -5,6 +5,7 @@
 El `CartSummaryWidget` estaba mostrando datos falsos que no venían de la API:
 
 ### Antes (Datos Incorrectos)
+
 ```dart
 // Valores hardcodeados que NO vienen de la API
 final double shipping = 5.99;
@@ -19,6 +20,7 @@ final double total = state.totalPrice + shipping + tax; // Total calculado incor
 ```
 
 ### Después (Datos Correctos)
+
 ```dart
 // Solo datos reales de la API
 final double subtotal = _calculateSubtotal(); // Calculado de los items reales
@@ -32,6 +34,7 @@ final double subtotal = _calculateSubtotal(); // Calculado de los items reales
 ## Solución Implementada
 
 ### 1. Eliminación de Datos Falsos
+
 - ❌ **Shipping hardcodeado**: `$5.99`
 - ❌ **Tax calculado**: `7%` del subtotal
 - ❌ **Total recalculado**: suma incorrecta
@@ -39,6 +42,7 @@ final double subtotal = _calculateSubtotal(); // Calculado de los items reales
 ### 2. Implementación de Datos Reales
 
 #### Subtotal Calculado
+
 ```dart
 /// Calcula el subtotal sumando el precio de todos los items
 double _calculateSubtotal() {
@@ -50,6 +54,7 @@ double _calculateSubtotal() {
 ```
 
 #### Total de la API
+
 ```dart
 // Usar directamente el total que viene de la API
 '\$${state.totalPrice.toStringAsFixed(2)}'
@@ -66,12 +71,14 @@ double _calculateSubtotal() {
 ```
 
 **Donde:**
+
 - **Subtotal**: Suma de (precio × cantidad) de todos los items
 - **Total**: Valor real que devuelve la API (`data.total`)
 
 ## Datos de la API Utilizados
 
 ### JSON de Respuesta
+
 ```json
 {
   "data": {
@@ -86,12 +93,13 @@ double _calculateSubtotal() {
         "quantity": 6
       }
     ],
-    "total": 1789.2000000000003  // ← Este es el total real
+    "total": 1789.2000000000003 // ← Este es el total real
   }
 }
 ```
 
 ### Cálculo del Subtotal
+
 ```dart
 // Para cada item:
 final price = item.product.originalPrice ?? item.product.price;
@@ -117,16 +125,19 @@ Es posible que haya una diferencia entre el subtotal calculado localmente y el t
 ## Beneficios de la Corrección
 
 ### ✅ Datos Reales
+
 - Solo muestra información que realmente existe
 - No confunde al usuario con costos falsos
 - Sincronizado con el backend
 
 ### ✅ Simplificación
+
 - UI más limpia y enfocada
 - Menos confusión para el usuario
 - Código más mantenible
 
 ### ✅ Consistencia
+
 - El total coincide con lo que procesa el backend
 - No hay discrepancias entre frontend y backend
 - Preparado para futuras integraciones de checkout
@@ -143,13 +154,13 @@ Si en el futuro la API devuelve más información detallada, se puede extender f
 ```json
 {
   "data": {
-    "subtotal": 1193.60,
+    "subtotal": 1193.6,
     "shipping": 5.99,
     "tax": 83.61,
-    "discounts": -50.00,
-    "total": 1789.20
+    "discounts": -50.0,
+    "total": 1789.2
   }
 }
 ```
 
-Entonces el widget se puede actualizar para mostrar estos valores reales en lugar de calculados. 
+Entonces el widget se puede actualizar para mostrar estos valores reales en lugar de calculados.

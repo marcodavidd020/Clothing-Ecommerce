@@ -1,9 +1,11 @@
 # Prueba de Cart API - GET del Carrito
 
 ## Objetivo
+
 Verificar que el GET al endpoint `/carts/my-cart` se ejecuta correctamente cuando se navega a la página del carrito.
 
 ## Estructura del JSON de Respuesta Esperado
+
 ```json
 {
   "success": true,
@@ -55,10 +57,12 @@ Verificar que el GET al endpoint `/carts/my-cart` se ejecuta correctamente cuand
 ## Flujo de Prueba
 
 ### 1. Navegación al Carrito
+
 1. Abre la aplicación en el navegador (http://localhost:8080)
 2. Navega al carrito desde el ícono del carrito en el AppBar o desde el menú
 
 ### 2. Verificación de Logs en el Navegador
+
 Abre las Developer Tools del navegador (F12) y ve a la consola. Deberías ver:
 
 ```
@@ -74,7 +78,9 @@ SUCCESS: Carrito cargado con 2 items
 ### 3. Verificación Visual en la Interfaz
 
 #### Caso 1: Carrito con Items
+
 Si la API devuelve items en el carrito, deberías ver:
+
 - Lista de productos con imagen, nombre, color, talla
 - Cantidad de cada producto con botones +/-
 - Precio individual de cada producto
@@ -86,13 +92,17 @@ Si la API devuelve items en el carrito, deberías ver:
 - Botón de "Checkout" con el precio total
 
 #### Caso 2: Carrito Vacío
+
 Si la API devuelve un carrito vacío, deberías ver:
+
 - Ícono de carrito vacío
 - Mensaje "Your cart is empty"
 - Mensaje "Explore products and add items to your cart"
 
 #### Caso 3: Error de API
+
 Si hay algún error, deberías ver:
+
 - Ícono de error
 - Mensaje "Error al cargar el carrito"
 - Mensaje específico del error
@@ -111,17 +121,20 @@ Si hay algún error, deberías ver:
 ### 5. Funcionalidades Adicionales a Probar
 
 #### Cambio de Cantidad
+
 1. En un item del carrito, presiona los botones +/-
 2. Verifica que se envía PUT a `/carts/my-cart/items/{itemId}`
 3. Verifica que la cantidad se actualiza en la interfaz
 
 #### Eliminar Item
+
 1. Desliza un item hacia la izquierda o presiona su botón de eliminar
 2. Confirma la eliminación en el diálogo
 3. Verifica que se envía DELETE a `/carts/my-cart/items/{itemId}`
 4. Verifica que el item desaparece de la lista
 
 #### Vaciar Carrito
+
 1. Presiona el botón de "vaciar carrito" en el AppBar (ícono de escoba)
 2. Confirma en el diálogo
 3. Verifica que se envía DELETE a `/carts/my-cart/clear`
@@ -130,31 +143,37 @@ Si hay algún error, deberías ver:
 ## Solución de Problemas
 
 ### Error: "API no disponible para cargar carrito"
+
 - Verifica que el `CartBloc` tenga acceso a los use cases de la API
 - Revisa la configuración de dependencias en `CartDIContainer`
 
 ### Error: Network connection
+
 - Verifica que la URL base sea correcta: `http://192.168.0.202:3000/api`
 - Asegúrate de que el backend esté ejecutándose
 - Verifica que no hay problemas de CORS
 
 ### Error: "No se pudo extraer datos del carrito"
+
 - Verifica que la estructura del JSON de respuesta coincida con `CartApiModel`
 - Revisa que el `ResponseHandler` esté extrayendo correctamente el campo `data`
 
 ### El carrito no se actualiza después de añadir productos
+
 - Verifica que después de añadir un producto desde Product Detail, el carrito se recargue
 - Puede ser necesario refrescar la página del carrito para ver los cambios
 
 ## Arquitectura Implementada
 
 ### Estados del CartBloc
+
 - `CartInitial`: Estado inicial, dispara la carga
 - `CartLoading`: Mostrando loading spinner
 - `CartLoaded`: Carrito cargado con items
 - `CartError`: Error al cargar o procesar
 
 ### Flujo de Datos
+
 1. `CartPage.initState()` → `CartLoadRequested()`
 2. `CartBloc._onCartLoadRequested()` → `CartLoadFromApiRequested()`
 3. `CartBloc._onCartLoadFromApiRequested()` → `GetMyCartUseCase.execute()`
@@ -163,8 +182,9 @@ Si hay algún error, deberías ver:
 6. Response → `CartModelMapper.fromApiItems()` → `CartLoaded(items)`
 
 ### Modelos de Conversión
+
 - **API**: `CartApiModel` → `CartItemApiModel` → `ProductVariantApiModel` → `ProductApiModel`
 - **Domain**: `CartItemModel` → `ProductItemModel` → `ProductColorOption`
 - **Mapper**: `CartModelMapper` convierte de API a Domain
 
-Esta implementación proporciona una base sólida para el manejo del carrito con la API, incluyendo carga, actualización, eliminación y vaciado de items. 
+Esta implementación proporciona una base sólida para el manejo del carrito con la API, incluyendo carga, actualización, eliminación y vaciado de items.

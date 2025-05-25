@@ -10,9 +10,11 @@ Los descuentos no se mostraban correctamente porque los modelos de datos tenían
 ## Archivos Corregidos
 
 ### 1. ✅ CategoryApiModel.fromJson
+
 **Archivo**: `lib/features/home/domain/entities/category_api_model.dart`
 
 #### Problema ANTES ❌
+
 ```dart
 return ProductItemModel(
   id: product['id'] as String,
@@ -25,6 +27,7 @@ return ProductItemModel(
 ```
 
 #### Solución DESPUÉS ✅
+
 ```dart
 return ProductItemModel(
   id: product['id'] as String,
@@ -37,9 +40,11 @@ return ProductItemModel(
 ```
 
 ### 2. ✅ ProductDetailModel Constructor
+
 **Archivo**: `lib/features/home/data/models/product_detail_model.dart`
 
 #### Problema ANTES ❌
+
 ```dart
 ProductDetailModel({
   required super.id,
@@ -55,6 +60,7 @@ ProductDetailModel({
 ```
 
 #### Solución DESPUÉS ✅
+
 ```dart
 ProductDetailModel({
   required super.id,
@@ -70,9 +76,11 @@ ProductDetailModel({
 ```
 
 ### 3. ✅ ProductDetailModel.fromJson
+
 **Archivo**: `lib/features/home/data/models/product_detail_model.dart`
 
 #### Problema ANTES ❌
+
 ```dart
 return ProductDetailModel(
   // ...
@@ -86,6 +94,7 @@ return ProductDetailModel(
 ```
 
 #### Solución DESPUÉS ✅
+
 ```dart
 final discountPrice = json['discountPrice'] != null
     ? double.tryParse(json['discountPrice'].toString())
@@ -105,15 +114,17 @@ return ProductDetailModel(
 ### API Response → Model Mapping
 
 #### Home Products (CategoryApiModel)
+
 ```json
 // API Response
 {
   "id": "123",
   "name": "Producto",
-  "price": "637.30",        // Precio original
+  "price": "637.30", // Precio original
   "discountPrice": "198.80" // Precio con descuento
 }
 ```
+
 ```dart
 // Mapeo Corregido
 ProductItemModel(
@@ -123,15 +134,17 @@ ProductItemModel(
 ```
 
 #### Product Detail (ProductDetailModel)
+
 ```json
 // API Response
 {
   "id": "123",
   "name": "Producto",
-  "price": "637.30",        // Precio original
+  "price": "637.30", // Precio original
   "discountPrice": "198.80" // Precio con descuento
 }
 ```
+
 ```dart
 // Mapeo Corregido
 ProductDetailModel(
@@ -146,18 +159,21 @@ ProductDetailModel(
 Con estos cambios, la visualización ahora es consistente en toda la app:
 
 #### Home Cards
+
 ```
 $198.80  $637.30
          (tachado)
 ```
 
 #### Product Detail
+
 ```
 $198.80 (grande, destacado)
 $637.30 (pequeño, tachado)
 ```
 
 #### Cart Items
+
 ```
 $637.30 (tachado, arriba)
 $198.80 (destacado, abajo)
@@ -166,6 +182,7 @@ $198.80 (destacado, abajo)
 ## Comparación: Antes vs Después
 
 ### ANTES ❌ (Datos Incorrectos)
+
 ```
 API: price=637.30, discountPrice=198.80
 CategoryApiModel: price=198.80, originalPrice=637.30 (INVERTIDO)
@@ -178,6 +195,7 @@ Resultado Visual:
 ```
 
 ### DESPUÉS ✅ (Datos Correctos)
+
 ```
 API: price=637.30, discountPrice=198.80
 CategoryApiModel: price=637.30, originalPrice=198.80 (CORRECTO)
@@ -192,6 +210,7 @@ Resultado Visual:
 ## Impacto en Cálculos del Carrito
 
 ### Subtotal Calculation
+
 ```dart
 // En cart_summary_widget.dart
 double _calculateSubtotal() {
@@ -204,28 +223,33 @@ double _calculateSubtotal() {
 ```
 
 ### Resultado Final
+
 - **Subtotal calculado**: $1,789.20 ✅
-- **Total de API**: $1,789.20 ✅ 
+- **Total de API**: $1,789.20 ✅
 - **Coincidencia perfecta**: ✅
 
 ## Beneficios de las Correcciones
 
 ### 🔧 Mapeo Consistente
+
 - Todos los modelos mapean precios de forma coherente
 - Compatibilidad entre CategoryApiModel y ProductDetailModel
 - Herencia de ProductModel respetada
 
 ### 🎨 Visualización Correcta
+
 - Descuentos visibles en Home, Detail y Cart
 - Precios tachados cuando corresponde
 - Precios destacados para descuentos
 
 ### 🔢 Matemáticas Precisas
+
 - Subtotales = Totales API
 - Cálculos coherentes en toda la aplicación
 - No más discrepancias en el checkout
 
 ### 🏗️ Arquitectura Robusta
+
 - Modelos de datos confiables
 - Mapeo desde JSON centralizado y correcto
 - Fácil mantenimiento y extensión
@@ -233,12 +257,14 @@ double _calculateSubtotal() {
 ## Testing Manual
 
 ### Productos con Descuento
+
 1. **Home**: Debe mostrar precio con descuento primero, original tachado
 2. **Product Detail**: Debe mostrar precio con descuento grande, original tachado pequeño
 3. **Cart**: Debe mostrar precio original tachado arriba, descuento destacado abajo
 4. **Summary**: Subtotal debe coincidir con total API
 
 ### Productos sin Descuento
+
 1. **Home**: Debe mostrar solo el precio normal
 2. **Product Detail**: Debe mostrar solo el precio normal
 3. **Cart**: Debe mostrar solo el precio normal
@@ -247,10 +273,11 @@ double _calculateSubtotal() {
 ## Estado Final ✅
 
 Todos los archivos corregidos compilan sin errores:
+
 - ✅ **CategoryApiModel**: Mapeo de precios corregido
 - ✅ **ProductDetailModel**: Constructor y fromJson corregidos
 - ✅ **Visualización**: Consistente en toda la app
 - ✅ **Cálculos**: Precisos y coincidentes con API
 - ✅ **Testing**: 25 issues encontrados, 0 errores críticos
 
-Los descuentos ahora se muestran correctamente en toda la aplicación con datos precisos y cálculos coherentes. 
+Los descuentos ahora se muestran correctamente en toda la aplicación con datos precisos y cálculos coherentes.

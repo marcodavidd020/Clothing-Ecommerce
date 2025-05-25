@@ -14,6 +14,10 @@ class CartItemModel {
   /// La cantidad seleccionada del producto
   final int quantity;
 
+  /// ID del item en la API (para operaciones de actualización/eliminación)
+  /// Es null para items creados localmente
+  final String? apiItemId;
+
   /// Identificador único del ítem del carrito (combinación de producto, talla y color)
   String get id => '${product.id}_${size}_${color.name}';
 
@@ -25,6 +29,7 @@ class CartItemModel {
     required this.size,
     required this.color,
     required this.quantity,
+    this.apiItemId,
   });
 
   /// Crea una copia del ítem con algunos campos modificados
@@ -33,12 +38,14 @@ class CartItemModel {
     String? size,
     ProductColorOption? color,
     int? quantity,
+    String? apiItemId,
   }) {
     return CartItemModel(
       product: product ?? this.product,
       size: size ?? this.size,
       color: color ?? this.color,
       quantity: quantity ?? this.quantity,
+      apiItemId: apiItemId ?? this.apiItemId,
     );
   }
 }
