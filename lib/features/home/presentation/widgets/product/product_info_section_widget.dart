@@ -74,20 +74,31 @@ class ProductInfoSectionWidget extends StatelessWidget {
 
   /// Construye la sección de precios (actual y original)
   Widget _buildPriceSection() {
-    return Row(
-      children: [
-        Text(
-          '\$${price.toStringAsFixed(2)}',
-          style: AppTextStyles.topSellingItem,
-        ),
-        if (originalPrice != null) ...[
-          const SizedBox(width: AppDimens.vSpace8),
+    final bool hasDiscount = originalPrice != null;
+    
+    if (hasDiscount) {
+      // Producto con descuento - mostrar precio con descuento primero, original tachado después
+      return Row(
+        children: [
           Text(
             '\$${originalPrice!.toStringAsFixed(2)}',
-            style: AppTextStyles.topSellingItemWithPrice,
+            style: AppTextStyles.topSellingItem,
+          ),
+          const SizedBox(width: AppDimens.vSpace8),
+          Text(
+            '\$${price.toStringAsFixed(2)}',
+            style: AppTextStyles.topSellingItemWithPrice.copyWith(
+              decoration: TextDecoration.lineThrough,
+            ),
           ),
         ],
-      ],
-    );
+      );
+    } else {
+      // Producto sin descuento - mostrar precio normal
+      return Text(
+        '\$${price.toStringAsFixed(2)}',
+        style: AppTextStyles.topSellingItem,
+      );
+    }
   }
 }

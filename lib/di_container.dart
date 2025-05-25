@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:flutter_application_ecommerce/features/home/di_container.dart';
 import 'package:flutter_application_ecommerce/features/auth/di_container.dart';
+import 'package:flutter_application_ecommerce/features/cart/di_container.dart';
 import 'package:flutter_application_ecommerce/core/constants/api_constants.dart';
 import 'package:flutter_application_ecommerce/core/di/modules/infrastructure_module.dart';
 import 'package:flutter_application_ecommerce/core/di/modules/storage_module.dart';
@@ -39,5 +40,6 @@ class DIContainer {
     //    Las dependencias básicas ya están disponibles gracias a los pasos anteriores
     await HomeDIContainer.register(sl);
     await AuthDIContainer.register(sl);
+    await CartDIContainer.register(sl);
   }
 }
