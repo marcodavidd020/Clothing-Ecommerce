@@ -95,13 +95,41 @@ class ProductContentWidget extends StatelessWidget {
 
   /// Construye el precio del producto.
   Widget _buildProductPrice() {
-    return Text(
-      '\$${state.product.price.toStringAsFixed(2)}',
-      style: AppTextStyles.heading.copyWith(
-        fontSize: ProductDetailUI.priceFontSize,
-        color: AppColors.primary,
-      ),
-    );
+    final bool hasDiscount = state.product.originalPrice != null;
+    
+    if (hasDiscount) {
+      // Producto con descuento - mostrar precio con descuento primero, original tachado después
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '\$${state.product.originalPrice!.toStringAsFixed(2)}',
+            style: AppTextStyles.heading.copyWith(
+              fontSize: ProductDetailUI.priceFontSize,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '\$${state.product.price.toStringAsFixed(2)}',
+            style: AppTextStyles.heading.copyWith(
+              fontSize: ProductDetailUI.priceFontSize * 0.8,
+              color: AppColors.textLight,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      );
+    } else {
+      // Producto sin descuento - mostrar precio normal
+      return Text(
+        '\$${state.product.price.toStringAsFixed(2)}',
+        style: AppTextStyles.heading.copyWith(
+          fontSize: ProductDetailUI.priceFontSize,
+          color: AppColors.primary,
+        ),
+      );
+    }
   }
 
   /// Construye el selector de talla.

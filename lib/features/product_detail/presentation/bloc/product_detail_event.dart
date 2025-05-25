@@ -53,9 +53,9 @@ class ProductDetailQuantityChanged extends ProductDetailEvent {
 // Evento cuando se añade el producto al carrito
 class ProductAddToCartRequested extends ProductDetailEvent {
   final BuildContext? context;
-  
+
   const ProductAddToCartRequested({this.context});
-  
+
   @override
   List<Object?> get props => [context];
 }

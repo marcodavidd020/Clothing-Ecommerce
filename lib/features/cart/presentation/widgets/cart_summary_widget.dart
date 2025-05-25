@@ -3,20 +3,18 @@ import 'package:flutter_application_ecommerce/core/constants/constants.dart';
 import 'package:flutter_application_ecommerce/features/cart/core/core.dart';
 import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart';
 
-/// Widget that displays the cart summary (subtotal, shipping, tax, total).
+/// Widget que muestra el resumen del carrito con los datos reales de la API.
 class CartSummaryWidget extends StatelessWidget {
-  /// The state of the cart with pricing information.
+  /// El estado del carrito con la información de precios.
   final CartLoaded state;
 
-  /// Creates an instance of [CartSummaryWidget].
+  /// Crea una instancia de [CartSummaryWidget].
   const CartSummaryWidget({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
-    // Example values for shipping and taxes
-    final double shipping = 5.99;
-    final double tax = state.totalPrice * 0.07; // 7% tax
-    final double total = state.totalPrice + shipping + tax;
+    // Calcular subtotal basado en los items del carrito
+    final double subtotal = _calculateSubtotal();
 
     return Container(
       padding: const EdgeInsets.all(AppDimens.contentPaddingHorizontal),
@@ -28,19 +26,12 @@ class CartSummaryWidget extends StatelessWidget {
         children: [
           _buildSummaryRow(
             CartStrings.subtotalLabel,
-            '\$${state.totalPrice.toStringAsFixed(2)}',
+            '\$${subtotal.toStringAsFixed(2)}',
           ),
-          const SizedBox(height: AppDimens.vSpace8),
-          _buildSummaryRow(
-            CartStrings.shippingLabel,
-            '\$${shipping.toStringAsFixed(2)}',
-          ),
-          const SizedBox(height: AppDimens.vSpace8),
-          _buildSummaryRow(CartStrings.taxLabel, '\$${tax.toStringAsFixed(2)}'),
           const Divider(height: 24, color: AppColors.textLight),
           _buildSummaryRow(
             CartStrings.totalLabel,
-            '\$${total.toStringAsFixed(2)}',
+            '\$${state.totalPrice.toStringAsFixed(2)}',
             isTotal: true,
           ),
         ],
@@ -48,7 +39,16 @@ class CartSummaryWidget extends StatelessWidget {
     );
   }
 
-  /// Builds a row in the cost summary.
+  /// Calcula el subtotal sumando el precio de todos los items
+  double _calculateSubtotal() {
+    return state.items.fold(0.0, (sum, item) {
+      // Usar precio con descuento si existe, sino el precio original
+      final price = item.product.originalPrice ?? item.product.price;
+      return sum + (price * item.quantity);
+    });
+  }
+
+  /// Construye una fila en el resumen de costos.
   Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

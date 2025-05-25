@@ -18,7 +18,7 @@ class CartItemModel {
   String get id => '${product.id}_${size}_${color.name}';
 
   /// Precio total del ítem (precio unitario * cantidad)
-  double get total => product.price * quantity;
+  double get total => (product.originalPrice ?? product.price) * quantity;
 
   const CartItemModel({
     required this.product,

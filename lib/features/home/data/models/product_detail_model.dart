@@ -29,6 +29,7 @@ class ProductDetailModel extends ProductModel {
     super.availableSizes = const [],
     super.availableColors = const [],
     super.additionalImageUrls = const [],
+    super.originalPrice,
   });
 
   factory ProductDetailModel.fromJson(Map<String, dynamic> json) {
@@ -75,6 +76,10 @@ class ProductDetailModel extends ProductModel {
             )
             .toList();
 
+    final discountPrice = json['discountPrice'] != null
+        ? double.tryParse(json['discountPrice'].toString())
+        : null;
+
     return ProductDetailModel(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
@@ -82,10 +87,7 @@ class ProductDetailModel extends ProductModel {
       description: json['description'] as String? ?? 'N/A',
       slug: json['slug'] as String? ?? '',
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
-      discountPrice:
-          json['discountPrice'] != null
-              ? double.tryParse(json['discountPrice'].toString())
-              : null,
+      discountPrice: discountPrice,
       stock: json['stock'] as int? ?? 0,
       categories: categoriesList,
       variants: variantsList,
@@ -93,6 +95,7 @@ class ProductDetailModel extends ProductModel {
       additionalImageUrls: additionalUrls,
       availableSizes: availableSizes.toList(),
       availableColors: colorOptions,
+      originalPrice: discountPrice, // Pasar discountPrice como originalPrice para compatibilidad
     );
   }
 

@@ -148,7 +148,7 @@ class ProductDetailScaffoldWidget extends StatelessWidget {
               }
             },
             child: AddToCartButtonWidget(
-              totalPrice: state.product.price * state.quantity,
+              totalPrice: (state.product.originalPrice ?? state.product.price) * state.quantity,
               onPressed: () {
                 // Primero, animar el añadir al carrito
                 onAddToCart(state);

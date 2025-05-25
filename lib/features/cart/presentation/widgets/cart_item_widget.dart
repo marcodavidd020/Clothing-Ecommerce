@@ -114,14 +114,7 @@ class CartItemWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '\$${item.product.price.toStringAsFixed(2)}',
-                      style: AppTextStyles.heading.copyWith(
-                        fontSize: 16,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    _buildPriceSection(),
                     CartQuantitySelectorWidget(
                       quantity: item.quantity,
                       onQuantityChanged: onQuantityChanged,
@@ -136,5 +129,47 @@ class CartItemWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Construye la sección de precios mostrando descuentos si aplican
+  Widget _buildPriceSection() {
+    final bool hasDiscount = item.product.originalPrice != null;
+    
+    if (hasDiscount) {
+      // Producto con descuento - mostrar precio original tachado y precio con descuento
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Precio original tachado
+          Text(
+            '\$${item.product.price.toStringAsFixed(2)}',
+            style: AppTextStyles.caption.copyWith(
+              decoration: TextDecoration.lineThrough,
+              color: AppColors.textLight,
+              fontSize: 12,
+            ),
+          ),
+          // Precio con descuento
+          Text(
+            '\$${item.product.originalPrice!.toStringAsFixed(2)}',
+            style: AppTextStyles.heading.copyWith(
+              fontSize: 16,
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
+    } else {
+      // Producto sin descuento - mostrar precio normal
+      return Text(
+        '\$${item.product.price.toStringAsFixed(2)}',
+        style: AppTextStyles.heading.copyWith(
+          fontSize: 16,
+          color: AppColors.primary,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
   }
 }

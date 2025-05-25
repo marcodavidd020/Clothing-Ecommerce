@@ -99,7 +99,7 @@ class CategoryApiModel {
                   .toList()
               : [],
       hasChildren: json['hasChildren'] as bool? ?? false,
-      products:
+              products:
           json['products'] != null
               ? (json['products'] as List<dynamic>).map((product) {
                 // Convertir precios de string a double
@@ -116,13 +116,8 @@ class CategoryApiModel {
                   id: product['id'] as String,
                   imageUrl: product['image'] as String,
                   name: product['name'] as String,
-                  price:
-                      discountPrice ??
-                      price, // Si hay precio de descuento, ese es el precio actual
-                  originalPrice:
-                      discountPrice != null
-                          ? price
-                          : null, // El precio original solo si hay descuento
+                  price: price, // Precio original del producto
+                  originalPrice: discountPrice, // Precio con descuento si existe
                   isFavorite: false, // No viene del API, inicializar en false
                   description: product['description'] as String? ?? '',
                 );

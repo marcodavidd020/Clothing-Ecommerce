@@ -17,20 +17,23 @@ class CartApiModel {
   });
 
   factory CartApiModel.fromJson(Map<String, dynamic> json) {
-    final itemsList = json['items'] != null
-        ? (json['items'] as List)
-            .map((i) => CartItemApiModel.fromJson(i))
-            .toList()
-        : <CartItemApiModel>[];
+    final itemsList =
+        json['items'] != null
+            ? (json['items'] as List)
+                .map((i) => CartItemApiModel.fromJson(i))
+                .toList()
+            : <CartItemApiModel>[];
 
     return CartApiModel(
       id: json['id'] as String? ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
-          : DateTime.now(),
+      createdAt:
+          json['createdAt'] != null
+              ? DateTime.parse(json['createdAt'] as String)
+              : DateTime.now(),
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'] as String)
+              : DateTime.now(),
       userId: json['user_id'] as String? ?? '',
       items: itemsList,
       total: double.tryParse(json['total']?.toString() ?? '0') ?? 0.0,
@@ -72,12 +75,14 @@ class CartItemApiModel {
   factory CartItemApiModel.fromJson(Map<String, dynamic> json) {
     return CartItemApiModel(
       id: json['id'] as String? ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
-          : DateTime.now(),
+      createdAt:
+          json['createdAt'] != null
+              ? DateTime.parse(json['createdAt'] as String)
+              : DateTime.now(),
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'] as String)
+              : DateTime.now(),
       cartId: json['cart_id'] as String? ?? '',
       productVariant: ProductVariantApiModel.fromJson(
         json['productVariant'] as Map<String, dynamic>? ?? {},
@@ -127,12 +132,14 @@ class ProductVariantApiModel {
   factory ProductVariantApiModel.fromJson(Map<String, dynamic> json) {
     return ProductVariantApiModel(
       id: json['id'] as String? ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
-          : DateTime.now(),
+      createdAt:
+          json['createdAt'] != null
+              ? DateTime.parse(json['createdAt'] as String)
+              : DateTime.now(),
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'] as String)
+              : DateTime.now(),
       color: json['color'] as String?,
       size: json['size'] as String?,
       stock: json['stock'] as int? ?? 0,
@@ -190,20 +197,23 @@ class ProductApiModel {
   factory ProductApiModel.fromJson(Map<String, dynamic> json) {
     return ProductApiModel(
       id: json['id'] as String? ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
-          : DateTime.now(),
+      createdAt:
+          json['createdAt'] != null
+              ? DateTime.parse(json['createdAt'] as String)
+              : DateTime.now(),
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'] as String)
+              : DateTime.now(),
       name: json['name'] as String? ?? '',
       image: json['image'] as String? ?? '',
       slug: json['slug'] as String? ?? '',
       description: json['description'] as String? ?? '',
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,
-      discountPrice: json['discountPrice'] != null
-          ? double.tryParse(json['discountPrice'].toString())
-          : null,
+      discountPrice:
+          json['discountPrice'] != null
+              ? double.tryParse(json['discountPrice'].toString())
+              : null,
       stock: json['stock'] as int? ?? 0,
       isActive: json['isActive'] as bool? ?? true,
     );
@@ -224,4 +234,4 @@ class ProductApiModel {
       'isActive': isActive,
     };
   }
-} 
+}

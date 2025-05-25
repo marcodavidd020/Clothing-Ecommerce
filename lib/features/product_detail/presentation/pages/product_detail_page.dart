@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart'; // Importar flutter_bloc
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart'; // Usaremos el modelo de producto de home
 import 'package:flutter_application_ecommerce/features/home/data/models/product_detail_model.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/bloc/bloc.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/product_states.dart' as home_states;
+import 'package:flutter_application_ecommerce/features/home/presentation/bloc/states/product_states.dart'
+    as home_states;
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/widgets/widgets.dart'; // Importar widgets
-import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart' as product_detail_bloc;
+import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart'
+    as product_detail_bloc;
 import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart'; // Importar bloc del carrito
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/helpers/helpers.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
@@ -45,7 +47,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   /// Carga el detalle completo del producto desde la API
   void _loadProductDetail() {
     AppLogger.logInfo('Cargando detalle del producto: ${widget.product.id}');
-    
+
     // Disparar evento para cargar el detalle del producto
     context.read<HomeBloc>().add(
       LoadProductByIdEvent(productId: widget.product.id),
@@ -82,14 +84,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return BlocListener<HomeBloc, HomeState>(
       listener: (context, state) {
         if (state is home_states.ProductDetailLoaded) {
-          AppLogger.logSuccess('Detalle del producto cargado: ${state.product.name}');
+          AppLogger.logSuccess(
+            'Detalle del producto cargado: ${state.product.name}',
+          );
           setState(() {
             _productDetail = state.product;
             _isLoadingDetail = false;
             _errorMessage = null;
           });
         } else if (state is HomeError) {
-          AppLogger.logError('Error al cargar detalle del producto: ${state.message}');
+          AppLogger.logError(
+            'Error al cargar detalle del producto: ${state.message}',
+          );
           setState(() {
             _isLoadingDetail = false;
             _errorMessage = state.message;
@@ -143,10 +149,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     // Crear contenido de detalle de producto con BlocProvider
     Widget productDetailContent = BlocProvider(
-      create: (context) => product_detail_bloc.ProductDetailBloc(
-        cartBloc: cartBloc,
-        productDetail: _productDetail, // Pasar el detalle completo
-      )..add(product_detail_bloc.ProductDetailLoadRequested(product: widget.product)),
+      create:
+          (context) => product_detail_bloc.ProductDetailBloc(
+            cartBloc: cartBloc,
+            productDetail: _productDetail, // Pasar el detalle completo
+          )..add(
+            product_detail_bloc.ProductDetailLoadRequested(
+              product: widget.product,
+            ),
+          ),
       child: Builder(
         // Añadimos un Builder para tener acceso al context con el provider
         builder: (builderContext) {
@@ -174,5 +185,3 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return productDetailContent;
   }
 }
-
-
