@@ -6,6 +6,7 @@ import 'modules/bloc_module.dart';
 import 'modules/storage_module.dart';
 import 'package:flutter_application_ecommerce/features/home/di_container.dart'; // Importar HomeDIContainer
 import 'package:flutter_application_ecommerce/features/auth/di_container.dart'; // Importar AuthDIContainer
+import 'package:flutter_application_ecommerce/features/cart/di_container.dart'; // Importar CartDIContainer
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
 
@@ -32,6 +33,7 @@ class InjectionContainer {
       // Registrar todos los módulos de características en GetIt
       await HomeDIContainer.register(sl);
       await AuthDIContainer.register(sl);
+      await CartDIContainer.register(sl);
 
       // Configurar el cliente Dio para usar el almacenamiento de autenticación
       if (sl.isRegistered<DioClient>() && sl.isRegistered<AuthStorage>()) {
@@ -71,13 +73,15 @@ class InjectionContainer {
     // Obtener providers de los módulos de características
     final homeProviders = HomeDIContainer.getRepositoryProviders();
     final authProviders = AuthDIContainer.getRepositoryProviders();
-    
+    final cartProviders = CartDIContainer.getRepositoryProviders();
+
     // Combinar todos los providers
     final allRepositoryProviders = [
       ...homeProviders,
       ...authProviders,
+      ...cartProviders,
     ];
-    
+
     return MultiRepositoryProvider(
       providers: allRepositoryProviders,
       child: Builder(

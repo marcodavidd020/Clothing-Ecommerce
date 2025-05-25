@@ -64,7 +64,8 @@ class ProductDetailScaffoldWidget extends StatelessWidget {
       showBack: true,
       onBack: onBack,
       title: _buildFavoriteButton(context),
-      actions: [_buildCartButton()],
+      toolbarHeight: kToolbarHeight * 1.2,
+      actions: [_buildCartButton(context)],
     );
   }
 
@@ -88,11 +89,14 @@ class ProductDetailScaffoldWidget extends StatelessWidget {
     );
   }
 
-  /// Construye el icono del carrito
-  Widget _buildCartButton() {
+  /// Construye el icono del carrito con badge de cantidad
+  Widget _buildCartButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: AppDimens.screenPadding),
-      child: CartIconWidget(key: cartButtonKey),
+      padding: const EdgeInsets.only(right: AppDimens.appBarActionRightPadding),
+      child: core_widgets.CartBadgeWidget(
+        key: cartButtonKey,
+        onPressed: () => NavigationHelper.goToCart(context),
+      ),
     );
   }
 
@@ -135,9 +139,11 @@ class ProductDetailScaffoldWidget extends StatelessWidget {
             listener: (context, cartState) {
               // Mostrar confirmación cuando el producto es añadido al carrito
               if (cartState is CartLoaded) {
-                CartIntegrationHelper.showAddedToCartMessage(
-                  context,
-                  ProductDetailStrings.addedToCartMessage,
+                CartIntegrationHelper.showAddToCartSnackBar(
+                  context: context,
+                  success: true,
+                  productName: state.product.name,
+                  quantity: state.quantity,
                 );
               }
             },
@@ -152,7 +158,7 @@ class ProductDetailScaffoldWidget extends StatelessWidget {
                 Future.delayed(const Duration(milliseconds: 1200), () {
                   if (builderContext.mounted) {
                     builderContext.read<ProductDetailBloc>().add(
-                      const ProductAddToCartRequested(),
+                      ProductAddToCartRequested(context: builderContext),
                     );
                   }
                 });

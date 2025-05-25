@@ -33,6 +33,13 @@ class ApiConstants {
   static String getPrdouctsBestSellersEndpoint(String categoryId) => '$productsEndpoint/best-sellers/by-category/$categoryId';
   static String getPrdouctsNewestEndpoint(String categoryId) => '$productsEndpoint/newest/by-category/$categoryId';
 
+  // Cart endpoints
+  static const String cartEndpoint = '$baseUrl/carts';
+  static const String cartMyCartEndpoint = '$cartEndpoint/my-cart';
+  static const String cartMyCartItemsEndpoint = '$cartMyCartEndpoint/items';
+  static String getCartMyCartItemEndpoint(String itemId) => '$cartMyCartItemsEndpoint/$itemId';
+  static String getCartMyCartClearEndpoint() => '$cartMyCartEndpoint/clear';
+
   static const int connectTimeout = 15000;
   static const int receiveTimeout = 15000;
   static const Map<String, String> headers = {
