@@ -5,7 +5,6 @@ import 'package:flutter_application_ecommerce/features/cart/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
 import 'package:flutter_application_ecommerce/features/home/data/models/product_detail_model.dart';
-import 'package:flutter_application_ecommerce/features/product_detail/presentation/bloc/bloc.dart';
 
 /// Helper para integrar la funcionalidad del carrito con el detalle del producto
 class CartIntegrationHelper {

@@ -7,6 +7,7 @@ import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bl
 import 'package:flutter_application_ecommerce/features/cart/presentation/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/cart/core/core.dart';
 import 'package:flutter_application_ecommerce/features/cart/domain/domain.dart';
+import 'package:flutter_application_ecommerce/core/routes/app_router.dart';
 
 /// Page that displays the products in the shopping cart.
 class CartPage extends StatefulWidget {
@@ -287,12 +288,6 @@ class _CartPageState extends State<CartPage> {
 
   /// Maneja el botón de checkout
   void _onCheckoutPressed() {
-    // TODO: Implement checkout flow
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(CartStrings.checkoutComingSoon),
-        duration: Duration(seconds: CartUI.snackBarDurationSeconds),
-      ),
-    );
+    AppRouter.pushCheckout(context);
   }
 }

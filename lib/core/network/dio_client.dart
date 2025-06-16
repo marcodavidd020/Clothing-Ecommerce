@@ -12,6 +12,9 @@ class DioClient {
   bool _isRefreshing = false;
   final Dio _tokenDio = Dio();
 
+  // Callback para manejar el logout automático cuando expire el token
+  void Function()? onTokenExpired;
+
   // Modo de depuración para desactivar verificación de conexión en desarrollo
   final bool debugSkipConnectionCheck;
 
@@ -20,6 +23,7 @@ class DioClient {
     required this.networkInfo,
     AuthStorage? authStorage,
     this.debugSkipConnectionCheck = false,
+    this.onTokenExpired,
   }) : _authStorage = authStorage {
     dio.options.baseUrl = ApiConstants.baseUrl;
     dio.options.connectTimeout = Duration(
@@ -39,6 +43,11 @@ class DioClient {
   /// Configura el almacenamiento de autenticación
   void setAuthStorage(AuthStorage authStorage) {
     _authStorage = authStorage;
+  }
+
+  /// Configura el callback para token expirado
+  void setTokenExpiredCallback(void Function() callback) {
+    onTokenExpired = callback;
   }
 
   /// Interceptor que añade el token de autorización si está disponible
@@ -78,9 +87,15 @@ class DioClient {
             // Ejecutar nuevamente la solicitud con el nuevo token
             final response = await dio.fetch(options);
             return handler.resolve(response);
+          } else {
+            // Si falla la renovación del token, cerrar sesión automáticamente
+            AppLogger.logWarning('Token no se pudo renovar. Cerrando sesión automáticamente.');
+            _performAutoLogout();
           }
         } catch (e) {
           AppLogger.logError('Error al renovar token: $e');
+          // En caso de error, también cerrar sesión
+          _performAutoLogout();
         } finally {
           _isRefreshing = false;
         }
@@ -89,6 +104,23 @@ class DioClient {
 
     // Si no se pudo renovar el token o no es un error 401, continuar con el error
     return handler.next(err);
+  }
+
+  /// Realizar logout automático cuando expire el token
+  void _performAutoLogout() async {
+    try {
+      // Limpiar tokens locales
+      await _authStorage?.clearAuth();
+      AppLogger.logInfo('Tokens limpiados localmente por expiración');
+      
+      // Llamar al callback si está disponible
+      if (onTokenExpired != null) {
+        onTokenExpired!();
+        AppLogger.logInfo('Callback de token expirado ejecutado');
+      }
+    } catch (e) {
+      AppLogger.logError('Error durante el logout automático: $e');
+    }
   }
 
   /// Intenta renovar el token usando el refreshToken

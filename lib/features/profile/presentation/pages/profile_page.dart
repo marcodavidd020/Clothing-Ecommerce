@@ -7,6 +7,7 @@ import 'package:flutter_application_ecommerce/features/profile/core/core.dart';
 import 'package:flutter_application_ecommerce/features/profile/presentation/widgets/widgets.dart';
 import 'package:flutter_application_ecommerce/features/cart/presentation/widgets/confirm_dialog_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_application_ecommerce/core/routes/app_router.dart';
 
 /// Pantalla principal de Perfil (Settings) del usuario.
 ///
@@ -89,7 +90,46 @@ class ProfilePage extends StatelessWidget {
 
   /// Método para manejar la navegación a diferentes pantallas.
   void _navigateTo(BuildContext context, String route) {
-    // TODO: Implementar navegación a las rutas específicas
+    switch (route) {
+      case 'orders':
+        AppRouter.goToOrders(context);
+        break;
+      case 'coupons':
+        AppRouter.goToCoupons(context);
+        break;
+      case 'address':
+        // TODO: Implementar navegación a direcciones
+        _showComingSoon(context, 'Direcciones');
+        break;
+      case 'wishlist':
+        // TODO: Implementar navegación a lista de deseos
+        _showComingSoon(context, 'Lista de Deseos');
+        break;
+      case 'payment':
+        // TODO: Implementar navegación a métodos de pago
+        _showComingSoon(context, 'Métodos de Pago');
+        break;
+      case 'help':
+        // TODO: Implementar navegación a ayuda
+        _showComingSoon(context, 'Ayuda');
+        break;
+      case 'support':
+        // TODO: Implementar navegación a soporte
+        _showComingSoon(context, 'Soporte');
+        break;
+      default:
+        _showComingSoon(context, 'Funcionalidad');
+    }
+  }
+
+  /// Muestra un mensaje de "próximamente" para funcionalidades no implementadas
+  void _showComingSoon(BuildContext context, String feature) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$feature - Próximamente'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   /// Método para manejar el clic en el botón de editar perfil.
