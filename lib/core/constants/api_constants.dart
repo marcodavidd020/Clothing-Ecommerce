@@ -2,7 +2,8 @@ import 'package:flutter_application_ecommerce/core/network/logger.dart';
 
 class ApiConstants {
   // Usamos una IP local para desarrollo - ajustar según el entorno
-  static const String baseUrl = 'http://192.168.0.202:3000/api';
+  // static const String baseUrl = 'http://192.168.0.202:3000/api';
+  static const String baseUrl = 'https://clothing-ecommerce-backend-eta.vercel.app/api';
 
   // Logs para verificar que la URL se está construyendo correctamente
   static void logEndpoints() {
