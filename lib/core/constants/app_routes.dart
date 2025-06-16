@@ -34,6 +34,13 @@ class AppRoutes {
   /// Ruta para la página de detalle de producto
   static const String productDetail = '/product-detail/:productId';
 
+  /// Nuevas rutas de ecommerce
+  static const String checkout = '/checkout';
+  static const String checkoutAdvanced = '/checkout-advanced';
+  static const String checkoutFunctional = '/checkout-functional';
+  static const String orders = '/orders';
+  static const String coupons = '/coupons';
+
   /// Rutas de autenticación
   static const String signIn = '/auth/signin';
   static const String register = '/auth/register';
@@ -53,6 +60,13 @@ class AppRoutes {
   /// Obsoleto, usar categoryDetailName
   @Deprecated('Use categoryDetailName instead')
   static const String categoryProductsName = 'category-products';
+
+  /// Nombres de rutas de ecommerce
+  static const String checkoutName = 'checkout';
+  static const String checkoutAdvancedName = 'checkout-advanced';
+  static const String checkoutFunctionalName = 'checkout-functional';
+  static const String ordersName = 'orders';
+  static const String couponsName = 'coupons';
 
   /// Nombres de rutas de autenticación
   static const String signInName = 'signin';

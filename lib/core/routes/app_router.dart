@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_application_ecommerce/core/constants/app_routes.dart';
-import 'package:flutter_application_ecommerce/features/home/presentation/pages/home_page.dart';
+import 'package:flutter_application_ecommerce/core/constants/constants.dart';
+import 'package:flutter_application_ecommerce/features/auth/presentation/pages/sign_in_page.dart';
+import 'package:flutter_application_ecommerce/features/auth/presentation/pages/register_page.dart';
 import 'package:flutter_application_ecommerce/features/cart/presentation/pages/cart_page.dart';
+import 'package:flutter_application_ecommerce/features/checkout/presentation/pages/functional_checkout_page.dart';
+import 'package:flutter_application_ecommerce/features/coupons/presentation/pages/coupons_simple_page.dart';
+import 'package:flutter_application_ecommerce/features/home/presentation/pages/home_page.dart';
+import 'package:flutter_application_ecommerce/features/orders/presentation/pages/orders_page.dart';
 import 'package:flutter_application_ecommerce/features/product_detail/presentation/pages/product_detail_page.dart';
-import 'package:flutter_application_ecommerce/features/splash/presentation/pages/splash_page.dart';
+import 'package:flutter_application_ecommerce/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_application_ecommerce/features/shell/presentation/pages/main_shell_page.dart';
 import 'package:flutter_application_ecommerce/features/home/presentation/pages/category_detail_page.dart';
 import 'package:flutter_application_ecommerce/features/home/domain/domain.dart';
-import 'package:flutter_application_ecommerce/features/auth/presentation/presentation.dart';
-import 'package:flutter_application_ecommerce/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter_application_ecommerce/features/splash/presentation/pages/splash_page.dart';
 
 /// Configuración del sistema de rutas de la aplicación con GoRouter.
 ///
@@ -42,6 +46,9 @@ class AppRouter {
       _signInRoute,
       _registerRoute,
       _categoryDetailRoute,
+      _checkoutRoute,
+      _ordersRoute,
+      _couponsRoute,
     ],
   );
 
@@ -235,6 +242,29 @@ class AppRouter {
     builder: (context, state) => const RegisterPage(),
   );
 
+  /// Ruta de checkout 
+  static final GoRoute _checkoutRoute = GoRoute(
+    path: AppRoutes.checkout,
+    name: AppRoutes.checkoutName,
+    builder: (context, state) => const FunctionalCheckoutPage(),
+  );
+
+
+
+  /// Ruta de órdenes
+  static final GoRoute _ordersRoute = GoRoute(
+    path: AppRoutes.orders,
+    name: AppRoutes.ordersName,
+    builder: (context, state) => const OrdersPage(),
+  );
+
+  /// Ruta de cupones
+  static final GoRoute _couponsRoute = GoRoute(
+    path: AppRoutes.coupons,
+    name: AppRoutes.couponsName,
+    builder: (context, state) => const CouponsSimplePage(),
+  );
+
   /// Métodos de navegación
 
   /// Navega a la página principal (reemplaza toda la pila)
@@ -338,6 +368,46 @@ class AppRouter {
       debugPrint('Error navegando a registro: $e');
     }
   }
+
+  /// Navega a la página de checkout básico
+  static void goToCheckout(BuildContext context) {
+    try {
+      context.goNamed(AppRoutes.checkoutName);
+    } catch (e) {
+      debugPrint('Error navegando a checkout: $e');
+    }
+  }
+
+
+
+  /// Navega a la página de órdenes
+  static void goToOrders(BuildContext context) {
+    try {
+      context.goNamed(AppRoutes.ordersName);
+    } catch (e) {
+      debugPrint('Error navegando a órdenes: $e');
+    }
+  }
+
+  /// Navega a la página de cupones
+  static void goToCoupons(BuildContext context) {
+    try {
+      context.goNamed(AppRoutes.couponsName);
+    } catch (e) {
+      debugPrint('Error navegando a cupones: $e');
+    }
+  }
+
+  /// Empuja la página de checkout básico
+  static void pushCheckout(BuildContext context) {
+    try {
+      context.pushNamed(AppRoutes.checkoutName);
+    } catch (e) {
+      debugPrint('Error empujando checkout: $e');
+    }
+  }
+
+
 
   /// Método para eliminar un ID de producto de la lista de abiertos
   static void removeOpenProductId(String productId) {

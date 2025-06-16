@@ -22,3 +22,6 @@ class SignOutRequested extends AuthEvent {}
 
 /// Evento para verificar el estado de autenticación inicial
 class CheckInitialAuthStatus extends AuthEvent {}
+
+/// Evento para manejar token expirado
+class TokenExpiredEvent extends AuthEvent {}

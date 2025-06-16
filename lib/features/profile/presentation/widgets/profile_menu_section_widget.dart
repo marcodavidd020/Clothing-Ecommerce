@@ -39,6 +39,18 @@ class ProfileMenuSectionWidget extends StatelessWidget {
 
           // Opciones de menú
           _buildMenuItem(
+            icon: Icons.receipt_long,
+            title: 'Mis Órdenes',
+            onTap: () => onMenuItemTap('orders'),
+            isActive: activeOption == 'orders',
+          ),
+          _buildMenuItem(
+            icon: Icons.local_offer,
+            title: 'Mis Cupones',
+            onTap: () => onMenuItemTap('coupons'),
+            isActive: activeOption == 'coupons',
+          ),
+          _buildMenuItem(
             icon: ProfileUI.shippingAddressesIcon,
             title: ProfileStrings.address,
             onTap: () => onMenuItemTap('address'),

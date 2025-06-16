@@ -5,6 +5,7 @@ import 'package:flutter_application_ecommerce/features/home/presentation/pages/h
 import 'package:flutter_application_ecommerce/features/profile/profile.dart';
 import 'package:flutter_application_ecommerce/features/cart/presentation/bloc/bloc.dart';
 import 'package:flutter_application_ecommerce/core/network/logger.dart';
+import 'package:flutter_application_ecommerce/features/orders/presentation/pages/orders_page.dart';
 
 /// Widget principal que actúa como un "caparazón" (shell) para la navegación
 /// principal de la aplicación mediante una [BottomNavigationBarWidget].
@@ -27,8 +28,8 @@ class _MainShellPageState extends State<MainShellPage> {
   final List<Widget> _pages = [
     const HomePage(),
     const Center(child: Text('Notifications Page')), // Placeholder para la página de Notificaciones
-    const Center(child: Text('Receipts Page')),      // Placeholder para la página de Recibos/Pedidos
-    const ProfilePage(),        // Reemplazar Placeholder con ProfilePage
+    const OrdersPage(),                               // Página de Órdenes/Pedidos
+    const ProfilePage(),        // Página de Perfil
   ];
 
   /// Cambia la página actual cuando se selecciona un ítem en la barra de navegación.

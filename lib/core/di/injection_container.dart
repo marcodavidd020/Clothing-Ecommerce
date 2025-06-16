@@ -7,8 +7,12 @@ import 'modules/storage_module.dart';
 import 'package:flutter_application_ecommerce/features/home/di_container.dart'; // Importar HomeDIContainer
 import 'package:flutter_application_ecommerce/features/auth/di_container.dart'; // Importar AuthDIContainer
 import 'package:flutter_application_ecommerce/features/cart/di_container.dart'; // Importar CartDIContainer
+import 'package:flutter_application_ecommerce/features/coupons/di_container.dart'; // Importar CouponDIContainer
+import 'package:flutter_application_ecommerce/features/payments/di_container.dart'; // Importar PaymentDIContainer
+import 'package:flutter_application_ecommerce/features/orders/di_container.dart'; // Importar OrderDIContainer
 import 'package:flutter_application_ecommerce/core/network/dio_client.dart';
 import 'package:flutter_application_ecommerce/core/storage/auth_storage.dart';
+import 'package:flutter_application_ecommerce/core/services/token_expiry_service.dart';
 
 /// Clase para gestionar la inyección de dependencias en la aplicación
 class InjectionContainer {
@@ -34,12 +38,20 @@ class InjectionContainer {
       await HomeDIContainer.register(sl);
       await AuthDIContainer.register(sl);
       await CartDIContainer.register(sl);
+      await CouponDIContainer.register(sl);
+      await PaymentDIContainer.register(sl);
+      await OrderDIContainer.register(sl);
 
       // Configurar el cliente Dio para usar el almacenamiento de autenticación
       if (sl.isRegistered<DioClient>() && sl.isRegistered<AuthStorage>()) {
         final dioClient = sl<DioClient>();
         final authStorage = sl<AuthStorage>();
         dioClient.setAuthStorage(authStorage);
+        
+        // Configurar el callback para token expirado
+        dioClient.setTokenExpiredCallback(() {
+          TokenExpiryService().notifyTokenExpired();
+        });
       }
 
       _initialized = true;
@@ -74,12 +86,18 @@ class InjectionContainer {
     final homeProviders = HomeDIContainer.getRepositoryProviders();
     final authProviders = AuthDIContainer.getRepositoryProviders();
     final cartProviders = CartDIContainer.getRepositoryProviders();
+    final couponProviders = CouponDIContainer.getRepositoryProviders();
+    final paymentProviders = PaymentDIContainer.getRepositoryProviders();
+    final orderProviders = OrderDIContainer.getRepositoryProviders();
 
     // Combinar todos los providers
     final allRepositoryProviders = [
       ...homeProviders,
       ...authProviders,
       ...cartProviders,
+      ...couponProviders,
+      ...paymentProviders,
+      ...orderProviders,
     ];
 
     return MultiRepositoryProvider(

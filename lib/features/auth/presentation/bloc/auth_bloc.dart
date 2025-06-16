@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_application_ecommerce/features/auth/data/models/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart'; // Importar meta.dart
@@ -5,6 +6,7 @@ import '../../domain/domain.dart'; // Importar casos de uso y entidades (Ruta co
 import 'package:flutter_application_ecommerce/features/auth/data/models/request/request.dart'; // Importar los modelos de parámetros
 import 'package:flutter_application_ecommerce/core/network/logger.dart'; // Ruta correcta para AppLogger
 import 'package:flutter_application_ecommerce/features/auth/domain/usecases/check_auth_status_usecase.dart'; // Importar CheckAuthStatusUseCase
+import 'package:flutter_application_ecommerce/core/services/token_expiry_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -15,6 +17,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterUseCase registerUseCase;
   final SignOutUseCase signOutUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase; // Añadir caso de uso
+
+  // Subscription para escuchar el token expirado
+  StreamSubscription<bool>? _tokenExpirySubscription;
 
   // Modificar el constructor para aceptar las dependencias
   AuthBloc({
@@ -27,6 +32,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterRequested>(_onRegisterRequested);
     on<SignOutRequested>(_onSignOutRequested);
     on<CheckInitialAuthStatus>(_onCheckInitialAuthStatus); // Registrar manejador
+    on<TokenExpiredEvent>(_onTokenExpired); // Añadir evento de token expirado
+    
+    _initTokenExpiryListener();
+  }
+
+  /// Inicializa el listener para token expirado
+  void _initTokenExpiryListener() {
+    _tokenExpirySubscription = TokenExpiryService().tokenExpiredStream.listen(
+      (expired) {
+        if (expired) {
+          add(TokenExpiredEvent());
+        }
+      },
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _tokenExpirySubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onCheckInitialAuthStatus(
@@ -117,5 +142,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppLogger.logSuccess('Usuario cerró sesión exitosamente.');
       emit(Unauthenticated());
     });
+  }
+
+  /// Maneja el evento de token expirado
+  void _onTokenExpired(
+    TokenExpiredEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    AppLogger.logWarning('Token expirado detectado. Cerrando sesión automáticamente.');
+    
+    // No emitir AuthLoading para evitar interferir con la UI actual
+    // Solo cambiar directamente a Unauthenticated
+    emit(Unauthenticated());
+    
+    AppLogger.logInfo('Sesión cerrada automáticamente por token expirado.');
   }
 }

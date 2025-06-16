@@ -16,12 +16,21 @@ class CartModelMapper {
     final product = _convertToProductItemModel(apiItem.productVariant.product);
     final color = _convertToProductColorOption(apiItem.productVariant.color);
 
+    // Log para debugging
+    print('🔍 CART MAPPER DEBUG:');
+    print('  - Product: ${apiItem.productVariant.product.name}');
+    print('  - Cart Item ID: ${apiItem.id}');
+    print('  - Product Variant ID: ${apiItem.productVariantId}');
+    print('  - Variant from object: ${apiItem.productVariant.id}');
+    print('  - Color: ${apiItem.productVariant.color}');
+    print('  - Size: ${apiItem.productVariant.size}');
+
     return CartItemModel(
       product: product,
       size: apiItem.productVariant.size ?? 'N/A',
       color: color,
       quantity: apiItem.quantity,
-      apiItemId: apiItem.id, // Agregar el ID de la API
+      apiItemId: apiItem.productVariantId, // CORREGIDO: Usar productVariantId en lugar de item.id
     );
   }
 
